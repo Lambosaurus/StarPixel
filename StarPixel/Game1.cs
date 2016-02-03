@@ -17,6 +17,7 @@ namespace StarPixel
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        // meh
         int window_res_x = 1200;
         int window_res_y = 800;
 
