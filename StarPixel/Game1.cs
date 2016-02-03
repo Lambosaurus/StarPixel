@@ -18,8 +18,7 @@ namespace StarPixel
         SpriteBatch spriteBatch;
 
         Camera camera;
-        Camera camera2;
-
+        
         Universe universe;
 
         public Game1()
@@ -51,8 +50,8 @@ namespace StarPixel
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             camera = new Camera(GraphicsDevice, spriteBatch, 200, 200);
-            camera2 = new Camera(GraphicsDevice, spriteBatch, 200, 200);
 
+            ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
             ArtManager.Load(Content);
 
         }
@@ -86,23 +85,15 @@ namespace StarPixel
         /// This is called when the game should draw itself.
         protected override void Draw(GameTime gameTime)
         {
-            camera.BeginRender();
-            universe.Draw(camera);
-            camera.EndRender();
-
-            camera2.scale = 2;
-            camera2.pos = new Vector2(20,20);
-
-            camera2.BeginRender();
-            universe.Draw(camera2);
-            camera2.EndRender();
+            camera.Draw(universe);
 
 
-            GraphicsDevice.SetRenderTarget(null);
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.SetRenderTarget(null); // draw to windows now
+            GraphicsDevice.Clear(Color.CornflowerBlue); // so we can see what we forgot TODO: remove this.
+
+            // now we write the cameras result to the screen
             spriteBatch.Begin();
             spriteBatch.Draw(camera.surface, new Vector2(20, 20), Color.White);
-            spriteBatch.Draw(camera2.surface, new Vector2(240, 20), Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);

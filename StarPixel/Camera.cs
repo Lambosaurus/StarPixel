@@ -55,19 +55,17 @@ namespace StarPixel
             return true;
         }
 
-        // to be called before camera is used in draw calls
-        public void BeginRender()
+ 
+
+        public void Draw(Universe universe)
         {
+
             device.SetRenderTarget(surface);
             device.Clear(Color.Black);
             batch.Begin();
-        }
 
-        // call when done with draw calls, to flush to the surface.
-        // Do not be a retard and mix draw calls with multiple cameras.
-        // End each cameras render before doing the next
-        public void EndRender()
-        {
+            universe.Draw(this);
+
             batch.End();
         }
     }

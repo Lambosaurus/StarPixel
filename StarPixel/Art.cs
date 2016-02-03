@@ -15,7 +15,7 @@ namespace StarPixel
     public static class ArtManager
     {
 
-        static Dictionary<string, ArtSpriteResource> sprites = new Dictionary<string, ArtSpriteResource>();
+        public static Dictionary<string, ArtSpriteResource> sprites = new Dictionary<string, ArtSpriteResource>();
         static ArtSpriteResource sprite_default;
 
         public static void Load(ContentManager content)
@@ -52,15 +52,19 @@ namespace StarPixel
 
         public float radius;
 
-        public ArtSpriteResource(string arg_name)
+        public float scale;
+
+        public ArtSpriteResource(string arg_name, float arg_scale = 1.0f)
         {
             name = arg_name;
+            scale = arg_scale; // TODO i dont even want the scale parameter.
         }
+        
 
         public void Load( ContentManager content )
         {
             sprite = content.Load<Texture2D>(name);
-            size = new Vector2(sprite.Bounds.Height, sprite.Bounds.Width);
+            size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
             center = size / 2;
         }
 
@@ -97,7 +101,7 @@ namespace StarPixel
         {
             if (!InView(camera)) { return; }
 
-            camera.batch.Draw(resource.sprite, camera.Map(pos), null, Color.White, angle, resource.center, camera.scale, SpriteEffects.None, 0);
+            camera.batch.Draw(resource.sprite, camera.Map(pos), null, Color.White, angle, resource.center, camera.scale * resource.scale, SpriteEffects.None, 0);
             
         }
     }

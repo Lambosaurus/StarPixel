@@ -17,6 +17,8 @@ namespace StarPixel
 
         ArtSprite hull_sprite;
 
+        public Intellegence ai;
+
         public Ship() : base()
         {
             mass = 50;
@@ -30,6 +32,10 @@ namespace StarPixel
         public override void Update()
         {
             base.Update();
+
+
+            IntOutputs orders = ai.Process( new IntInputs() );
+            
 
             hull_sprite.pos = pos;
             hull_sprite.angle = angle;
