@@ -35,6 +35,17 @@ namespace StarPixel
             {
                 ent.Update();
             }
+
+
+            // remove entities that are good to be removed.
+            // The reason this should be done in a separate
+            for (int i = entities.Count - 1; i >= 0; i--)
+            {
+                if ( entities[i].destroyed)
+                {
+                    entities.RemoveAt(i);
+                }
+            }
         }
 
         public void Draw( Camera camera )

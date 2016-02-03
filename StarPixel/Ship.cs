@@ -33,9 +33,10 @@ namespace StarPixel
         {
             base.Update();
 
-
-            IntOutputs orders = ai.Process( new IntInputs() );
-            
+            if (ai != null)
+            {
+                IntOutputs orders = ai.Process(new IntInputs());
+            }
 
             hull_sprite.pos = pos;
             hull_sprite.angle = angle;

@@ -21,7 +21,7 @@ namespace StarPixel
         public Vector2 velocity;
         public float angle;
 
-        bool clear_for_deletion;
+        public bool destroyed;
 
         public Entity()
         {
@@ -29,7 +29,7 @@ namespace StarPixel
             velocity = new Vector2(0, 0);
             angle = 0.0f;
 
-            clear_for_deletion = false;
+            destroyed = false;
         }
 
         public virtual void Update()
@@ -43,7 +43,7 @@ namespace StarPixel
 
         public void Destory(Camera camera)
         {
-            clear_for_deletion = true;
+            destroyed = true;
         }
     }
 
