@@ -17,6 +17,9 @@ namespace StarPixel
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        int window_res_x = 1200;
+        int window_res_y = 800;
+
         Camera camera;
         
         Universe universe;
@@ -24,10 +27,12 @@ namespace StarPixel
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
+            graphics.PreferredBackBufferHeight = window_res_y;
+            graphics.PreferredBackBufferWidth = window_res_x;
+
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
         /// related content.  Calling base.Initialize will enumerate through any components
@@ -49,7 +54,7 @@ namespace StarPixel
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            camera = new Camera(GraphicsDevice, spriteBatch, 200, 200);
+            camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y);
 
             ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
             ArtManager.Load(Content);
@@ -93,7 +98,7 @@ namespace StarPixel
 
             // now we write the cameras result to the screen
             spriteBatch.Begin();
-            spriteBatch.Draw(camera.surface, new Vector2(20, 20), Color.White);
+            spriteBatch.Draw(camera.surface, new Vector2(0, 0), Color.White);
             spriteBatch.End();
 
             base.Draw(gameTime);
