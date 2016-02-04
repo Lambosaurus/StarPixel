@@ -67,6 +67,7 @@
     <Compile Include="Ship.cs" />
     <Compile Include="ShipModules.cs" />
     <Compile Include="Universe.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
