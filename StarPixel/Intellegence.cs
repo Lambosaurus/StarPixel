@@ -18,7 +18,6 @@ namespace StarPixel
 
     public class IntOutputs
     {
-
     }
 
 

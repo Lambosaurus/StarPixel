@@ -11,29 +11,68 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    class Thrusters
+    class Component
     {
-        public float main_thrust;
-        public float manouvering_thrust;
+        // do i have component parent classes?
+        // I dunno. It gets messy, but i feel like i need them to abstract out component generation
+        public float max_hp = 100;
+        public float hp;
 
-        public float max_power;
-        public float input_power;
+        public bool destroyed;
 
-        public float health;
-        public float max_health;
+        public Ship ship;
 
+        public Component( Ship arg_ship )
+        {
+            destroyed = false;
+            hp = max_hp;
 
-        Vector2 force;
-        float torque;
+            ship = arg_ship;
+        }
 
+        public virtual void Damage(float damage)
+        {
+            hp -= damage;
+            
+            if (hp <= 0)
+            {
+                if (!destroyed)
+                {
+                    destroyed = true;
+                    Destroy();
+                }
+            }
+        }
 
-        public Thrusters()
+        public virtual void Update()
         {
         }
 
-        public void Update()
+        public virtual void Destroy()
+        {
+        }
+    }
+
+
+    class Thrusters : Component
+    {
+        public float main_thrust = 40;
+        public float manouvering_thrust = 10;
+
+        public Vector2 control_thrust_vector;
+        public float control_torque_scalar;
+        
+        public Thrusters(Ship ship) : base(ship)
+        {
+        }
+
+        public override void Update()
         {
 
         }
     }
 }
+
+
+
+

@@ -19,12 +19,11 @@ namespace StarPixel
 
         public Intellegence ai;
 
+
         public Ship() : base()
         {
             mass = 50;
             inertia = 500;
-
-            angular_velocity = 0.1f;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
         }
