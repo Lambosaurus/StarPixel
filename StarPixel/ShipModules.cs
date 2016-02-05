@@ -90,7 +90,9 @@ namespace StarPixel
             float output_torque = control_t * manouvering_thrust;
             float output_thrust_x = control_x * manouvering_thrust;
             float output_thrust_y = control_y * ((control_y > 0) ? main_thrust : manouvering_thrust);
-        
+
+            // out thrust vector we have calculated needs to be rotated by the ships angle.
+            ship.Push( Utility.Rotate( new Vector2(output_thrust_x, output_thrust_y), ship.angle ) , output_torque);
         }
     }
 }

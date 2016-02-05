@@ -26,6 +26,8 @@ namespace StarPixel
             inertia = 500;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
+
+            ai = new IntellegenceHuman();
         }
 
         public override void Update()

@@ -21,18 +21,40 @@ namespace StarPixel
         
         const float LOOKUP_CONSTANT = SINE_RESOLUTION / MathHelper.TwoPi; // or just (1 / rads step)
 
-        public static float Cos(float rads)
+
+        // here i provide a fast cos and sin function
+        // Its a simple lookup table. Its more convenient than doing (float)Math.Cos(rads)
+        // And about twice as fast. possibly.
+        public static float Cos(float alpha)
         {
-            return cos_values[ (int)(rads * LOOKUP_CONSTANT)];
+            return cos_values[ (int)(alpha * LOOKUP_CONSTANT)];
         }
 
-        public static float Sin(float rads)
+        public static float Sin(float alpha)
         {
-            return sin_values[(int)(rads * LOOKUP_CONSTANT)];
+            return sin_values[(int)(alpha * LOOKUP_CONSTANT)];
         }
 
-        public static void Load()
+        // maybe i should build an atan2 table.... nah..
+
+
+        // rotates a vector by alpha rads, about its origin
+        // This is the very lifeblood of my code.
+        public static Vector2 Rotate(Vector2 point, float alpha)
         {
+            // here i am inlining the above Cos and Sin functions.
+            // When it comes to Vector Rotations, speed is paramount.
+            float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
+            float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
+
+            return new Vector2( (c * point.X) + (s * point.Y),
+                                (s * point.X) - (c * point.Y) );
+
+        }
+
+        static Utility()
+        {
+            // build the cos and sine tables used for Cos() and Sin()
             for ( int i = 0; i < SINE_RESOLUTION; i++)
             {
                 float angle = i * MathHelper.TwoPi / SINE_RESOLUTION;
