@@ -95,18 +95,20 @@ namespace StarPixel
                 camera.scale /= 1.25f;
             }
             scrollVal = Mouse.GetState().ScrollWheelValue;
+
+            Vector2 new_pos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+
             //if right button is pressed, move camera
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
             {
-                Vector2 new_pos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+                
                 if (new_pos != mouse_pos)
                 {
-                    Vector2 delta = (new_pos - mouse_pos) / camera.scale;
+                    Vector2 delta = (mouse_pos - new_pos) / camera.scale;
                     camera.pos += delta;
                 }
             }
-            mouse_pos.X = Mouse.GetState().X;
-            mouse_pos.Y = Mouse.GetState().Y;
+            mouse_pos = new_pos;
             
 
             universe.Update();
