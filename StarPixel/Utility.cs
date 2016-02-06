@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
@@ -10,28 +11,42 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 
+
 namespace StarPixel
 {
     public static class Utility
     {
         // lol, 32KB right here. Ez.
         const int SINE_RESOLUTION = 4000;
-        static float[] sin_values = new float[SINE_RESOLUTION];
-        static float[] cos_values = new float[SINE_RESOLUTION];
+        static float[] sin_values = new float[SINE_RESOLUTION+1];
+        static float[] cos_values = new float[SINE_RESOLUTION+1];
         
         const float LOOKUP_CONSTANT = SINE_RESOLUTION / MathHelper.TwoPi; // or just (1 / rads step)
 
+
+        public static float WrapAngle(float alpha)
+        {
+            alpha = alpha % MathHelper.TwoPi;
+            return (alpha > 0) ? alpha : alpha + MathHelper.TwoPi;
+        }
 
         // here i provide a fast cos and sin function
         // Its a simple lookup table. Its more convenient than doing (float)Math.Cos(rads)
         // And about twice as fast. possibly.
         public static float Cos(float alpha)
         {
+            // Utility.WrapAngle(alpha) inline
+            alpha = alpha % MathHelper.TwoPi;
+            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+
             return cos_values[ (int)(alpha * LOOKUP_CONSTANT)];
         }
 
         public static float Sin(float alpha)
         {
+            // Utility.WrapAngle(alpha) inline
+            alpha = alpha % MathHelper.TwoPi;
+            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
             return sin_values[(int)(alpha * LOOKUP_CONSTANT)];
         }
 
@@ -42,8 +57,10 @@ namespace StarPixel
         // This is the very lifeblood of my code.
         public static Vector2 Rotate(Vector2 point, float alpha)
         {
-            // here i am inlining the above Cos and Sin functions.
-            // When it comes to Vector Rotations, speed is paramount.
+            // Utility.WrapAngle(alpha) inline
+            alpha = alpha % MathHelper.TwoPi;
+            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
 
@@ -52,10 +69,21 @@ namespace StarPixel
 
         }
 
+        public static Vector2 CosSin(float alpha)
+        {
+            // Utility.WrapAngle(alpha) inline
+            alpha = alpha % MathHelper.TwoPi;
+            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+
+            float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
+            float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
+            return new Vector2(c, s);
+        }
+
         static Utility()
         {
             // build the cos and sine tables used for Cos() and Sin()
-            for ( int i = 0; i < SINE_RESOLUTION; i++)
+            for ( int i = 0; i < (SINE_RESOLUTION+1); i++)
             {
                 float angle = i * MathHelper.TwoPi / SINE_RESOLUTION;
 
@@ -66,7 +94,7 @@ namespace StarPixel
 
         public static float Clamp(float value, float min = 1.0f, float max = 1.0f)
         {
-            if (min > value) { return min; }
+            if (min < value) { return min; }
             if (value > max) { return max; }
             return value;
         }

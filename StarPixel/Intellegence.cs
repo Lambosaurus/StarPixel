@@ -52,8 +52,9 @@ namespace StarPixel
 
             KeyboardState key_state = Keyboard.GetState();
 
+            
             outputs.control_thrust.Y = key_state.IsKeyDown(Keys.W) ? 1.0f : ((key_state.IsKeyDown(Keys.S)) ? -1.0f : 0.0f);
-
+            
             outputs.control_thrust.X = key_state.IsKeyDown(Keys.D) ? 1.0f : ((key_state.IsKeyDown(Keys.A)) ? -1.0f : 0.0f);
 
             outputs.control_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);

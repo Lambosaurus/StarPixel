@@ -64,6 +64,7 @@ namespace StarPixel
         public override void Update()
         {
             angle += angular_velocity;
+            angle = Utility.WrapAngle(angle);
 
             base.Update();
         }

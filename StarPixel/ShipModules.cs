@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    class Component
+    public class Component
     {
         // do i have component parent classes?
         // I dunno. It gets messy, but i feel like i need them to abstract out component generation
@@ -54,10 +54,10 @@ namespace StarPixel
     }
     
 
-    class Thrusters : Component
+    public class Thrusters : Component
     {
-        public float main_thrust = 40;
-        public float manouvering_thrust = 10;
+        public float main_thrust = 4;
+        public float manouvering_thrust = 1;
 
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;

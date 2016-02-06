@@ -19,6 +19,7 @@ namespace StarPixel
 
         public Intellegence ai;
 
+        public Thrusters thrusters;
 
         public Ship() : base()
         {
@@ -27,17 +28,27 @@ namespace StarPixel
 
             hull_sprite = ArtManager.NewArtSprite("ship");
 
+            thrusters = new Thrusters(this);
+
             ai = new IntellegenceHuman();
         }
 
         public override void Update()
         {
-            base.Update();
-
+            
             if (ai != null)
             {
                 IntOutputs orders = ai.Process(new IntInputs());
+
+
+                thrusters.control_thrust_vector = orders.control_thrust;
+                thrusters.control_torque_scalar = orders.control_torque;
+
             }
+
+            thrusters.Update();
+
+            base.Update();
 
             hull_sprite.pos = pos;
             hull_sprite.angle = angle;
