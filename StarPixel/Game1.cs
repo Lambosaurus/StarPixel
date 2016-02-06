@@ -25,7 +25,7 @@ namespace StarPixel
         int scrollVal = 0;
         Vector2 mouse_pos = new Vector2(0, 0);
         Texture2D cursor;
-
+        
         Universe universe;
 
         public Game1()
@@ -109,8 +109,11 @@ namespace StarPixel
                 }
             }
             mouse_pos = new_pos;
-            
 
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y)));
+            }
             universe.Update();
 
             base.Update(gameTime);

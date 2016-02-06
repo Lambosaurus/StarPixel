@@ -106,6 +106,19 @@ namespace StarPixel
             return value;
         }
 
+        public static bool CompareVector2(Vector2 vect1, Vector2 vect2, float cullRadius)
+        {
+            return vect1.X + cullRadius > vect2.X &&
+                   vect1.Y + cullRadius > vect2.Y &&
+                   vect1.X - cullRadius < vect2.X &&
+                   vect1.Y - cullRadius < vect2.Y;
+        }
+
+        public static bool CompareVector2(Vector2 vect1, Vector2 vect2)
+        {
+            return CompareVector2(vect1, vect2, 10.0f);
+        }
+
 
     }
 }

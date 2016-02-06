@@ -23,6 +23,8 @@ namespace StarPixel
 
         public bool destroyed;
 
+        public event EventHandler Clicked;
+
         public Entity()
         {
             pos = new Vector2(0, 0);
@@ -31,6 +33,14 @@ namespace StarPixel
 
             destroyed = false;
         }
+
+        public void OnClick()
+        {
+            angle+=1.0f;
+            //Clicked(this, EventArgs.Empty);
+
+        }
+
 
         public virtual void Update()
         {

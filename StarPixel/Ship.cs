@@ -21,10 +21,12 @@ namespace StarPixel
 
         public Thrusters thrusters;
 
+        
+
         public Ship() : base()
         {
-            mass = 2500;
-            inertia = 30000;
+            mass = 25;
+            inertia = 200;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
 
@@ -39,7 +41,6 @@ namespace StarPixel
             if (ai != null)
             {
                 IntOutputs orders = ai.Process(new IntInputs());
-
 
                 thrusters.control_thrust_vector = orders.control_thrust;
                 thrusters.control_torque_scalar = orders.control_torque;
