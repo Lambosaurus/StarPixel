@@ -24,7 +24,7 @@ namespace StarPixel
             sprite_default = new ArtSpriteResource("default_sprite");
             sprite_default.Load(content);
 
-            foreach ( ArtSpriteResource sprite in sprites.Values)
+            foreach (ArtSpriteResource sprite in sprites.Values)
             {
                 sprite.Load(content);
             }
@@ -32,7 +32,7 @@ namespace StarPixel
 
         public static ArtSprite NewArtSprite(string key)
         {
-            if ( sprites.ContainsKey(key) )
+            if (sprites.ContainsKey(key))
             {
                 return sprites[key].New();
             }
@@ -42,14 +42,69 @@ namespace StarPixel
     }
 
 
-    public class ArtParticleResource
+    public class ArtThermoparticleResource
+    {
+        public int max_particle_count;
+        public float alpha_decay;
+        public float temperature_decay;
+
+        string sprite_name;
+        public Texture2D sprite;
+        
+        public ArtThermoparticleResource(string particle_name, int max_particles, float alpha_decay_rate, float temp_decay_constant)
+        {
+            sprite_name = particle_name;
+            max_particle_count = max_particles;
+            alpha_decay = alpha_decay_rate;
+            temperature_decay = temp_decay_constant;
+        }
+
+        public ArtThermoparticle New()
+        {
+            return new ArtThermoparticle(this);
+        }
+
+        public void Load(ContentManager content)
+        {
+            sprite = content.Load<Texture2D>(sprite_name);
+        }
+    }
+
+    public class ArtThermoparticle
     {
         public string name;
 
-        Vector2[] positions;
-        Vector2[] velocities;
-        
-        
+        Vector2[] position;
+        Vector2[] velocity;
+        float[] alpha;
+        float[] temperature;
+
+        int write_index;
+        int read_index;
+
+        ArtThermoparticleResource resource;
+
+
+        public ArtThermoparticle(ArtThermoparticleResource arg_resource)
+        {
+            resource = arg_resource;
+
+            position = new Vector2[resource.max_particle_count];
+            velocity = new Vector2[resource.max_particle_count];
+            alpha = new float[resource.max_particle_count];
+            temperature = new float[resource.max_particle_count];
+        }
+
+        public void Add(Vector2 new_position, Vector2 new_velocity, float temperature)
+        {
+        }
+
+        public void Draw( Camera camera )
+        {
+            Color color = new Color();
+            color.A = 255;
+            camera.batch.Draw(resource.sprite, camera.Map(position[0]), color);
+        }
     }
 
 
@@ -77,6 +132,8 @@ namespace StarPixel
             sprite = content.Load<Texture2D>(name);
             size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
             center = size / 2;
+
+            radius = center.Length();
         }
 
         public ArtSprite New(  )
