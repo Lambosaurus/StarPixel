@@ -62,9 +62,12 @@ namespace StarPixel
 
             camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y);
 
+            ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
+
             ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
             ArtManager.Load(Content);
 
+            
             cursor = Content.Load<Texture2D>("cursor");
         }
 

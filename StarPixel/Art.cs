@@ -41,6 +41,33 @@ namespace StarPixel
         }
     }
 
+    public static class ColorManager
+    {
+        public static Color[] thermo_colors;
+
+        public static float max_temperature = 6000;
+        public static float thermo_color_constant;
+        public static int thermo_scale_length;
+
+        public static void Load(ContentManager content)
+        {
+            Texture2D thermal_scale = content.Load<Texture2D>("thermal_scale");
+
+            thermo_scale_length = thermal_scale.Bounds.Width;
+            thermo_colors = new Color[thermo_scale_length];
+            thermal_scale.GetData<Color>(thermo_colors);
+
+            thermo_color_constant = thermo_scale_length / (max_temperature+1);
+        }
+
+        public static Color GetThermo( float temp )
+        {
+            if ( temp < 0 ) { return thermo_colors[0]; }
+            else if (temp > max_temperature) { return thermo_colors[thermo_scale_length - 1]; }
+            return thermo_colors[(int)(thermo_color_constant * temp)];
+        }
+    }
+
 
     public class ArtThermoparticleResource
     {
@@ -95,15 +122,40 @@ namespace StarPixel
             temperature = new float[resource.max_particle_count];
         }
 
-        public void Add(Vector2 new_position, Vector2 new_velocity, float temperature)
+        public void Add(Vector2 new_position, Vector2 new_velocity, float new_temperature)
         {
+            position[write_index] = new_position;
+            velocity[write_index] = new_velocity;
+            temperature[write_index] = new_temperature;
+            alpha[write_index] = 255;
+
+            // get to next write index
+            write_index++;
+            if (write_index >= resource.max_particle_count) { write_index = 0; }
+        }
+
+        public void Update()
+        {
+            bool needs_wrap = read_index >= write_index;
+            
+            for ( int i = read_index; (i < write_index) || needs_wrap; i++ )
+            {
+                alpha[i] -= resource.alpha_decay;
+
+                if (alpha[i] < 0.0f)
+                {
+                    read_index = i;
+                }
+                else
+                {
+                    position[i] += velocity[i];
+                    temperature[i] *= resource.temperature_decay;
+                }
+            }
         }
 
         public void Draw( Camera camera )
         {
-            Color color = new Color();
-            color.A = 255;
-            camera.batch.Draw(resource.sprite, camera.Map(position[0]), color);
         }
     }
 
