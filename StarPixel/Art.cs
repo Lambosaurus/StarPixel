@@ -42,14 +42,12 @@ namespace StarPixel
     }
 
 
-    class Particle
-    {
-
-    }
-
     public class ArtParticleResource
     {
         public string name;
+
+        Vector2[] positions;
+        Vector2[] velocities;
         
         
     }

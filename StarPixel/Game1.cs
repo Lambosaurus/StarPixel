@@ -23,8 +23,8 @@ namespace StarPixel
 
         Camera camera;
         int scrollVal = 0;
-        int mouse_x = 0;
-        int mouse_y = 0;
+        Vector2 mouse_pos = new Vector2(0, 0);
+        Texture2D cursor;
 
         Universe universe;
 
@@ -35,6 +35,8 @@ namespace StarPixel
             graphics.PreferredBackBufferWidth = window_res_x;
 
             Content.RootDirectory = "Content";
+
+            
         }
 
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -63,6 +65,7 @@ namespace StarPixel
             ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
             ArtManager.Load(Content);
 
+            cursor = Content.Load<Texture2D>("cursor");
         }
 
         /// UnloadContent will be called once per game and is the place to unload
@@ -95,16 +98,15 @@ namespace StarPixel
             //if right button is pressed, move camera
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
             {
-                if (mouse_x != Mouse.GetState().X && mouse_y != Mouse.GetState().Y)
+                Vector2 new_pos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
+                if (new_pos != mouse_pos)
                 {
-                    float _x = (mouse_x - Mouse.GetState().X) / camera.scale;
-                    float _y = (mouse_y - Mouse.GetState().Y) / camera.scale;
-                    camera.pos += new Vector2(_x, _y);
+                    Vector2 delta = (new_pos - mouse_pos) / camera.scale;
+                    camera.pos += delta;
                 }
             }
-                mouse_x = Mouse.GetState().X;
-                mouse_y = Mouse.GetState().Y;
-
+            mouse_pos.X = Mouse.GetState().X;
+            mouse_pos.Y = Mouse.GetState().Y;
             
 
             universe.Update();
@@ -127,6 +129,9 @@ namespace StarPixel
             spriteBatch.Begin();
 
             spriteBatch.Draw(camera.surface, new Vector2(0, 0), Color.White);
+
+            spriteBatch.Draw(cursor, mouse_pos - new Vector2(7,7), Color.White);
+
             spriteBatch.End();
 
             base.Draw(gameTime);
