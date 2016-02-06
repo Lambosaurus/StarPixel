@@ -48,6 +48,12 @@ namespace StarPixel
             return midpoint + ((point - pos) * scale);
         }
 
+        // maps a on camera point into the global coordinate frame
+        public Vector2 InverseMap(Vector2 point)
+        {
+            return ((point - midpoint) / scale) + pos;
+
+        }
 
         public bool Contains(Vector2 point)
         {
