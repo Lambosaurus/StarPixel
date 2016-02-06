@@ -68,7 +68,7 @@ namespace StarPixel
 
             device.SetRenderTarget(surface);
             device.Clear(Color.Black);
-            batch.Begin();
+            batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             universe.Draw(this);
 
