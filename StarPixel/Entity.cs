@@ -36,8 +36,11 @@ namespace StarPixel
 
         public void OnClick()
         {
-            angle+=1.0f;
-            //Clicked(this, EventArgs.Empty);
+            if (Clicked != null)
+            {
+                Clicked(this, EventArgs.Empty);
+            }
+            
 
         }
 
