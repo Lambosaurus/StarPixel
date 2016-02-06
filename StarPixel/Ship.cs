@@ -20,19 +20,26 @@ namespace StarPixel
         public Intellegence ai;
 
         public Thrusters thrusters;
-
         
+        private bool selected = false;
+
+        private void SelectMe(object sender, EventArgs eventArgs)
+        {
+            selected = !selected;
+        }
 
         public Ship() : base()
         {
-            mass = 25;
-            inertia = 200;
+            mass = new Random().Next(25, 250);
+            inertia = mass * new Random().Next(5,10);
 
             hull_sprite = ArtManager.NewArtSprite("ship");
 
             thrusters = new Thrusters(this);
 
             ai = new IntellegenceHuman();
+
+            Clicked += SelectMe;
         }
 
         public override void Update()
@@ -53,6 +60,15 @@ namespace StarPixel
 
             hull_sprite.pos = pos;
             hull_sprite.angle = angle;
+
+            if (selected)
+            {
+                hull_sprite.color = Color.CadetBlue;
+            }
+            else
+            {
+                hull_sprite.color = Color.White;
+            }
         }
 
         public override void Draw(Camera camera)

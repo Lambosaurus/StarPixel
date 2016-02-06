@@ -17,6 +17,9 @@ namespace StarPixel
         // I dunno. It gets messy, but i feel like i need them to abstract out component generation
         public float max_hp = 100;
         public float hp;
+        public float mass;
+        int max_size;
+        public float efficiency;
 
         public bool destroyed;
 
@@ -61,11 +64,12 @@ namespace StarPixel
 
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
-        
+
         public Thrusters(Ship ship) : base(ship)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
+            efficiency = 1.0f;
         }
 
         public override void Update()
@@ -93,6 +97,28 @@ namespace StarPixel
 
             // out thrust vector we have calculated needs to be rotated by the ships angle.
             ship.Push( Utility.Rotate( new Vector2(output_thrust_x, output_thrust_y), ship.angle ) , output_torque);
+        }
+    }
+    enum ReactorType
+    {
+        URANIUM, THORIUM, PLUTONIUM
+    }
+
+
+    public class Reactor : Component
+    {
+        float Max_output;
+        float fuel_efficiency;
+        ReactorType fuel_type;
+        float power_usage;
+
+        public Reactor(Ship ship) : base(ship)
+        {
+
+        }
+
+        public override void Update()
+        {
         }
     }
 

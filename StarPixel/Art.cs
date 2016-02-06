@@ -197,7 +197,7 @@ namespace StarPixel
     public class ArtSprite
     {
         ArtSpriteResource resource;
-
+        public Color color = Color.White;
         public Vector2 pos;
         public float angle;
 
@@ -221,7 +221,7 @@ namespace StarPixel
         {
             if (!InView(camera)) { return; }
 
-            camera.batch.Draw(resource.sprite, camera.Map(pos), null, Color.White, angle, resource.center, camera.scale * resource.scale, SpriteEffects.None, 0);
+            camera.batch.Draw(resource.sprite, camera.Map(pos), null, color, angle, resource.center, camera.scale * resource.scale, SpriteEffects.None, 0);
             
         }
     }

@@ -25,7 +25,7 @@ namespace StarPixel
         int scrollVal = 0;
         Vector2 mouse_pos = new Vector2(0, 0);
         Texture2D cursor;
-        
+        ButtonState mouse_left = Mouse.GetState().LeftButton;
         Universe universe;
 
         public Game1()
@@ -49,6 +49,7 @@ namespace StarPixel
 
 
             universe = new Universe();
+            universe.entities.Add(new Ship());
             universe.entities.Add(new Ship());
 
         }
@@ -113,10 +114,11 @@ namespace StarPixel
             }
             mouse_pos = new_pos;
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            if (mouse_left == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Released)
             {
                 universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y)));
             }
+            mouse_left = Mouse.GetState().LeftButton;
             universe.Update();
 
             base.Update(gameTime);
