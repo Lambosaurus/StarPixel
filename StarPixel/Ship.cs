@@ -16,6 +16,7 @@ namespace StarPixel
     {
 
         ArtSprite hull_sprite;
+        ArtThermoparticle jets_particles;
 
         public Intellegence ai;
 
@@ -29,6 +30,7 @@ namespace StarPixel
             inertia = 200;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
+            jets_particles = ArtManager.NewArtThermoparticle("jets");
 
             thrusters = new Thrusters(this);
 
@@ -45,7 +47,14 @@ namespace StarPixel
                 thrusters.control_thrust_vector = orders.control_thrust;
                 thrusters.control_torque_scalar = orders.control_torque;
 
+                if ( thrusters.control_thrust_vector.X != 0.0f || thrusters.control_thrust_vector.Y != 0.0f || thrusters.control_torque_scalar != 0.0f )
+                {
+                    jets_particles.Add(pos, velocity - Utility.CosSin(angle) + Utility.Rand(0.2f), 3000);
+                }
+
             }
+
+            jets_particles.Update();
 
             thrusters.Update();
 
@@ -58,6 +67,8 @@ namespace StarPixel
         public override void Draw(Camera camera)
         {
             hull_sprite.Draw(camera);
+            jets_particles.Draw(camera);
+
         }
     }
 }

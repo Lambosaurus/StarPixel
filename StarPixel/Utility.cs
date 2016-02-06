@@ -23,6 +23,7 @@ namespace StarPixel
         
         const float LOOKUP_CONSTANT = SINE_RESOLUTION / MathHelper.TwoPi; // or just (1 / rads step)
 
+        static Random random;
 
         public static float WrapAngle(float alpha)
         {
@@ -80,8 +81,19 @@ namespace StarPixel
             return new Vector2(c, s);
         }
 
+        public static Vector2 Rand(float scale)
+        {
+            int a = random.Next(SINE_RESOLUTION);
+
+            float c = cos_values[a];
+            float s = sin_values[a];
+            return new Vector2(c*scale, s*scale);
+        }
+
         static Utility()
         {
+            random = new Random();
+
             // build the cos and sine tables used for Cos() and Sin()
             for ( int i = 0; i < (SINE_RESOLUTION+1); i++)
             {

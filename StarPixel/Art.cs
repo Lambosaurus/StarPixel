@@ -12,11 +12,15 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+
     public static class ArtManager
     {
 
         public static Dictionary<string, ArtSpriteResource> sprites = new Dictionary<string, ArtSpriteResource>();
         static ArtSpriteResource sprite_default;
+
+        public static Dictionary<string, ArtThermoparticleResource> thermoparticles = new Dictionary<string, ArtThermoparticleResource>();
+        static ArtThermoparticleResource thermoparticle_default;
 
         public static void Load(ContentManager content)
         {
@@ -28,6 +32,15 @@ namespace StarPixel
             {
                 sprite.Load(content);
             }
+
+
+            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 1, 0.98f );
+            thermoparticle_default.Load(content);
+
+            foreach (ArtThermoparticleResource thermoparticle in thermoparticles.Values)
+            {
+                thermoparticle.Load(content);
+            }
         }
 
         public static ArtSprite NewArtSprite(string key)
@@ -38,6 +51,16 @@ namespace StarPixel
             }
 
             return sprite_default.New();
+        }
+
+        public static ArtThermoparticle NewArtThermoparticle(string key)
+        {
+            if (thermoparticles.ContainsKey(key))
+            {
+                return thermoparticles[key].New();
+            }
+
+            return thermoparticle_default.New();
         }
     }
 
@@ -137,11 +160,11 @@ namespace StarPixel
         public void Update()
         {
             bool needs_wrap = read_index >= write_index;
-            
-            for ( int i = read_index; (i < write_index) || needs_wrap; i++ )
+
+            int i = read_index;
+            while ( i < write_index || needs_wrap )
             {
                 alpha[i] -= resource.alpha_decay;
-
                 if (alpha[i] < 0.0f)
                 {
                     read_index = i;
@@ -151,11 +174,34 @@ namespace StarPixel
                     position[i] += velocity[i];
                     temperature[i] *= resource.temperature_decay;
                 }
+
+                i++;
+                if (i >= resource.max_particle_count) { i = 0; needs_wrap = false; }
             }
         }
 
-        public void Draw( Camera camera )
+        public bool InView(Camera camera)
         {
+            return true; // yep. Nothing wrong this this. We fine boys.
+        }
+
+        public void Draw(Camera camera)
+        {
+            if (!InView(camera)) { return; }
+
+            bool needs_wrap = read_index >= write_index;
+
+            int i = read_index;
+            while (i < write_index || needs_wrap)
+            {
+                Color k = ColorManager.GetThermo(temperature[i]);
+                k.A = (byte)alpha[i];
+                camera.batch.Draw(resource.sprite, camera.Map(position[i]), k );
+
+                i++;
+                if (i >= resource.max_particle_count) { i = 0; needs_wrap = false; }
+            }
+
         }
     }
 
