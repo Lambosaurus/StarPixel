@@ -109,7 +109,6 @@ namespace StarPixel
 
             universe.Update();
 
-
             base.Update(gameTime);
         }
         
@@ -119,6 +118,7 @@ namespace StarPixel
         {
             camera.Draw(universe);
 
+            
 
             GraphicsDevice.SetRenderTarget(null); // draw to windows now
             GraphicsDevice.Clear(Color.CornflowerBlue); // so we can see what we forgot TODO: remove this.

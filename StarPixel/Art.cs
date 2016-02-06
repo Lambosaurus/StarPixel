@@ -42,6 +42,19 @@ namespace StarPixel
     }
 
 
+    class Particle
+    {
+
+    }
+
+    public class ArtParticleResource
+    {
+        public string name;
+        
+        
+    }
+
+
     public class ArtSpriteResource
     {
         public Texture2D sprite;
