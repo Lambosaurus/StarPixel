@@ -194,9 +194,9 @@ namespace StarPixel
             int i = read_index;
             while (i < write_index || needs_wrap)
             {
-                Color k = ColorManager.GetThermo(temperature[i]);
-                k.A = (byte)alpha[i];
-                camera.batch.Draw(resource.sprite, camera.Map(position[i]), k );
+                Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i] / 255.0f);
+                //k.A = (byte)alpha[i];
+                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, 0.0f, new Vector2(0,0), camera.scale, SpriteEffects.None, 0  );
 
                 i++;
                 if (i >= resource.max_particle_count) { i = 0; needs_wrap = false; }
