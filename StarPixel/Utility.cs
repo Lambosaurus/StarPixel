@@ -23,7 +23,7 @@ namespace StarPixel
         
         const float LOOKUP_CONSTANT = SINE_RESOLUTION / MathHelper.TwoPi; // or just (1 / rads step)
 
-        static Random random;
+        public static Random random;
 
         public static float WrapAngle(float alpha)
         {

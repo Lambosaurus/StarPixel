@@ -100,6 +100,7 @@ namespace StarPixel
 
         string sprite_name;
         public Texture2D sprite;
+        public Vector2 sprite_center;
         
         public ArtThermoparticleResource(string particle_name, int max_particles, float alpha_decay_rate, float temp_decay_constant)
         {
@@ -117,6 +118,8 @@ namespace StarPixel
         public void Load(ContentManager content)
         {
             sprite = content.Load<Texture2D>(sprite_name);
+            Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
+            sprite_center = size / 2;
         }
     }
 
@@ -196,7 +199,7 @@ namespace StarPixel
             {
                 Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i] / 255.0f);
                 //k.A = (byte)alpha[i];
-                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, 0.0f, new Vector2(0,0), camera.scale, SpriteEffects.None, 0  );
+                camera.batch.Draw(resource.sprite, camera.Map(position[i] - resource.sprite_center), null, k, 0.0f, new Vector2(0,0), camera.scale, SpriteEffects.None, 0  );
 
                 i++;
                 if (i >= resource.max_particle_count) { i = 0; needs_wrap = false; }
