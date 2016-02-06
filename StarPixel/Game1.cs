@@ -22,7 +22,10 @@ namespace StarPixel
         int window_res_y = 800;
 
         Camera camera;
-        
+        int scrollVal = 0;
+        int mouse_x = 0;
+        int mouse_y = 0;
+
         Universe universe;
 
         public Game1()
@@ -79,7 +82,30 @@ namespace StarPixel
             {
                 this.Exit();
             }
+            //if scroll has been used, zoom in/out
+            if (Mouse.GetState().ScrollWheelValue > scrollVal)
+            {
+                camera.scale *= 1.25f;
+            }
+            else if(Mouse.GetState().ScrollWheelValue < scrollVal)
+            {
+                camera.scale /= 1.25f;
+            }
+            scrollVal = Mouse.GetState().ScrollWheelValue;
+            //if right button is pressed, move camera
+            if (Mouse.GetState().RightButton == ButtonState.Pressed)
+            {
+                if (mouse_x != Mouse.GetState().X && mouse_y != Mouse.GetState().Y)
+                {
+                    float _x = (mouse_x - Mouse.GetState().X) / camera.scale;
+                    float _y = (mouse_y - Mouse.GetState().Y) / camera.scale;
+                    camera.pos += new Vector2(_x, _y);
+                }
+            }
+                mouse_x = Mouse.GetState().X;
+                mouse_y = Mouse.GetState().Y;
 
+            
 
             universe.Update();
 
@@ -99,6 +125,7 @@ namespace StarPixel
 
             // now we write the cameras result to the screen
             spriteBatch.Begin();
+
             spriteBatch.Draw(camera.surface, new Vector2(0, 0), Color.White);
             spriteBatch.End();
 
