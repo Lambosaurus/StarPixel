@@ -59,7 +59,6 @@ namespace StarPixel
 
             outputs.control_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);
 
-
             return outputs;
         }
     }
