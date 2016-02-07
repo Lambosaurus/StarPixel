@@ -19,7 +19,8 @@ namespace StarPixel
         public float hp;
         public float mass;
         int max_size;
-        public float efficiency;
+        public float max_usage;
+        public float usage;
 
         public bool destroyed;
 
@@ -54,8 +55,12 @@ namespace StarPixel
         public virtual void Destroy()
         {
         }
+        public virtual void CalculateUsage()
+        {
     }
     
+    }
+
 
 
     public struct ThrusterNozzle
@@ -77,20 +82,20 @@ namespace StarPixel
     {
         public float main_thrust = 4;
         public float manouvering_thrust = 1;
-
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
-        
+
         public enum PortDirections { Rear, Front, LeftRear, RightRear, LeftFront, RightFront };
         public ThrusterNozzle[] nozzles = new ThrusterNozzle[6];
 
         ArtThermoparticle particles;
+
+        public float efficiency;
         
         public Thrusters(Ship ship) : base(ship)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
-
             particles = ArtManager.NewArtThermoparticle("lol");
             efficiency = 1.0f;
 
@@ -103,6 +108,16 @@ namespace StarPixel
             nozzles[(int)PortDirections.LeftRear] = new ThrusterNozzle(new Vector2(-4, -8), new Vector2(-0.5f, 0));
             nozzles[(int)PortDirections.RightFront] = new ThrusterNozzle(new Vector2(4, 8), new Vector2(0.5f, 0));
             nozzles[(int)PortDirections.RightRear] = new ThrusterNozzle(new Vector2(4, -8), new Vector2(0.5f, 0));
+
+            max_usage = 4.0f;
+            usage = 0.0f;
+        }
+
+        public override void CalculateUsage()
+        {
+            usage = (control_thrust_vector.X > 0.0f ? (control_thrust_vector.X * main_thrust) : (Utility.Abs(control_thrust_vector.X) * control_torque_scalar)) +
+                (control_thrust_vector.Y * manouvering_thrust) +
+                (control_torque_scalar * manouvering_thrust);
         }
 
         public override void Update()
@@ -123,7 +138,7 @@ namespace StarPixel
 
                 // in the simplest case, if control_x is full and torque is full, then they both get reduced to half.
             }
-            
+
             float output_torque = control_t * manouvering_thrust;
             float output_thrust_x = control_x * manouvering_thrust;
             float output_thrust_y = control_y * ((control_y > 0) ? main_thrust : manouvering_thrust);
@@ -171,14 +186,20 @@ namespace StarPixel
         float fuel_efficiency;
         ReactorType fuel_type;
         float power_usage;
+        List<Component> connected;
 
         public Reactor(Ship ship) : base(ship)
         {
-
+            Max_output = 3.0f;
+            connected.Add(ship.thrusters);
         }
 
         public override void Update()
         {
+            foreach (Component comp in connected)
+            {
+                
+            }
         }
     }
 

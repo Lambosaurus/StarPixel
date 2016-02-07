@@ -48,15 +48,24 @@ namespace StarPixel
             }
         }
 
-        public void OnClick(Vector2 pos)
+        public Entity OnClick(Vector2 pos)
         {
             foreach (Entity ent in entities)
             {
                 if (Utility.CompareVector2(ent.pos, pos))
                 {
                     ent.OnClick();
+
+                    return ent;
                 }
+                else
+                {
+                    ent.Selected = false;
+                }
+
             }
+
+            return null;
 
         }
 

@@ -23,10 +23,7 @@ namespace StarPixel
 
         private bool selected = false;
         
-        private void SelectMe(object sender, EventArgs eventArgs)
-        {
-            selected = !selected;
-        }
+        
 
         public Ship() : base()
         {
@@ -39,7 +36,6 @@ namespace StarPixel
 
             ai = new IntellegenceHuman();
 
-            Clicked += SelectMe;
         }
 
         public override void Update()
