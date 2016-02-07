@@ -20,8 +20,22 @@ namespace StarPixel
         public Vector2 pos;
         public Vector2 velocity;
         public float angle;
+        private bool selected = false;
+
+        private void SelectMe(object sender, EventArgs eventArgs)
+        {
+            selected = !selected;
+        }
 
         public bool destroyed;
+
+        public bool Selected
+        {
+            set
+            {
+                selected = false;
+            }
+        }
 
         public event EventHandler Clicked;
 
@@ -31,6 +45,7 @@ namespace StarPixel
             velocity = new Vector2(0, 0);
             angle = 0.0f;
 
+            Clicked += SelectMe;
             destroyed = false;
         }
 

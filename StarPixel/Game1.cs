@@ -27,6 +27,7 @@ namespace StarPixel
         Texture2D cursor;
         ButtonState mouse_left = Mouse.GetState().LeftButton;
         Universe universe;
+        Entity selectedEntity = null;
 
         public Game1()
         {
@@ -115,10 +116,14 @@ namespace StarPixel
 
             if (mouse_left == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Released)
             {
-                universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y)));
+                selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y)));
             }
             mouse_left = Mouse.GetState().LeftButton;
             universe.Update();
+            if (selectedEntity != null)
+            {
+                camera.pos = selectedEntity.pos;
+            }
 
             base.Update(gameTime);
         }

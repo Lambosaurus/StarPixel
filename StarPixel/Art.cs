@@ -34,7 +34,7 @@ namespace StarPixel
             }
 
 
-            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 5.0f, 1.5f );
+            thermoparticle_default = new ArtThermoparticleResource("particle", 1000, 1, 0.98f );
             thermoparticle_default.Load(content);
 
             foreach (ArtThermoparticleResource thermoparticle in thermoparticles.Values)
@@ -76,7 +76,6 @@ namespace StarPixel
         {
             Texture2D thermal_scale = content.Load<Texture2D>("thermal_scale");
 
-
             thermo_scale_length = thermal_scale.Bounds.Width;
             thermo_colors = new Color[thermo_scale_length];
             thermal_scale.GetData<Color>(thermo_colors);
@@ -91,8 +90,7 @@ namespace StarPixel
             return thermo_colors[(int)(thermo_color_constant * temp)];
         }
     }
-    
-    
+
 
     public class ArtThermoparticleResource
     {
@@ -102,16 +100,13 @@ namespace StarPixel
 
         string sprite_name;
         public Texture2D sprite;
-        public Vector2 sprite_center;
-
-        const float natural_log_half = -0.693147180559f; // close enough....
-
-        public ArtThermoparticleResource(string particle_name, int max_particles, float particle_life, float temp_half_life)
+        
+        public ArtThermoparticleResource(string particle_name, int max_particles, float alpha_decay_rate, float temp_decay_constant)
         {
             sprite_name = particle_name;
             max_particle_count = max_particles;
-            alpha_decay = 1.0f / (particle_life*60);
-            temperature_decay = (float)Math.Exp(natural_log_half / (temp_half_life*60) ); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
+            alpha_decay = alpha_decay_rate;
+            temperature_decay = temp_decay_constant;
         }
 
         public ArtThermoparticle New()
@@ -122,8 +117,6 @@ namespace StarPixel
         public void Load(ContentManager content)
         {
             sprite = content.Load<Texture2D>(sprite_name);
-            Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
-            sprite_center = size / 2;
         }
     }
 
@@ -150,9 +143,6 @@ namespace StarPixel
             velocity = new Vector2[resource.max_particle_count];
             alpha = new float[resource.max_particle_count];
             temperature = new float[resource.max_particle_count];
-
-            write_index = 0;
-            read_index = 0;
         }
 
         public void Add(Vector2 new_position, Vector2 new_velocity, float new_temperature)
@@ -160,33 +150,24 @@ namespace StarPixel
             position[write_index] = new_position;
             velocity[write_index] = new_velocity;
             temperature[write_index] = new_temperature;
-            alpha[write_index] = 1.0f;
+            alpha[write_index] = 255;
 
             // get to next write index
             write_index++;
             if (write_index >= resource.max_particle_count) { write_index = 0; }
-            
-            if (write_index == read_index)
-            {
-                read_index++;
-                if (read_index >= resource.max_particle_count) { read_index = 0; }
-            }
         }
 
         public void Update()
         {
-            
-            int i = read_index;
-            int c = write_index - read_index;
-            if (c < 0) { c += resource.max_particle_count; }
+            bool needs_wrap = read_index >= write_index;
 
-            while ( c > 0 )
+            int i = read_index;
+            while ( i < write_index || needs_wrap )
             {
                 alpha[i] -= resource.alpha_decay;
                 if (alpha[i] < 0.0f)
                 {
-                    read_index = i + 1;
-                    if (read_index >= resource.max_particle_count) { read_index = 0; }
+                    read_index = i;
                 }
                 else
                 {
@@ -194,9 +175,8 @@ namespace StarPixel
                     temperature[i] *= resource.temperature_decay;
                 }
 
-                c--;
                 i++;
-                if (i >= resource.max_particle_count) { i = 0; }
+                if (i >= resource.max_particle_count) { i = 0; needs_wrap = false; }
             }
         }
 
@@ -209,19 +189,17 @@ namespace StarPixel
         {
             if (!InView(camera)) { return; }
 
+            bool needs_wrap = read_index >= write_index;
+
             int i = read_index;
-            int c = write_index - read_index;
-            if (c < 0) { c += resource.max_particle_count; }
-
-            while (c > 0)
+            while (i < write_index || needs_wrap)
             {
-                Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
-                
-                camera.batch.Draw(resource.sprite, camera.Map(position[i] - resource.sprite_center), null, k, 0.0f, new Vector2(0, 0), camera.scale, SpriteEffects.None, 0);
+                Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i] / 255.0f);
+                //k.A = (byte)alpha[i];
+                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, 0.0f, new Vector2(0,0), camera.scale, SpriteEffects.None, 0  );
 
-                c--;
                 i++;
-                if (i >= resource.max_particle_count) { i = 0; }
+                if (i >= resource.max_particle_count) { i = 0; needs_wrap = false; }
             }
 
         }
