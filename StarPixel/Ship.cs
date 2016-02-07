@@ -51,9 +51,7 @@ namespace StarPixel
 
                 thrusters.control_thrust_vector = orders.control_thrust;
                 thrusters.control_torque_scalar = orders.control_torque;
-
                 
-
             }
 
             

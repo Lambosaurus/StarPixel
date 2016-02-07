@@ -57,6 +57,22 @@ namespace StarPixel
     }
     
 
+
+    public struct ThrusterNozzle
+    {
+        public Vector2 position;
+        public float particle_gen;
+        public Vector2 velocity;
+
+        public ThrusterNozzle( Vector2 pos, Vector2 vel )
+        {
+            position = pos;
+            velocity = vel;
+            particle_gen = 0.0f;
+        }
+    }
+
+
     public class Thrusters : Component
     {
         public float main_thrust = 4;
@@ -66,8 +82,7 @@ namespace StarPixel
         public float control_torque_scalar;
         
         public enum PortDirections { Rear, Front, LeftRear, RightRear, LeftFront, RightFront };
-        public Vector2[] port_pos = new Vector2[6];
-        public float[] port_particle_gen = new float[6];
+        public ThrusterNozzle[] nozzles = new ThrusterNozzle[6];
 
         ArtThermoparticle particles;
         
@@ -78,6 +93,16 @@ namespace StarPixel
 
             particles = ArtManager.NewArtThermoparticle("lol");
             efficiency = 1.0f;
+
+
+
+            nozzles[(int)PortDirections.Rear] = new ThrusterNozzle(new Vector2(0, -10), new Vector2(0, -1));
+            nozzles[(int)PortDirections.Front] = new ThrusterNozzle(new Vector2(0, 10), new Vector2(0, 1));
+
+            nozzles[(int)PortDirections.LeftFront] = new ThrusterNozzle(new Vector2(-4, 8), new Vector2(-0.5f, 0));
+            nozzles[(int)PortDirections.LeftRear] = new ThrusterNozzle(new Vector2(-4, -8), new Vector2(-0.5f, 0));
+            nozzles[(int)PortDirections.RightFront] = new ThrusterNozzle(new Vector2(4, 8), new Vector2(0.5f, 0));
+            nozzles[(int)PortDirections.RightRear] = new ThrusterNozzle(new Vector2(4, -8), new Vector2(0.5f, 0));
         }
 
         public override void Update()
@@ -104,44 +129,24 @@ namespace StarPixel
             float output_thrust_y = control_y * ((control_y > 0) ? main_thrust : manouvering_thrust);
 
 
-            float nozzle_rear = (control_y > 0) ? control_y : 0;
-            float nozzle_front = (control_y < 0) ? -control_y : 0;
+            nozzles[(int)PortDirections.Rear].particle_gen += (control_y > 0) ? control_y*0.5f : 0;
+            nozzles[(int)PortDirections.Front].particle_gen += (control_y < 0) ? -control_y*0.125f : 0;
 
-            float nozzle_left_rear = ((control_x > 0) ? control_x : 0) + ((control_t < 0) ? -control_t : 0);
-            float nozzle_left_front = ((control_x > 0) ? control_x : 0) + ((control_t > 0) ? control_t : 0);
+            nozzles[(int)PortDirections.LeftRear].particle_gen += ((control_x - control_t > 0) ? (control_x - control_t) * 0.125f : 0);
+            nozzles[(int)PortDirections.LeftFront].particle_gen += ((control_x + control_t > 0) ? (control_x + control_t) * 0.125f : 0);
 
-            float nozzle_right_front = ((control_x < 0) ? -control_x : 0) + ((control_t < 0) ? -control_t : 0);
-            float nozzle_right_rear = ((control_x < 0) ? -control_x : 0) + ((control_t > 0) ? control_t : 0);
+            nozzles[(int)PortDirections.RightFront].particle_gen += ((-control_x - control_t > 0) ? (-control_x - control_t) * 0.125f : 0);
+            nozzles[(int)PortDirections.RightRear].particle_gen += ((-control_x + control_t > 0) ? (-control_x + control_t) * 0.125f : 0);
 
-
-
-
-            if (nozzle_rear > 0.1)
+            for ( int i = 0; i < 6; i++ )
             {
-                particles.Add(ship.pos + Utility.Rotate(new Vector2(0, -10), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0, -1) + Utility.Rand(0.1f), ship.angle), 2000);
+                while (nozzles[i].particle_gen > 1)
+                {
+                    nozzles[i].particle_gen--;
+                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle), 3000);
+                }
             }
-            else if (nozzle_front > 0.1)
-            {
-                particles.Add(ship.pos + Utility.Rotate(new Vector2(0, 10), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0, 1) + Utility.Rand(0.1f), ship.angle), 1000);
-            }
-
-            if (nozzle_left_rear > 0.1)
-            {
-                particles.Add(ship.pos + Utility.Rotate(new Vector2(-4, -8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(-0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
-            }
-            if (nozzle_left_front > 0.1)
-            {
-                particles.Add(ship.pos + Utility.Rotate(new Vector2(-4, 8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(-0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
-            }
-            if (nozzle_right_rear > 0.1)
-            {
-                particles.Add(ship.pos + Utility.Rotate(new Vector2(4, -8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
-            }
-            if (nozzle_right_front > 0.1)
-            {
-                particles.Add(ship.pos + Utility.Rotate(new Vector2(4, 8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
-            }
-
+            
 
             particles.Update();
 
