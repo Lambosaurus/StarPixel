@@ -145,7 +145,7 @@ namespace StarPixel
 
 
             nozzles[(int)PortDirections.Rear].particle_gen += (control_y > 0) ? control_y*0.5f : 0;
-            nozzles[(int)PortDirections.Front].particle_gen += (control_y < 0) ? -control_y*0.125f : 0;
+            nozzles[(int)PortDirections.Front].particle_gen += (control_y < 0) ? -control_y*0.25f : 0;
 
             nozzles[(int)PortDirections.LeftRear].particle_gen += ((control_x - control_t > 0) ? (control_x - control_t) * 0.125f : 0);
             nozzles[(int)PortDirections.LeftFront].particle_gen += ((control_x + control_t > 0) ? (control_x + control_t) * 0.125f : 0);
@@ -158,7 +158,7 @@ namespace StarPixel
                 while (nozzles[i].particle_gen > 1)
                 {
                     nozzles[i].particle_gen--;
-                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle), 3000);
+                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle), 5000);
                 }
             }
             
