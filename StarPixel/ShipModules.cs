@@ -57,10 +57,10 @@ namespace StarPixel
         }
         public virtual void CalculateUsage()
         {
-        }
-
     }
     
+    }
+
 
     public class Thrusters : Component
     {
@@ -69,10 +69,17 @@ namespace StarPixel
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
 
+        public enum PortDirections { Rear, Front, LeftRear, RightRear, LeftFront, RightFront };
+        public Vector2[] port_pos = new Vector2[6];
+        public float[] port_particle_gen = new float[6];
+
+        ArtThermoparticle particles;
+        
         public Thrusters(Ship ship) : base(ship)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
+            particles = ArtManager.NewArtThermoparticle("lol");
             max_usage = 4.0f;
             usage = 0.0f;
         }
@@ -107,8 +114,55 @@ namespace StarPixel
             float output_thrust_x = control_x * manouvering_thrust;
             float output_thrust_y = control_y * ((control_y > 0) ? main_thrust : manouvering_thrust);
 
+
+            float nozzle_rear = (control_y > 0) ? control_y : 0;
+            float nozzle_front = (control_y < 0) ? -control_y : 0;
+
+            float nozzle_left_rear = ((control_x > 0) ? control_x : 0) + ((control_t < 0) ? -control_t : 0);
+            float nozzle_left_front = ((control_x > 0) ? control_x : 0) + ((control_t > 0) ? control_t : 0);
+
+            float nozzle_right_front = ((control_x < 0) ? -control_x : 0) + ((control_t < 0) ? -control_t : 0);
+            float nozzle_right_rear = ((control_x < 0) ? -control_x : 0) + ((control_t > 0) ? control_t : 0);
+
+
+
+
+            if (nozzle_rear > 0.1)
+            {
+                particles.Add(ship.pos + Utility.Rotate(new Vector2(0, -10), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0, -1) + Utility.Rand(0.1f), ship.angle), 2000);
+            }
+            else if (nozzle_front > 0.1)
+            {
+                particles.Add(ship.pos + Utility.Rotate(new Vector2(0, 10), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0, 1) + Utility.Rand(0.1f), ship.angle), 1000);
+            }
+
+            if (nozzle_left_rear > 0.1)
+            {
+                particles.Add(ship.pos + Utility.Rotate(new Vector2(-4, -8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(-0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
+            }
+            if (nozzle_left_front > 0.1)
+            {
+                particles.Add(ship.pos + Utility.Rotate(new Vector2(-4, 8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(-0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
+            }
+            if (nozzle_right_rear > 0.1)
+            {
+                particles.Add(ship.pos + Utility.Rotate(new Vector2(4, -8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
+            }
+            if (nozzle_right_front > 0.1)
+            {
+                particles.Add(ship.pos + Utility.Rotate(new Vector2(4, 8), ship.angle), ship.velocity + Utility.Rotate(new Vector2(0.75f, 0) + Utility.Rand(0.1f), ship.angle), 1000);
+            }
+
+
+            particles.Update();
+
             // out thrust vector we have calculated needs to be rotated by the ships angle.
             ship.Push( Utility.Rotate( new Vector2(output_thrust_x, output_thrust_y), ship.angle ) , output_torque);
+        }
+
+        public void Draw(Camera camera)
+        {
+            particles.Draw(camera);
         }
     }
     enum ReactorType
