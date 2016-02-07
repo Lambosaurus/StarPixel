@@ -15,7 +15,7 @@ namespace StarPixel
     public class Ship : Physical
     {
 
-        ArtSprite hull_sprite;
+        public ArtSprite hull_sprite;
         
         public Intellegence ai;
 
@@ -60,6 +60,7 @@ namespace StarPixel
             hull_sprite.pos = pos;
             hull_sprite.angle = angle;
 
+            /*
             if (selected)
             {
                 hull_sprite.color = Color.CadetBlue;
@@ -68,6 +69,7 @@ namespace StarPixel
             {
                 hull_sprite.color = Color.White;
             }
+            */
         }
 
         public override void Draw(Camera camera)

@@ -82,8 +82,10 @@ namespace StarPixel
     {
         public float main_thrust = 4;
         public float manouvering_thrust = 1;
+
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
+        public float thrust_temperature = 5000;
 
         public enum PortDirections { Rear, Front, LeftRear, RightRear, LeftFront, RightFront };
         public ThrusterNozzle[] nozzles = new ThrusterNozzle[6];
@@ -159,7 +161,7 @@ namespace StarPixel
                 while (nozzles[i].particle_gen > 1)
                 {
                     nozzles[i].particle_gen--;
-                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle), 5000);
+                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle), thrust_temperature);
                 }
             }
             

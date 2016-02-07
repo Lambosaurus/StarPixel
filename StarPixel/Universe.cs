@@ -24,13 +24,21 @@ namespace StarPixel
 
             Ship playership = new Ship();
             playership.ai = new IntellegenceHuman();
-
+            
             entities.Add(playership);
 
             for (int i = 0; i < 10; i++)
             {
                 Ship othership = new Ship();
                 othership.ai = new IntellegenceHunter(playership);
+                othership.hull_sprite.color = Color.LightGray;
+
+                // these give them some speed advantage...
+                float advantage = 1.1f;
+                othership.thrusters.manouvering_thrust *= advantage;
+                othership.thrusters.main_thrust *= advantage;
+
+                othership.thrusters.thrust_temperature = 2000;
                 entities.Add(othership);
             }
 

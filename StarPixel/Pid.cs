@@ -17,12 +17,12 @@ namespace StarPixel
 
         float last_value = 0;
 
-        public PID( float arg_p, float arg_i, float arg_d, float update_rate = 60, float maximum_i = 100 )
+        public PID( float arg_p, float arg_i, float arg_d, float update_rate = 60, float maximum_i = 10f )
         {
             p = arg_p;
             i = arg_i / update_rate;
             d = arg_d * update_rate;
-            maximum_integral = maximum_i * update_rate;
+            maximum_integral = maximum_i / i;
         }
 
         public float Update( float value )
