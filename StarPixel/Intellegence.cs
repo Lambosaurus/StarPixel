@@ -68,13 +68,24 @@ namespace StarPixel
     {
         Ship target;
 
-        PID angle_tracker = new PID(10f, 0.1f, 10f);
-        PID x_tracker = new PID(0.05f,0.01f,0.5f);
-        PID y_tracker = new PID(0.05f,0.01f,0.5f);
+
+        PID angle_tracker;
+        PID x_tracker;
+        PID y_tracker;
 
         public IntellegenceHunter( Ship arg_target )
         {
             target = arg_target;
+
+            /*
+            PID angle_tracker = new PID(10f, 0.1f, 10f);
+            PID x_tracker = new PID(0.05f, 0.01f, 0.5f);
+            PID y_tracker = new PID(0.05f, 0.01f, 0.5f);
+            */
+
+            angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.1f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
+            x_tracker = new PID(0.05f * Utility.random.Next(5, 15) / 10f, 0.01f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
+            y_tracker = new PID(0.05f * Utility.random.Next(5, 15) / 10f, 0.01f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
         }
 
         public override IntOutputs Process(IntInputs inputs)
@@ -84,9 +95,11 @@ namespace StarPixel
             mov.X = x_tracker.Update(target.pos.X - inputs.pos.X);
             mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
 
-            float mov_angle = Utility.Angle( target.pos );
-            
-            float a_mov = angle_tracker.Update( Utility.AngleDelta( Utility.Angle(target.pos - inputs.pos)  , inputs.angle) );
+            //float a_mov = Utility.Angle(mov); // Utility.Angle( target.pos );
+            //float a_mov = angle_tracker.Update( Utility.AngleDelta( Utility.Angle(target.pos - inputs.pos)  , inputs.angle) );
+
+            // Ya, this version is way cooler.
+            float a_mov = angle_tracker.Update( Utility.AngleDelta( Utility.Angle(mov), inputs.angle) );
 
             mov = Utility.Rotate(mov, -inputs.angle);
             

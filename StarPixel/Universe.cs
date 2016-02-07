@@ -25,11 +25,15 @@ namespace StarPixel
             Ship playership = new Ship();
             playership.ai = new IntellegenceHuman();
 
-            Ship othership = new Ship();
-            othership.ai = new IntellegenceHunter( playership );
-
             entities.Add(playership);
-            entities.Add(othership);
+
+            for (int i = 0; i < 10; i++)
+            {
+                Ship othership = new Ship();
+                othership.ai = new IntellegenceHunter(playership);
+                entities.Add(othership);
+            }
+
 
         }
 
