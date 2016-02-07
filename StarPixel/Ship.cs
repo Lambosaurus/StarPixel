@@ -21,9 +21,9 @@ namespace StarPixel
         public Intellegence ai;
 
         public Thrusters thrusters;
-        
-        private bool selected = false;
 
+        private bool selected = false;
+        
         private void SelectMe(object sender, EventArgs eventArgs)
         {
             selected = !selected;
@@ -31,8 +31,8 @@ namespace StarPixel
 
         public Ship() : base()
         {
-            mass = new Random().Next(25, 250);
-            inertia = mass * new Random().Next(5,10);
+            mass = 500;
+            inertia = 2000;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
             jets_particles = ArtManager.NewArtThermoparticle("jets");
@@ -56,7 +56,7 @@ namespace StarPixel
 
                 if ( thrusters.control_thrust_vector.X != 0.0f || thrusters.control_thrust_vector.Y != 0.0f || thrusters.control_torque_scalar != 0.0f )
                 {
-                    jets_particles.Add(pos, velocity - Utility.CosSin(angle - MathHelper.PiOver2) + Utility.Rand(0.2f), 4500 + new Random().Next(2000));
+                    jets_particles.Add(pos, velocity - (Utility.CosSin(angle - MathHelper.PiOver2)) + Utility.Rand(0.1f), 6000);
                 }
 
             }
