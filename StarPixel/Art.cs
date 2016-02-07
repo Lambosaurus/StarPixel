@@ -91,7 +91,8 @@ namespace StarPixel
             return thermo_colors[(int)(thermo_color_constant * temp)];
         }
     }
-
+    
+    
 
     public class ArtThermoparticleResource
     {
@@ -110,7 +111,7 @@ namespace StarPixel
             sprite_name = particle_name;
             max_particle_count = max_particles;
             alpha_decay = 1.0f / (particle_life*60);
-            temperature_decay = (float)Math.Exp(natural_log_half / (temp_half_life*60) );
+            temperature_decay = (float)Math.Exp(natural_log_half / (temp_half_life*60) ); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
         }
 
         public ArtThermoparticle New()
