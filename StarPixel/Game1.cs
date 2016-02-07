@@ -50,7 +50,6 @@ namespace StarPixel
 
             universe = new Universe();
             universe.entities.Add(new Ship());
-            universe.entities.Add(new Ship());
 
         }
 
