@@ -17,6 +17,9 @@ namespace StarPixel
         // I dunno. It gets messy, but i feel like i need them to abstract out component generation
         public float max_hp = 100;
         public float hp;
+        public float mass;
+        int max_size;
+        public float efficiency;
 
         public bool destroyed;
 
@@ -61,19 +64,20 @@ namespace StarPixel
 
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
-
+        
         public enum PortDirections { Rear, Front, LeftRear, RightRear, LeftFront, RightFront };
         public Vector2[] port_pos = new Vector2[6];
         public float[] port_particle_gen = new float[6];
 
         ArtThermoparticle particles;
-
+        
         public Thrusters(Ship ship) : base(ship)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
 
             particles = ArtManager.NewArtThermoparticle("lol");
+            efficiency = 1.0f;
         }
 
         public override void Update()
@@ -148,6 +152,28 @@ namespace StarPixel
         public void Draw(Camera camera)
         {
             particles.Draw(camera);
+        }
+    }
+    enum ReactorType
+    {
+        URANIUM, THORIUM, PLUTONIUM
+    }
+
+
+    public class Reactor : Component
+    {
+        float Max_output;
+        float fuel_efficiency;
+        ReactorType fuel_type;
+        float power_usage;
+
+        public Reactor(Ship ship) : base(ship)
+        {
+
+        }
+
+        public override void Update()
+        {
         }
     }
 
