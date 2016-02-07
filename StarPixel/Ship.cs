@@ -26,8 +26,8 @@ namespace StarPixel
 
         public Ship() : base()
         {
-            mass = 25;
-            inertia = 200;
+            mass = 500;
+            inertia = 2000;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
             jets_particles = ArtManager.NewArtThermoparticle("jets");
@@ -50,7 +50,7 @@ namespace StarPixel
                 if ( thrusters.control_thrust_vector.X != 0.0f || thrusters.control_thrust_vector.Y != 0.0f || thrusters.control_torque_scalar != 0.0f )
                 {
                     
-                    jets_particles.Add(pos, velocity - (Utility.CosSin(angle - MathHelper.PiOver2)*2) + Utility.Rand(0.2f), 2000 );
+                    jets_particles.Add(pos, velocity - (Utility.CosSin(angle - MathHelper.PiOver2)) + Utility.Rand(0.1f), 6000 );
                     
                 }
 
