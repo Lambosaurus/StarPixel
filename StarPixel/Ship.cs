@@ -53,7 +53,6 @@ namespace StarPixel
 
                 thrusters.control_thrust_vector = orders.control_thrust;
                 thrusters.control_torque_scalar = orders.control_torque;
-
                 if ( thrusters.control_thrust_vector.X != 0.0f || thrusters.control_thrust_vector.Y != 0.0f || thrusters.control_torque_scalar != 0.0f )
                 {
                     jets_particles.Add(pos, velocity - (Utility.CosSin(angle - MathHelper.PiOver2)) + Utility.Rand(0.1f), 6000);

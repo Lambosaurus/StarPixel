@@ -19,7 +19,8 @@ namespace StarPixel
         public float hp;
         public float mass;
         int max_size;
-        public float efficiency;
+        public float max_usage;
+        public float usage;
 
         public bool destroyed;
 
@@ -54,6 +55,10 @@ namespace StarPixel
         public virtual void Destroy()
         {
         }
+        public virtual void CalculateUsage()
+        {
+        }
+
     }
     
 
@@ -61,7 +66,6 @@ namespace StarPixel
     {
         public float main_thrust = 4;
         public float manouvering_thrust = 1;
-
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
 
@@ -69,7 +73,15 @@ namespace StarPixel
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
-            efficiency = 1.0f;
+            max_usage = 4.0f;
+            usage = 0.0f;
+        }
+
+        public override void CalculateUsage()
+        {
+            usage = (control_thrust_vector.X > 0.0f ? (control_thrust_vector.X * main_thrust) : (Utility.Abs(control_thrust_vector.X) * control_torque_scalar)) +
+                (control_thrust_vector.Y * manouvering_thrust) +
+                (control_torque_scalar * manouvering_thrust);
         }
 
         public override void Update()
@@ -111,14 +123,20 @@ namespace StarPixel
         float fuel_efficiency;
         ReactorType fuel_type;
         float power_usage;
+        List<Component> connected;
 
         public Reactor(Ship ship) : base(ship)
         {
-
+            Max_output = 3.0f;
+            connected.Add(ship.thrusters);
         }
 
         public override void Update()
         {
+            foreach (Component comp in connected)
+            {
+                
+            }
         }
     }
 
