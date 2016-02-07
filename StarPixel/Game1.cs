@@ -36,8 +36,6 @@ namespace StarPixel
             graphics.PreferredBackBufferWidth = window_res_x;
 
             Content.RootDirectory = "Content";
-
-            
         }
 
         /// Allows the game to perform any initialization it needs to before starting to run.
@@ -50,7 +48,6 @@ namespace StarPixel
 
 
             universe = new Universe();
-            universe.entities.Add(new Ship());
 
         }
 

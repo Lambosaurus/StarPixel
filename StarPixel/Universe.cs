@@ -19,6 +19,18 @@ namespace StarPixel
         public Universe()
         {
             entities = new List<Entity>();
+
+
+
+            Ship playership = new Ship();
+            playership.ai = new IntellegenceHuman();
+
+            Ship othership = new Ship();
+            othership.ai = new IntellegenceHunter( playership );
+
+            entities.Add(playership);
+            entities.Add(othership);
+
         }
 
         public void Start()
@@ -38,7 +50,7 @@ namespace StarPixel
 
 
             // remove entities that are good to be removed.
-            // The reason this should be done in a separate
+            // this is done separately for a good reason. probably.
             for (int i = entities.Count - 1; i >= 0; i--)
             {
                 if ( entities[i].destroyed)

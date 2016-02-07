@@ -65,8 +65,8 @@ namespace StarPixel
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
 
-            return new Vector2( (c * point.X) + (s * point.Y),
-                                (s * point.X) - (c * point.Y) );
+            return new Vector2( (c * point.X) - (s * point.Y),
+                                (s * point.X) + (c * point.Y) );
 
         }
 
@@ -104,9 +104,9 @@ namespace StarPixel
             }
         }
 
-        public static float Clamp(float value, float min = 1.0f, float max = 1.0f)
+        public static float Clamp(float value, float min = -1.0f, float max = 1.0f)
         {
-            if (min < value) { return min; }
+            if (value < min) { return min; }
             if (value > max) { return max; }
             return value;
         }
@@ -118,17 +118,32 @@ namespace StarPixel
             return value;
         }
 
-        public static bool CompareVector2(Vector2 vect1, Vector2 vect2, float cullRadius)
+        public static bool CompareVector2(Vector2 vect1, Vector2 vect2, float cullRadius = 10.0f)
         {
             return vect1.X + cullRadius > vect2.X &&
                    vect1.Y + cullRadius > vect2.Y &&
                    vect1.X - cullRadius < vect2.X &&
                    vect1.Y - cullRadius < vect2.Y;
         }
-
-        public static bool CompareVector2(Vector2 vect1, Vector2 vect2)
+        
+        // gets the angle from the origin to the given point
+        public static float Angle( Vector2 point )
         {
-            return CompareVector2(vect1, vect2, 10.0f);
+            return (float)Math.Atan2(point.Y, point.X);
+        }
+
+        // mod with positive results only
+        public static float Mod( float a, float b )
+        {
+            float m = a % b;
+            return (m > 0) ? m : m + b;
+        }
+
+        // gets the shortest angle to the target angle from the current angle
+        public static float AngleDelta( float target, float current )
+        {
+            float a = target - current;
+            return Mod(a + MathHelper.Pi, MathHelper.TwoPi) - MathHelper.Pi;
         }
 
 

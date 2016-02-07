@@ -23,6 +23,8 @@ namespace StarPixel
 
         private bool selected = false;
         
+
+        public IntInputs ai_inputs = new IntInputs();
         
 
         public Ship() : base()
@@ -34,8 +36,6 @@ namespace StarPixel
             
             thrusters = new Thrusters(this);
 
-            ai = new IntellegenceHuman();
-
         }
 
         public override void Update()
@@ -43,7 +43,9 @@ namespace StarPixel
             
             if (ai != null)
             {
-                IntOutputs orders = ai.Process(new IntInputs());
+                ai_inputs.pos = pos;
+                ai_inputs.angle = angle;
+                IntOutputs orders = ai.Process(ai_inputs);
 
                 thrusters.control_thrust_vector = orders.control_thrust;
                 thrusters.control_torque_scalar = orders.control_torque;

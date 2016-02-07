@@ -101,13 +101,14 @@ namespace StarPixel
 
 
 
-            nozzles[(int)PortDirections.Rear] = new ThrusterNozzle(new Vector2(0, -10), new Vector2(0, -1));
-            nozzles[(int)PortDirections.Front] = new ThrusterNozzle(new Vector2(0, 10), new Vector2(0, 1));
+            nozzles[(int)PortDirections.Rear] = new ThrusterNozzle(new Vector2(-10, 0), new Vector2(-1, 0));
+            nozzles[(int)PortDirections.Front] = new ThrusterNozzle(new Vector2(10, 0), new Vector2(0.75f, 0));
 
-            nozzles[(int)PortDirections.LeftFront] = new ThrusterNozzle(new Vector2(-4, 8), new Vector2(-0.5f, 0));
-            nozzles[(int)PortDirections.LeftRear] = new ThrusterNozzle(new Vector2(-4, -8), new Vector2(-0.5f, 0));
-            nozzles[(int)PortDirections.RightFront] = new ThrusterNozzle(new Vector2(4, 8), new Vector2(0.5f, 0));
-            nozzles[(int)PortDirections.RightRear] = new ThrusterNozzle(new Vector2(4, -8), new Vector2(0.5f, 0));
+            nozzles[(int)PortDirections.LeftFront] = new ThrusterNozzle(new Vector2(8, -4), new Vector2(0, -0.75f));
+            nozzles[(int)PortDirections.LeftRear] = new ThrusterNozzle(new Vector2(-8, -6), new Vector2(0, -0.75f));
+            nozzles[(int)PortDirections.RightFront] = new ThrusterNozzle(new Vector2(8, 4), new Vector2(0, 0.75f));
+            nozzles[(int)PortDirections.RightRear] = new ThrusterNozzle(new Vector2(-8, -6), new Vector2(0, 0.75f));
+
 
             max_usage = 4.0f;
             usage = 0.0f;
@@ -129,29 +130,29 @@ namespace StarPixel
 
 
             // Torque and thrust use all use the side thrusters, so they conflict a little.
-            float side_thruster_sum = Utility.Abs(control_x) + Utility.Abs(control_t);
+            float side_thruster_sum = Utility.Abs(control_y) + Utility.Abs(control_t);
             if (side_thruster_sum > 1.0f )
             {
                 // we set them in proportion to their ratio
                 control_t = control_t / (side_thruster_sum);
-                control_x = control_x / (side_thruster_sum);
+                control_y = control_y / (side_thruster_sum);
 
                 // in the simplest case, if control_x is full and torque is full, then they both get reduced to half.
             }
 
             float output_torque = control_t * manouvering_thrust;
-            float output_thrust_x = control_x * manouvering_thrust;
-            float output_thrust_y = control_y * ((control_y > 0) ? main_thrust : manouvering_thrust);
+            float output_thrust_y = control_y * manouvering_thrust;
+            float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : manouvering_thrust);
 
 
-            nozzles[(int)PortDirections.Rear].particle_gen += (control_y > 0) ? control_y*0.5f : 0;
-            nozzles[(int)PortDirections.Front].particle_gen += (control_y < 0) ? -control_y*0.25f : 0;
+            nozzles[(int)PortDirections.Rear].particle_gen += (control_x > 0) ? control_x*0.5f : 0;
+            nozzles[(int)PortDirections.Front].particle_gen += (control_x < 0) ? -control_x*0.25f : 0;
 
-            nozzles[(int)PortDirections.LeftRear].particle_gen += ((control_x - control_t > 0) ? (control_x - control_t) * 0.125f : 0);
-            nozzles[(int)PortDirections.LeftFront].particle_gen += ((control_x + control_t > 0) ? (control_x + control_t) * 0.125f : 0);
+            nozzles[(int)PortDirections.LeftRear].particle_gen += ((control_y - control_t > 0) ? (control_y - control_t) * 0.125f : 0);
+            nozzles[(int)PortDirections.LeftFront].particle_gen += ((control_y + control_t > 0) ? (control_y + control_t) * 0.125f : 0);
 
-            nozzles[(int)PortDirections.RightFront].particle_gen += ((-control_x - control_t > 0) ? (-control_x - control_t) * 0.125f : 0);
-            nozzles[(int)PortDirections.RightRear].particle_gen += ((-control_x + control_t > 0) ? (-control_x + control_t) * 0.125f : 0);
+            nozzles[(int)PortDirections.RightFront].particle_gen += ((-control_y - control_t > 0) ? (-control_y - control_t) * 0.125f : 0);
+            nozzles[(int)PortDirections.RightRear].particle_gen += ((-control_y + control_t > 0) ? (-control_y + control_t) * 0.125f : 0);
 
             for ( int i = 0; i < 6; i++ )
             {
