@@ -69,8 +69,8 @@ namespace StarPixel
         Ship target;
 
         PID angle_tracker = new PID(10f, 0.1f, 10f);
-        PID x_tracker = new PID(0.01f,0.001f,0.01f);
-        PID y_tracker = new PID(0.01f,0.001f,0.01f);
+        PID x_tracker = new PID(0.05f,0.01f,0.5f);
+        PID y_tracker = new PID(0.05f,0.01f,0.5f);
 
         public IntellegenceHunter( Ship arg_target )
         {
