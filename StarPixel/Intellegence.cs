@@ -79,17 +79,16 @@ namespace StarPixel
         {
             target = arg_target;
 
-            /*
-            PID angle_tracker = new PID(10f, 0.1f, 10f);
-            PID x_tracker = new PID(0.05f, 0.01f, 0.5f);
-            PID y_tracker = new PID(0.05f, 0.01f, 0.5f);
-            */
-
             
-
+            angle_tracker = new PID(10f, 0.5f, 10f);
+            x_tracker = new PID(0.05f, 0.3f, 0.1f);
+            y_tracker = new PID(0.05f, 0.3f, 0.1f);
+            
+            /*
             angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
-            x_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
-            y_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
+            x_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f);
+            y_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f);
+            */
         }
 
         public override IntOutputs Process(IntInputs inputs)
@@ -103,7 +102,7 @@ namespace StarPixel
                 mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
 
 
-                if (mov.LengthSquared() > (0.25 * 0.25))
+                if (mov.LengthSquared() > (0.5 * 0.5))
                 {
                     // Ya, this version is way cooler.
 
@@ -118,6 +117,7 @@ namespace StarPixel
                 outputs.control_thrust.X = Utility.Clamp(mov.X);
                 outputs.control_thrust.Y = Utility.Clamp(mov.Y);
                 outputs.control_torque = Utility.Clamp(a_mov);
+
             }
             else
             {

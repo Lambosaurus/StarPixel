@@ -34,7 +34,7 @@ namespace StarPixel
             }
 
 
-            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 5f, 1.5f );
+            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 5f, 1.5f);
             thermoparticle_default.Load(content);
 
             foreach (ArtThermoparticleResource thermoparticle in thermoparticles.Values)
@@ -81,18 +81,18 @@ namespace StarPixel
             thermo_colors = new Color[thermo_scale_length];
             thermal_scale.GetData<Color>(thermo_colors);
 
-            thermo_color_constant = thermo_scale_length / (max_temperature+1);
+            thermo_color_constant = thermo_scale_length / (max_temperature + 1);
         }
 
-        public static Color GetThermo( float temp )
+        public static Color GetThermo(float temp)
         {
-            if ( temp < 0 ) { return thermo_colors[0]; }
+            if (temp < 0) { return thermo_colors[0]; }
             else if (temp > max_temperature) { return thermo_colors[thermo_scale_length - 1]; }
             return thermo_colors[(int)(thermo_color_constant * temp)];
         }
     }
-    
-    
+
+
 
     public class ArtThermoparticleResource
     {
@@ -110,8 +110,8 @@ namespace StarPixel
         {
             sprite_name = particle_name;
             max_particle_count = max_particles;
-            alpha_decay = 1.0f / (particle_life*60);
-            temperature_decay = (float)Math.Exp(natural_log_half / (temp_half_life*60) ); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
+            alpha_decay = 1.0f / (particle_life * 60);
+            temperature_decay = (float)Math.Exp(natural_log_half / (temp_half_life * 60)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
         }
 
         public ArtThermoparticle New()
@@ -165,7 +165,7 @@ namespace StarPixel
             // get to next write index
             write_index++;
             if (write_index >= resource.max_particle_count) { write_index = 0; }
-            
+
             if (write_index == read_index)
             {
                 read_index++;
@@ -175,12 +175,12 @@ namespace StarPixel
 
         public void Update()
         {
-            
+
             int i = read_index;
             int c = write_index - read_index;
             if (c < 0) { c += resource.max_particle_count; }
 
-            while ( c > 0 )
+            while (c > 0)
             {
                 alpha[i] -= resource.alpha_decay;
                 if (alpha[i] < 0.0f)
@@ -216,7 +216,7 @@ namespace StarPixel
             while (c > 0)
             {
                 Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
-                
+
                 camera.batch.Draw(resource.sprite, camera.Map(position[i] - resource.sprite_center), null, k, 0.0f, new Vector2(0, 0), camera.scale, SpriteEffects.None, 0);
 
                 c--;
@@ -226,6 +226,14 @@ namespace StarPixel
 
         }
     }
+
+
+
+    public class ArtSpaceDust
+    {
+        public Vector2 TileSize;
+    }
+
 
 
     public class ArtSpriteResource

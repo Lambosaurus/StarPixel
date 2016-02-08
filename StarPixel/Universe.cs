@@ -14,40 +14,33 @@ namespace StarPixel
 {
     public class Universe
     {
-        int frame = 0;
-
         public List<Entity> entities;
-
-        Ship playership;
 
         public Universe()
         {
             entities = new List<Entity>();
 
 
-
-            playership = new Ship();
+            
+            Ship playership = new Ship();
             playership.ai = new IntellegenceHuman();
             
             entities.Add(playership);
 
-            for (int i = 0; i < 1; i++)
-            {
-                Ship othership = new Ship();
-                othership.ai = new IntellegenceHunter(playership);
-                othership.hull_sprite = ArtManager.NewArtSprite("missile");
+            Ship othership = new Ship();
+            othership.ai = new IntellegenceHunter(playership);
+            othership.hull_sprite = ArtManager.NewArtSprite("missile");
 
-                othership.pos = Utility.Rand(1000);
+            othership.pos = Utility.Rand(1000);
 
-                // these give them some speed advantage...
-                othership.thrusters.thrust_temperature = Utility.random.Next(500,2000);
+            // these give them some speed advantage...
+            othership.thrusters.thrust_temperature = Utility.random.Next(500,2000);
 
-                float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
-                //othership.thrusters.manouvering_thrust *= advantage;
-                othership.thrusters.main_thrust *= advantage;
+            float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
+            othership.thrusters.manouvering_thrust *= advantage;
+            othership.thrusters.main_thrust *= advantage;
 
-                entities.Add(othership);
-            }
+            entities.Add(othership);
 
 
         }
@@ -62,41 +55,10 @@ namespace StarPixel
 
         public void Update()
         {
-            if (++frame == 60*5)
-            {
-                frame = 0;
-
-                Ship othership = new Ship();
-                othership.ai = new IntellegenceHunter(playership);
-                othership.hull_sprite = ArtManager.NewArtSprite("missile");
-
-                othership.pos = entities.Last().pos;
-                othership.angle = entities.Last().angle;
-                othership.velocity = entities.Last().velocity;
-
-                // these give them some speed advantage...
-                othership.thrusters.thrust_temperature = Utility.random.Next(500, 2000);
-
-                float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
-                //othership.thrusters.manouvering_thrust *= advantage;
-                othership.thrusters.main_thrust *= advantage;
-
-                entities.Add(othership);
-            }
-
 
             foreach (Entity ent in entities)
             {
                 ent.Update();
-
-                if( ent != playership)
-                {
-                    if ( Utility.CompareVector2(ent.pos, playership.pos, 16) )
-                    {
-                        ent.Destory(this);
-                        playership.Destory(this);
-                    }
-                }
 
             }
 

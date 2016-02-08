@@ -66,7 +66,6 @@ namespace StarPixel
             ArtManager.sprites.Add("missile", new ArtSpriteResource("ship", 0.1f));
             ArtManager.Load(Content);
 
-            
             cursor = Content.Load<Texture2D>("cursor");
         }
 
@@ -125,7 +124,8 @@ namespace StarPixel
 
             base.Update(gameTime);
         }
-        
+
+        int time = 0;
 
         /// This is called when the game should draw itself.
         protected override void Draw(GameTime gameTime)
