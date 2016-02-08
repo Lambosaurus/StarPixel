@@ -63,6 +63,7 @@ namespace StarPixel
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
 
             ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
+            ArtManager.sprites.Add("missile", new ArtSpriteResource("ship", 0.1f));
             ArtManager.Load(Content);
 
             

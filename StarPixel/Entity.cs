@@ -69,8 +69,13 @@ namespace StarPixel
         {
         }
 
-        public void Destory(Camera camera)
+        public void Destory( Universe universe )
         {
+            if ( ! destroyed )
+            {
+
+            }
+
             destroyed = true;
         }
     }

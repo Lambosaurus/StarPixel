@@ -95,26 +95,30 @@ namespace StarPixel
         public override IntOutputs Process(IntInputs inputs)
         {
 
-            Vector2 mov;
-            mov.X = x_tracker.Update(target.pos.X - inputs.pos.X);
-            mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
-
-
-            if (mov.LengthSquared() > (0.25 * 0.25))
+            if (!target.destroyed)
             {
-                // Ya, this version is way cooler.
 
-                desired_angle = Utility.Angle(mov);
+                Vector2 mov;
+                mov.X = x_tracker.Update(target.pos.X - inputs.pos.X);
+                mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
+
+
+                if (mov.LengthSquared() > (0.25 * 0.25))
+                {
+                    // Ya, this version is way cooler.
+
+                    desired_angle = Utility.Angle(mov);
+                }
+
+                float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, inputs.angle));
+
+
+                mov = Utility.Rotate(mov, -inputs.angle);
+
+                outputs.control_thrust.X = Utility.Clamp(mov.X);
+                outputs.control_thrust.Y = Utility.Clamp(mov.Y);
+                outputs.control_torque = Utility.Clamp(a_mov);
             }
-
-            float a_mov = angle_tracker.Update( Utility.AngleDelta(desired_angle, inputs.angle) );
-
-
-            mov = Utility.Rotate(mov, -inputs.angle);
-            
-            outputs.control_thrust.X = Utility.Clamp( mov.X );
-            outputs.control_thrust.Y = Utility.Clamp( mov.Y );
-            outputs.control_torque = Utility.Clamp(a_mov);
 
             return outputs;
         }

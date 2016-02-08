@@ -16,13 +16,15 @@ namespace StarPixel
     {
         public List<Entity> entities;
 
+        Ship playership;
+
         public Universe()
         {
             entities = new List<Entity>();
 
 
 
-            Ship playership = new Ship();
+            playership = new Ship();
             playership.ai = new IntellegenceHuman();
             
             entities.Add(playership);
@@ -31,14 +33,16 @@ namespace StarPixel
             {
                 Ship othership = new Ship();
                 othership.ai = new IntellegenceHunter(playership);
-                othership.hull_sprite.color = Color.LightGray;
+                othership.hull_sprite = ArtManager.NewArtSprite("missile");
+                othership.pos = new Vector2( -1000, 0 );
+                othership.velocity = new Vector2(-10, 0);
 
                 // these give them some speed advantage...
                 float advantage = 1.1f;
                 othership.thrusters.manouvering_thrust *= advantage;
                 othership.thrusters.main_thrust *= advantage;
 
-                othership.thrusters.thrust_temperature = 2000;
+                othership.thrusters.thrust_temperature = 1000;
                 entities.Add(othership);
             }
 
@@ -58,6 +62,16 @@ namespace StarPixel
             foreach (Entity ent in entities)
             {
                 ent.Update();
+
+                if( ent != playership)
+                {
+                    if ( Utility.CompareVector2(ent.pos, playership.pos, 16) )
+                    {
+                        ent.Destory(this);
+                        playership.Destory(this);
+                    }
+                }
+
             }
 
 
