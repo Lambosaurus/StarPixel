@@ -40,10 +40,10 @@ namespace StarPixel
                 othership.pos = Utility.Rand(1000);
 
                 // these give them some speed advantage...
-                othership.thrusters.thrust_temperature = Utility.random.Next(500,1500);
+                othership.thrusters.thrust_temperature = Utility.random.Next(500,2000);
 
                 float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
-                othership.thrusters.manouvering_thrust *= advantage;
+                //othership.thrusters.manouvering_thrust *= advantage;
                 othership.thrusters.main_thrust *= advantage;
 
                 entities.Add(othership);
@@ -75,10 +75,10 @@ namespace StarPixel
                 othership.velocity = entities.Last().velocity;
 
                 // these give them some speed advantage...
-                othership.thrusters.thrust_temperature = Utility.random.Next(500, 1500);
+                othership.thrusters.thrust_temperature = Utility.random.Next(500, 2000);
 
                 float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
-                othership.thrusters.manouvering_thrust *= advantage;
+                //othership.thrusters.manouvering_thrust *= advantage;
                 othership.thrusters.main_thrust *= advantage;
 
                 entities.Add(othership);
