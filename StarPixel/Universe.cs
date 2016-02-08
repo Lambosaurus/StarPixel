@@ -14,6 +14,8 @@ namespace StarPixel
 {
     public class Universe
     {
+        int frame = 0;
+
         public List<Entity> entities;
 
         Ship playership;
@@ -29,20 +31,21 @@ namespace StarPixel
             
             entities.Add(playership);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Ship othership = new Ship();
                 othership.ai = new IntellegenceHunter(playership);
                 othership.hull_sprite = ArtManager.NewArtSprite("missile");
-                othership.pos = new Vector2( -1000, 0 );
-                othership.velocity = new Vector2(-10, 0);
+
+                othership.pos = Utility.Rand(1000);
 
                 // these give them some speed advantage...
-                float advantage = 1.1f;
+                othership.thrusters.thrust_temperature = Utility.random.Next(500,1500);
+
+                float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
                 othership.thrusters.manouvering_thrust *= advantage;
                 othership.thrusters.main_thrust *= advantage;
 
-                othership.thrusters.thrust_temperature = 1000;
                 entities.Add(othership);
             }
 
@@ -59,6 +62,29 @@ namespace StarPixel
 
         public void Update()
         {
+            if (++frame == 60*5)
+            {
+                frame = 0;
+
+                Ship othership = new Ship();
+                othership.ai = new IntellegenceHunter(playership);
+                othership.hull_sprite = ArtManager.NewArtSprite("missile");
+
+                othership.pos = entities.Last().pos;
+                othership.angle = entities.Last().angle;
+                othership.velocity = entities.Last().velocity;
+
+                // these give them some speed advantage...
+                othership.thrusters.thrust_temperature = Utility.random.Next(500, 1500);
+
+                float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
+                othership.thrusters.manouvering_thrust *= advantage;
+                othership.thrusters.main_thrust *= advantage;
+
+                entities.Add(othership);
+            }
+
+
             foreach (Entity ent in entities)
             {
                 ent.Update();
