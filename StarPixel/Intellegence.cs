@@ -73,6 +73,8 @@ namespace StarPixel
         PID x_tracker;
         PID y_tracker;
 
+        float desired_angle;
+
         public IntellegenceHunter( Ship arg_target )
         {
             target = arg_target;
@@ -83,9 +85,11 @@ namespace StarPixel
             PID y_tracker = new PID(0.05f, 0.01f, 0.5f);
             */
 
-            angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.1f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
-            x_tracker = new PID(0.05f * Utility.random.Next(5, 15) / 10f, 0.01f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
-            y_tracker = new PID(0.05f * Utility.random.Next(5, 15) / 10f, 0.01f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
+            
+
+            angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.05f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
+            x_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.05f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
+            y_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.05f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
         }
 
         public override IntOutputs Process(IntInputs inputs)
@@ -95,11 +99,16 @@ namespace StarPixel
             mov.X = x_tracker.Update(target.pos.X - inputs.pos.X);
             mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
 
-            //float a_mov = Utility.Angle(mov); // Utility.Angle( target.pos );
-            //float a_mov = angle_tracker.Update( Utility.AngleDelta( Utility.Angle(target.pos - inputs.pos)  , inputs.angle) );
 
-            // Ya, this version is way cooler.
-            float a_mov = angle_tracker.Update( Utility.AngleDelta( Utility.Angle(mov), inputs.angle) );
+            if (mov.LengthSquared() > (0.25 * 0.25))
+            {
+                // Ya, this version is way cooler.
+
+                desired_angle = Utility.Angle(mov);
+            }
+
+            float a_mov = angle_tracker.Update( Utility.AngleDelta(desired_angle, inputs.angle) );
+
 
             mov = Utility.Rotate(mov, -inputs.angle);
             
