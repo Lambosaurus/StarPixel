@@ -87,9 +87,9 @@ namespace StarPixel
 
             
 
-            angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.05f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
-            x_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.05f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
-            y_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.05f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
+            angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
+            x_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
+            y_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f);
         }
 
         public override IntOutputs Process(IntInputs inputs)
@@ -118,6 +118,12 @@ namespace StarPixel
                 outputs.control_thrust.X = Utility.Clamp(mov.X);
                 outputs.control_thrust.Y = Utility.Clamp(mov.Y);
                 outputs.control_torque = Utility.Clamp(a_mov);
+            }
+            else
+            {
+                outputs.control_thrust.X = 0.0f;
+                outputs.control_thrust.Y = 0.0f;
+                outputs.control_torque = 0.0f;
             }
 
             return outputs;
