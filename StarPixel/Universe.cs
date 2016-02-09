@@ -29,7 +29,6 @@ namespace StarPixel
 
             Ship othership = new Ship();
             othership.ai = new IntellegenceHunter(playership);
-            othership.hull_sprite = ArtManager.NewArtSprite("missile");
 
             othership.pos = Utility.Rand(1000);
 

@@ -161,7 +161,11 @@ namespace StarPixel
                 while (nozzles[i].particle_gen > 1)
                 {
                     nozzles[i].particle_gen--;
-                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle), thrust_temperature);
+
+                    Vector2 thrust_vector = Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle);
+
+
+                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + thrust_vector, thrust_temperature, Utility.Angle(thrust_vector), thrust_vector.LengthSquared()*3 );
                 }
             }
             

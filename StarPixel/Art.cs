@@ -94,6 +94,7 @@ namespace StarPixel
 
 
 
+
     public class ArtThermoparticleResource
     {
         public int max_particle_count;
@@ -127,6 +128,8 @@ namespace StarPixel
         }
     }
 
+
+
     public class ArtThermoparticle
     {
         public string name;
@@ -135,6 +138,9 @@ namespace StarPixel
         Vector2[] velocity;
         float[] alpha;
         float[] temperature;
+
+        float[] angle;
+        float[] length;
 
         int write_index;
         int read_index;
@@ -151,16 +157,22 @@ namespace StarPixel
             alpha = new float[resource.max_particle_count];
             temperature = new float[resource.max_particle_count];
 
+            angle = new float[resource.max_particle_count];
+            length = new float[resource.max_particle_count];
+
             write_index = 0;
             read_index = 0;
         }
 
-        public void Add(Vector2 new_position, Vector2 new_velocity, float new_temperature)
+        public void Add(Vector2 new_position, Vector2 new_velocity, float new_temperature, float new_angle, float new_length)
         {
             position[write_index] = new_position;
             velocity[write_index] = new_velocity;
             temperature[write_index] = new_temperature;
             alpha[write_index] = 1.0f;
+
+            angle[write_index] = new_angle;
+            length[write_index] = new_length;
 
             // get to next write index
             write_index++;
@@ -217,7 +229,7 @@ namespace StarPixel
             {
                 Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
 
-                camera.batch.Draw(resource.sprite, camera.Map(position[i] - resource.sprite_center), null, k, 0.0f, new Vector2(0, 0), camera.scale, SpriteEffects.None, 0);
+                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i],  resource.sprite_center, new Vector2(length[i],1)*camera.scale, SpriteEffects.None, 0);
 
                 c--;
                 i++;
