@@ -34,7 +34,7 @@ namespace StarPixel
             }
 
 
-            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 2f, 0.75f);
+            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 1.0f, 0.5f);
             thermoparticle_default.Load(content);
 
             foreach (ArtThermoparticleResource thermoparticle in thermoparticles.Values)

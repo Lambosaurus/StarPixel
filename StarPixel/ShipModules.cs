@@ -91,6 +91,7 @@ namespace StarPixel
         public ThrusterNozzle[] nozzles = new ThrusterNozzle[6];
 
         ArtThermoparticle particles;
+        ArtThermoparticle particles2;
 
         public float efficiency;
         
@@ -99,6 +100,7 @@ namespace StarPixel
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
             particles = ArtManager.NewArtThermoparticle("lol");
+            particles2 = ArtManager.NewArtThermoparticle("jets2");
             efficiency = 1.0f;
 
 
@@ -166,11 +168,18 @@ namespace StarPixel
 
 
                     particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + thrust_vector, thrust_temperature, Utility.Angle(thrust_vector), thrust_vector.Length()*2 );
+
+
+                    if ( (i == (int)PortDirections.Rear)  && (Utility.random.Next(0,10) == 0) )
+                    {
+                        particles2.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + thrust_vector, thrust_temperature, Utility.Angle(thrust_vector), thrust_vector.Length() * 2);
+                    }
                 }
             }
-            
+
 
             particles.Update();
+            particles2.Update();
 
             // out thrust vector we have calculated needs to be rotated by the ships angle.
             ship.Push( Utility.Rotate( new Vector2(output_thrust_x, output_thrust_y), ship.angle ) , output_torque);
@@ -179,6 +188,7 @@ namespace StarPixel
         public void Draw(Camera camera)
         {
             particles.Draw(camera);
+            particles2.Draw(camera);
         }
     }
     enum ReactorType

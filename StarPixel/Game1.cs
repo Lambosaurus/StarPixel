@@ -64,6 +64,9 @@ namespace StarPixel
 
             ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
             ArtManager.sprites.Add("missile", new ArtSpriteResource("ship", 0.1f));
+
+            ArtManager.thermoparticles.Add("jets2", new ArtThermoparticleResource("particle", 50, 5, 2));
+            
             ArtManager.Load(Content);
 
             cursor = Content.Load<Texture2D>("cursor");
