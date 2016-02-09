@@ -165,7 +165,7 @@ namespace StarPixel
                     Vector2 thrust_vector = Utility.Rotate(nozzles[i].velocity + Utility.Rand(0.1f), ship.angle);
 
 
-                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + thrust_vector, thrust_temperature, Utility.Angle(thrust_vector), thrust_vector.LengthSquared()*3 );
+                    particles.Add(ship.pos + Utility.Rotate(nozzles[i].position, ship.angle), ship.velocity + thrust_vector, thrust_temperature, Utility.Angle(thrust_vector), thrust_vector.Length()*2 );
                 }
             }
             

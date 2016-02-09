@@ -229,7 +229,7 @@ namespace StarPixel
             {
                 Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
 
-                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i],  resource.sprite_center, new Vector2(length[i],1)*camera.scale, SpriteEffects.None, 0);
+                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i],  resource.sprite_center, new Vector2( length[i] * (1.25f / (0.25f + alpha[i]) ) ,1)*camera.scale, SpriteEffects.None, 0);
 
                 c--;
                 i++;
