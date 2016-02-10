@@ -30,7 +30,7 @@ namespace StarPixel
         public Ship() : base()
         {
             mass = 200;
-            inertia = 1000;
+            inertia = 800;
 
             hull_sprite = ArtManager.NewArtSprite("ship");
             

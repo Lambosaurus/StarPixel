@@ -81,8 +81,8 @@ namespace StarPixel
 
             
             angle_tracker = new PID(10f, 0.5f, 10f);
-            x_tracker = new PID(0.05f, 0.3f, 0.1f);
-            y_tracker = new PID(0.05f, 0.3f, 0.1f);
+            x_tracker = new PID(0.2f, 0.3f, 1f);
+            y_tracker = new PID(0.2f, 0.3f, 1f);
             
             /*
             angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);

@@ -20,16 +20,29 @@ namespace StarPixel
         const int SINE_RESOLUTION = 4000;
         static float[] sin_values = new float[SINE_RESOLUTION+1];
         static float[] cos_values = new float[SINE_RESOLUTION+1];
-        
+
+
+        // TODO: Add in an EXP table
+
         const float LOOKUP_CONSTANT = SINE_RESOLUTION / MathHelper.TwoPi; // or just (1 / rads step)
 
-        public static Random random;
+        static Random random;
 
-        public static float WrapAngle(float alpha)
+
+        static Utility()
         {
-            alpha = alpha % MathHelper.TwoPi;
-            return (alpha > 0) ? alpha : alpha + MathHelper.TwoPi;
+            random = new Random();
+
+            // build the cos and sine tables used for Cos() and Sin()
+            for (int i = 0; i < (SINE_RESOLUTION + 1); i++)
+            {
+                float angle = i * MathHelper.TwoPi / SINE_RESOLUTION;
+
+                sin_values[i] = (float)Math.Sin(angle);
+                cos_values[i] = (float)Math.Cos(angle);
+            }
         }
+
 
         // here i provide a fast cos and sin function
         // Its a simple lookup table. Its more convenient than doing (float)Math.Cos(rads)
@@ -81,6 +94,25 @@ namespace StarPixel
             return new Vector2(c, s);
         }
 
+        public static Vector2 CosSin(float alpha, float scale)
+        {
+            // Utility.WrapAngle(alpha) inline
+            alpha = alpha % MathHelper.TwoPi;
+            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+
+            float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
+            float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
+            return new Vector2(c*scale, s*scale);
+        }
+
+
+        public static float WrapAngle(float alpha)
+        {
+            alpha = alpha % MathHelper.TwoPi;
+            return (alpha > 0) ? alpha : alpha + MathHelper.TwoPi;
+        }
+
+
         public static Vector2 Rand(float scale)
         {
             int a = random.Next(SINE_RESOLUTION);
@@ -90,19 +122,17 @@ namespace StarPixel
             return new Vector2(c*scale, s*scale);
         }
 
-        static Utility()
+
+        public static float Randf(float max)
         {
-            random = new Random();
-
-            // build the cos and sine tables used for Cos() and Sin()
-            for ( int i = 0; i < (SINE_RESOLUTION+1); i++)
-            {
-                float angle = i * MathHelper.TwoPi / SINE_RESOLUTION;
-
-                sin_values[i] = (float)Math.Sin(angle);
-                cos_values[i] = (float)Math.Cos(angle);
-            }
+            return (max * random.Next(10000) / 10000f);
         }
+
+        public static float Randf(float min, float max)
+        {
+            return min + ((max - min) * random.Next(10000) / 10000f);
+        }
+
 
         public static float Clamp(float value, float min = -1.0f, float max = 1.0f)
         {
@@ -118,12 +148,13 @@ namespace StarPixel
             return value;
         }
 
-        public static bool CompareVector2(Vector2 vect1, Vector2 vect2, float cullRadius = 10.0f)
+        public static bool Window(Vector2 p1, Vector2 p2, float window = 10.0f) // i dont think a default value is healthy here.
         {
-            return vect1.X + cullRadius > vect2.X &&
-                   vect1.Y + cullRadius > vect2.Y &&
-                   vect1.X - cullRadius < vect2.X &&
-                   vect1.Y - cullRadius < vect2.Y;
+            // TODO: this functions needs to be tested sometime
+            return p1.X + window > p2.X &&
+                   p1.Y + window > p2.Y &&
+                   p1.X - window < p2.X &&
+                   p1.Y - window < p2.Y;
         }
         
         // gets the angle from the origin to the given point

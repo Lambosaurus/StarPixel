@@ -19,8 +19,8 @@ namespace StarPixel
         public static Dictionary<string, ArtSpriteResource> sprites = new Dictionary<string, ArtSpriteResource>();
         static ArtSpriteResource sprite_default;
 
-        public static Dictionary<string, ArtThermoparticleResource> thermoparticles = new Dictionary<string, ArtThermoparticleResource>();
-        static ArtThermoparticleResource thermoparticle_default;
+        public static Dictionary<string, ArtVentResource> vents = new Dictionary<string, ArtVentResource>();
+        static ArtVentResource vent_default;
 
         public static void Load(ContentManager content)
         {
@@ -34,12 +34,24 @@ namespace StarPixel
             }
 
 
-            thermoparticle_default = new ArtThermoparticleResource("particle", 200, 1.0f, 0.5f);
-            thermoparticle_default.Load(content);
+            vent_default = new ArtVentResource("particle");
+            vent_default.std_ejection_temperature = 2000;
+            vent_default.std_particle_count = 200;
+            vent_default.std_particle_length = 1.0f;
+            vent_default.std_particle_stretch = 4f;
+            vent_default.std_particle_life = 0.75f;
+            vent_default.std_particle_width = 0.75f;
+            vent_default.std_temp_halflife = 0.33f;
+            vent_default.std_temperature_scatter = 0.0f;
+            vent_default.std_velocity_scatter = 0.1f;
+            vent_default.std_ejection_velocity = 1f;
 
-            foreach (ArtThermoparticleResource thermoparticle in thermoparticles.Values)
+
+            vent_default.Load(content);
+
+            foreach (ArtVentResource vent in vents.Values)
             {
-                thermoparticle.Load(content);
+                vent.Load(content);
             }
         }
 
@@ -53,14 +65,14 @@ namespace StarPixel
             return sprite_default.New();
         }
 
-        public static ArtThermoparticle NewArtThermoparticle(string key)
+        public static ArtVent NewArtvent(string key, float scale)
         {
-            if (thermoparticles.ContainsKey(key))
+            if (vents.ContainsKey(key))
             {
-                return thermoparticles[key].New();
+                return vents[key].New(scale);
             }
 
-            return thermoparticle_default.New();
+            return vent_default.New(scale);
         }
     }
 
@@ -93,226 +105,11 @@ namespace StarPixel
     }
 
 
-
-
-    public class ArtThermoparticleResource
-    {
-        public int max_particle_count;
-        public float alpha_decay;
-        public float temperature_decay;
-
-        string sprite_name;
-        public Texture2D sprite;
-        public Vector2 sprite_center;
-
-        const float natural_log_half = -0.693147180559f; // close enough....
-
-        public ArtThermoparticleResource(string particle_name, int max_particles, float particle_life, float temp_half_life)
-        {
-            sprite_name = particle_name;
-            max_particle_count = max_particles;
-            alpha_decay = 1.0f / (particle_life * 60);
-            temperature_decay = (float)Math.Exp(natural_log_half / (temp_half_life * 60)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
-        }
-
-        public ArtThermoparticle New()
-        {
-            return new ArtThermoparticle(this);
-        }
-
-        public void Load(ContentManager content)
-        {
-            sprite = content.Load<Texture2D>(sprite_name);
-            Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
-            sprite_center = size / 2;
-        }
-    }
-
-
-
-    public class ArtThermoparticle
-    {
-        public string name;
-
-        Vector2[] position;
-        Vector2[] velocity;
-        float[] alpha;
-        float[] temperature;
-
-        float[] angle;
-        float[] length;
-
-        int write_index;
-        int read_index;
-
-        ArtThermoparticleResource resource;
-
-
-        public ArtThermoparticle(ArtThermoparticleResource arg_resource)
-        {
-            resource = arg_resource;
-
-            position = new Vector2[resource.max_particle_count];
-            velocity = new Vector2[resource.max_particle_count];
-            alpha = new float[resource.max_particle_count];
-            temperature = new float[resource.max_particle_count];
-
-            angle = new float[resource.max_particle_count];
-            length = new float[resource.max_particle_count];
-
-            write_index = 0;
-            read_index = 0;
-        }
-
-        public void Add(Vector2 new_position, Vector2 new_velocity, float new_temperature, float new_angle, float new_length)
-        {
-            position[write_index] = new_position;
-            velocity[write_index] = new_velocity;
-            temperature[write_index] = new_temperature;
-            alpha[write_index] = 1.0f;
-
-            angle[write_index] = new_angle;
-            length[write_index] = new_length;
-
-            // get to next write index
-            write_index++;
-            if (write_index >= resource.max_particle_count) { write_index = 0; }
-
-            if (write_index == read_index)
-            {
-                read_index++;
-                if (read_index >= resource.max_particle_count) { read_index = 0; }
-            }
-        }
-
-        public void Update()
-        {
-
-            int i = read_index;
-            int c = write_index - read_index;
-            if (c < 0) { c += resource.max_particle_count; }
-
-            while (c > 0)
-            {
-                alpha[i] -= resource.alpha_decay;
-                if (alpha[i] < 0.0f)
-                {
-                    read_index = i + 1;
-                    if (read_index >= resource.max_particle_count) { read_index = 0; }
-                }
-                else
-                {
-                    position[i] += velocity[i];
-                    temperature[i] *= resource.temperature_decay;
-                }
-
-                c--;
-                i++;
-                if (i >= resource.max_particle_count) { i = 0; }
-            }
-        }
-
-        public bool InView(Camera camera)
-        {
-            return true; // yep. Nothing wrong this this. We fine boys.
-        }
-
-        public void Draw(Camera camera)
-        {
-            if (!InView(camera)) { return; }
-
-            int i = read_index;
-            int c = write_index - read_index;
-            if (c < 0) { c += resource.max_particle_count; }
-
-            while (c > 0)
-            {
-                Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
-
-                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i],  resource.sprite_center, new Vector2( length[i] * (1.25f / (0.25f + alpha[i]) ) ,0.75f)*camera.scale, SpriteEffects.None, 0);
-
-                c--;
-                i++;
-                if (i >= resource.max_particle_count) { i = 0; }
-            }
-
-        }
-    }
-
-
-
     public class ArtSpaceDust
     {
         public Vector2 TileSize;
     }
 
-
-
-    public class ArtSpriteResource
-    {
-        public Texture2D sprite;
-        public string name;
-
-        public Vector2 size;
-        public Vector2 center;
-
-        public float radius;
-
-        public float scale;
-
-        public ArtSpriteResource(string arg_name, float arg_scale = 1.0f)
-        {
-            name = arg_name;
-            scale = arg_scale; // TODO i dont even want the scale parameter.
-        }
-        
-
-        public void Load( ContentManager content )
-        {
-            sprite = content.Load<Texture2D>(name);
-            size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
-            center = size / 2;
-
-            radius = center.Length();
-        }
-
-        public ArtSprite New(  )
-        {
-            return new ArtSprite(this);
-        }
-    }
-
-    public class ArtSprite
-    {
-        ArtSpriteResource resource;
-        public Color color = Color.White;
-        public Vector2 pos;
-        public float angle;
-
-        public ArtSprite( ArtSpriteResource arg_resource )
-        {
-            resource = arg_resource;
-        }
-
-        public bool InView( Camera camera )
-        {
-            Vector2 onscreen = camera.Map(pos);
-            float cull_radius = resource.radius * camera.scale;
-
-            return onscreen.X + cull_radius > 0 &&
-                   onscreen.Y + cull_radius > 0 &&
-                   onscreen.X - cull_radius < camera.res.X &&
-                   onscreen.Y - cull_radius < camera.res.Y;
-        }
-
-        public void Draw( Camera camera )
-        {
-            if (!InView(camera)) { return; }
-
-            camera.batch.Draw(resource.sprite, camera.Map(pos), null, color, angle, resource.center, camera.scale * resource.scale, SpriteEffects.None, 0);
-            
-        }
-    }
 }
 
 

@@ -31,14 +31,7 @@ namespace StarPixel
             othership.ai = new IntellegenceHunter(playership);
 
             othership.pos = Utility.Rand(1000);
-
-            // these give them some speed advantage...
-            othership.thrusters.thrust_temperature = Utility.random.Next(500,2000);
-
-            float advantage = 1f + (othership.thrusters.thrust_temperature / 10000f);
-            othership.thrusters.manouvering_thrust *= advantage;
-            othership.thrusters.main_thrust *= advantage;
-
+            
             entities.Add(othership);
 
 
@@ -77,7 +70,7 @@ namespace StarPixel
         {
             foreach (Entity ent in entities)
             {
-                if (Utility.CompareVector2(ent.pos, pos))
+                if (Utility.Window(ent.pos, pos))
                 {
                     ent.OnClick();
 

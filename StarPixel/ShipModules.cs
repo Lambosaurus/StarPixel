@@ -66,14 +66,22 @@ namespace StarPixel
     public struct ThrusterNozzle
     {
         public Vector2 position;
-        public float particle_gen;
-        public Vector2 velocity;
+        public float angle;
+        public ArtVent vent;
 
-        public ThrusterNozzle( Vector2 pos, Vector2 vel )
+        public float kx;
+        public float ky;
+        public float kt;
+
+        public ThrusterNozzle( Vector2 pos, float arg_angle, float a_kx, float a_ky, float a_kt, ArtVent arg_vent )
         {
             position = pos;
-            velocity = vel;
-            particle_gen = 0.0f;
+            angle = arg_angle;
+            vent = arg_vent;
+
+            kx = a_kx;
+            ky = a_ky;
+            kt = a_kt;
         }
     }
 
@@ -81,30 +89,44 @@ namespace StarPixel
     public class Thrusters : Component
     {
         public float main_thrust = 4;
-        public float manouvering_thrust = 1;
+        public float manouvering_thrust = 2;
+        public float torque = 0.5f;
 
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
         public float thrust_temperature = 5000;
 
-        public enum PortDirections { Rear, Front, LeftRear, RightRear, LeftFront, RightFront };
-        public ThrusterNozzle[] nozzles = new ThrusterNozzle[6];
+        public List<ThrusterNozzle> nozzles = new List<ThrusterNozzle>();
 
-        ArtThermoparticle particles;
-        ArtThermoparticle particles2;
-
+        ArtVent sparkles;
+        
         public float efficiency;
         
         public Thrusters(Ship ship) : base(ship)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
-            particles = ArtManager.NewArtThermoparticle("lol");
-            particles2 = ArtManager.NewArtThermoparticle("jets2");
+
             efficiency = 1.0f;
 
+            
+            float scale = 0.8f;
+
+            sparkles = ArtManager.NewArtvent("sparkles", 1.0f);
 
 
+            nozzles.Add(new ThrusterNozzle(new Vector2(-10, 0), MathHelper.Pi, 1, 0, 0, ArtManager.NewArtvent("", scale)));
+
+            nozzles.Add(new ThrusterNozzle(new Vector2(8, 4), MathHelper.PiOver2, 0, -0.25f, -0.25f, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-8, 7), MathHelper.PiOver2, 0, -0.25f, 0.25f, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(8, -4), -MathHelper.PiOver2, 0, 0.25f,  0.25f, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-8, -7), -MathHelper.PiOver2, 0, 0.25f, -0.25f, ArtManager.NewArtvent("", scale)));
+
+            nozzles.Add(new ThrusterNozzle(new Vector2(-6, 8), 0.2f, -0.25f, 0, 0, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-6, -8), -0.2f, -0.25f, 0, 0, ArtManager.NewArtvent("", scale)));
+
+
+            /*
             nozzles[(int)PortDirections.Rear] = new ThrusterNozzle(new Vector2(-10, 0), new Vector2(-1, 0));
             nozzles[(int)PortDirections.Front] = new ThrusterNozzle(new Vector2(10, 0), new Vector2(0.75f, 0));
 
@@ -112,7 +134,7 @@ namespace StarPixel
             nozzles[(int)PortDirections.LeftRear] = new ThrusterNozzle(new Vector2(-8, -6), new Vector2(0, -0.75f));
             nozzles[(int)PortDirections.RightFront] = new ThrusterNozzle(new Vector2(8, 4), new Vector2(0, 0.75f));
             nozzles[(int)PortDirections.RightRear] = new ThrusterNozzle(new Vector2(-8, -6), new Vector2(0, 0.75f));
-
+            */
 
             max_usage = 4.0f;
             usage = 0.0f;
@@ -132,8 +154,8 @@ namespace StarPixel
 
             float control_t = Utility.Clamp(control_torque_scalar);
 
-
-            // Torque and thrust use all use the side thrusters, so they conflict a little.
+            /*
+            /+/ Torque and thrust use all use the side thrusters, so they conflict a little.
             float side_thruster_sum = Utility.Abs(control_y) + Utility.Abs(control_t);
             if (side_thruster_sum > 1.0f )
             {
@@ -143,21 +165,34 @@ namespace StarPixel
 
                 // in the simplest case, if control_x is full and torque is full, then they both get reduced to half.
             }
+            */
 
-            float output_torque = control_t * manouvering_thrust;
+            float output_torque = control_t * torque;
             float output_thrust_y = control_y * manouvering_thrust;
             float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : manouvering_thrust);
 
 
-            nozzles[(int)PortDirections.Rear].particle_gen += (control_x > 0) ? control_x*0.5f : 0;
-            nozzles[(int)PortDirections.Front].particle_gen += (control_x < 0) ? -control_x*0.25f : 0;
+            foreach (ThrusterNozzle nozzle in nozzles)
+            {
+                float strength = (nozzle.kx * control_x) + (nozzle.ky * control_y) + (nozzle.kt * control_t);
+                if (strength > 0)
+                {
+                    nozzle.vent.Generate(ship.pos + Utility.Rotate(nozzle.position, ship.angle), ship.velocity, nozzle.angle + ship.angle, strength);
+                }
+                nozzle.vent.Update();
+            }
+            
 
-            nozzles[(int)PortDirections.LeftRear].particle_gen += ((control_y - control_t > 0) ? (control_y - control_t) * 0.125f : 0);
-            nozzles[(int)PortDirections.LeftFront].particle_gen += ((control_y + control_t > 0) ? (control_y + control_t) * 0.125f : 0);
+            //particles.Generate(ship.pos + Utility.Rotate(nozzles[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, nozzles[(int)PortDirections.Rear].particle_gen);
+            
+            if( control_x > 0 && Utility.Randf(1.0f) > 0.94f / control_x ) {
+                sparkles.Generate(ship.pos + Utility.Rotate(nozzles[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, 1);
+            }
+            
 
-            nozzles[(int)PortDirections.RightFront].particle_gen += ((-control_y - control_t > 0) ? (-control_y - control_t) * 0.125f : 0);
-            nozzles[(int)PortDirections.RightRear].particle_gen += ((-control_y + control_t > 0) ? (-control_y + control_t) * 0.125f : 0);
+            
 
+            /*
             for ( int i = 0; i < 6; i++ )
             {
                 while (nozzles[i].particle_gen > 1)
@@ -176,10 +211,10 @@ namespace StarPixel
                     }
                 }
             }
+            */
 
-
-            particles.Update();
-            particles2.Update();
+            //particles.Update();
+            sparkles.Update();
 
             // out thrust vector we have calculated needs to be rotated by the ships angle.
             ship.Push( Utility.Rotate( new Vector2(output_thrust_x, output_thrust_y), ship.angle ) , output_torque);
@@ -187,8 +222,13 @@ namespace StarPixel
 
         public void Draw(Camera camera)
         {
-            particles.Draw(camera);
-            particles2.Draw(camera);
+            sparkles.Draw(camera);
+
+            foreach ( ThrusterNozzle nozzle in nozzles)
+            {
+                nozzle.vent.Draw(camera);
+            }
+
         }
     }
     enum ReactorType

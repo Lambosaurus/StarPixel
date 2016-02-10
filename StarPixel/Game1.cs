@@ -17,7 +17,7 @@ namespace StarPixel
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        // meh
+        // meh. Its a semi comfortable res for developing in.
         int window_res_x = 1200;
         int window_res_y = 800;
 
@@ -63,9 +63,21 @@ namespace StarPixel
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
 
             ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
-            ArtManager.sprites.Add("missile", new ArtSpriteResource("ship", 0.1f));
 
-            ArtManager.thermoparticles.Add("jets2", new ArtThermoparticleResource("particle", 50, 5, 2));
+            ArtVentResource sparkles = new ArtVentResource("particle");
+            sparkles.std_ejection_temperature = 2000;
+            sparkles.std_particle_count = 20;
+            sparkles.std_particle_length = 0.75f;
+            sparkles.std_particle_stretch = 4f;
+            sparkles.std_particle_life = 3f;
+            sparkles.std_particle_width = 0.75f;
+            sparkles.std_temperature_scatter = 0;
+            sparkles.std_temp_halflife = 2f;
+            sparkles.std_velocity_scatter = 0.1f;
+            sparkles.std_ejection_velocity = 1f;
+
+            ArtManager.vents.Add("sparkles", sparkles );
+
             
             ArtManager.Load(Content);
 

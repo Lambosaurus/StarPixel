@@ -58,6 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Art.cs" />
+    <Compile Include="ArtSprite.cs" />
+    <Compile Include="ArtVent.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Intellegence.cs" />
