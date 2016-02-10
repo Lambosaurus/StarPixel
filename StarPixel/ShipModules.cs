@@ -110,12 +110,12 @@ namespace StarPixel
             efficiency = 1.0f;
 
             
-            float scale = 0.8f;
+            float scale = 0.75f;
 
-            sparkles = ArtManager.NewArtVent("sparkles", 1.0f);
+            sparkles = ArtManager.NewArtVent("sparkles", 0.75f);
 
 
-            nozzles.Add(new ThrusterNozzle(new Vector2(-10, 0), MathHelper.Pi, 1, 0, 0, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-10, 0), MathHelper.Pi, 1, 0, 0, ArtManager.NewArtVent("", scale*1.2f)));
 
             nozzles.Add(new ThrusterNozzle(new Vector2(8, 4), MathHelper.PiOver2, 0, -0.25f, -0.25f, ArtManager.NewArtVent("", scale)));
             nozzles.Add(new ThrusterNozzle(new Vector2(-8, 7), MathHelper.PiOver2, 0, -0.25f, 0.25f, ArtManager.NewArtVent("", scale)));
