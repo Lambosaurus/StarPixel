@@ -112,18 +112,18 @@ namespace StarPixel
             
             float scale = 0.8f;
 
-            sparkles = ArtManager.NewArtvent("sparkles", 1.0f);
+            sparkles = ArtManager.NewArtVent("sparkles", 1.0f);
 
 
-            nozzles.Add(new ThrusterNozzle(new Vector2(-10, 0), MathHelper.Pi, 1, 0, 0, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-10, 0), MathHelper.Pi, 1, 0, 0, ArtManager.NewArtVent("", scale)));
 
-            nozzles.Add(new ThrusterNozzle(new Vector2(8, 4), MathHelper.PiOver2, 0, -0.25f, -0.25f, ArtManager.NewArtvent("", scale)));
-            nozzles.Add(new ThrusterNozzle(new Vector2(-8, 7), MathHelper.PiOver2, 0, -0.25f, 0.25f, ArtManager.NewArtvent("", scale)));
-            nozzles.Add(new ThrusterNozzle(new Vector2(8, -4), -MathHelper.PiOver2, 0, 0.25f,  0.25f, ArtManager.NewArtvent("", scale)));
-            nozzles.Add(new ThrusterNozzle(new Vector2(-8, -7), -MathHelper.PiOver2, 0, 0.25f, -0.25f, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(8, 4), MathHelper.PiOver2, 0, -0.25f, -0.25f, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-8, 7), MathHelper.PiOver2, 0, -0.25f, 0.25f, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(8, -4), -MathHelper.PiOver2, 0, 0.25f,  0.25f, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-8, -7), -MathHelper.PiOver2, 0, 0.25f, -0.25f, ArtManager.NewArtVent("", scale)));
 
-            nozzles.Add(new ThrusterNozzle(new Vector2(-6, 8), 0.2f, -0.25f, 0, 0, ArtManager.NewArtvent("", scale)));
-            nozzles.Add(new ThrusterNozzle(new Vector2(-6, -8), -0.2f, -0.25f, 0, 0, ArtManager.NewArtvent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-6, 8), 0.2f, -0.25f, 0, 0, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-6, -8), -0.2f, -0.25f, 0, 0, ArtManager.NewArtVent("", scale)));
 
 
             /*

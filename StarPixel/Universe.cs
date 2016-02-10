@@ -27,11 +27,16 @@ namespace StarPixel
             
             entities.Add(playership);
 
+
             Ship othership = new Ship();
             othership.ai = new IntellegenceHunter(playership);
-
+            foreach (ThrusterNozzle nozzle in othership.thrusters.nozzles)
+            {
+                nozzle.vent.ejection_temperature = 5000;
+            }
             othership.pos = Utility.Rand(1000);
             
+
             entities.Add(othership);
 
 

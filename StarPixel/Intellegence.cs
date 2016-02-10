@@ -102,7 +102,7 @@ namespace StarPixel
                 mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
 
 
-                if (mov.LengthSquared() > (0.5 * 0.5))
+                if (mov.LengthSquared() > (0.5))
                 {
                     // Ya, this version is way cooler.
 

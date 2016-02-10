@@ -65,7 +65,7 @@ namespace StarPixel
             return sprite_default.New();
         }
 
-        public static ArtVent NewArtvent(string key, float scale)
+        public static ArtVent NewArtVent(string key, float scale)
         {
             if (vents.ContainsKey(key))
             {
