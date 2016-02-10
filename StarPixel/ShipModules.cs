@@ -122,8 +122,8 @@ namespace StarPixel
             nozzles.Add(new ThrusterNozzle(new Vector2(8, -4), -MathHelper.PiOver2, 0, 0.25f,  0.25f, ArtManager.NewArtVent("", scale)));
             nozzles.Add(new ThrusterNozzle(new Vector2(-8, -7), -MathHelper.PiOver2, 0, 0.25f, -0.25f, ArtManager.NewArtVent("", scale)));
 
-            nozzles.Add(new ThrusterNozzle(new Vector2(-6, 8), 0.2f, -0.25f, 0, 0, ArtManager.NewArtVent("", scale)));
-            nozzles.Add(new ThrusterNozzle(new Vector2(-6, -8), -0.2f, -0.25f, 0, 0, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-6, 11), 0.2f, -0.25f, 0, 0, ArtManager.NewArtVent("", scale)));
+            nozzles.Add(new ThrusterNozzle(new Vector2(-6, -11), -0.2f, -0.25f, 0, 0, ArtManager.NewArtVent("", scale)));
 
 
             /*
