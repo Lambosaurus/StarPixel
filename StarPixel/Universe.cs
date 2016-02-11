@@ -30,8 +30,6 @@ namespace StarPixel
 
             Ship othership = new Ship();
             othership.ai = new IntellegenceHunter(playership);
-            othership.inertia *= 2;
-            othership.mass *= 1.5f;
             foreach (ThrusterNozzle nozzle in othership.thrusters.nozzles)
             {
                 nozzle.vent.ejection_temperature = 5000;

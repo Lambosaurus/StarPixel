@@ -62,6 +62,7 @@
     <Compile Include="ArtVent.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Entity.cs" />
+    <Compile Include="Hitbox.cs" />
     <Compile Include="Intellegence.cs" />
     <Compile Include="Pid.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

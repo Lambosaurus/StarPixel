@@ -86,6 +86,10 @@ namespace StarPixel
         public float inertia;
         public float angular_velocity;
 
+
+        public Hitbox hitbox;
+
+
         public Physical() : base()
         {
             mass = 10;
@@ -96,6 +100,8 @@ namespace StarPixel
 
         public override void Update()
         {
+            angular_velocity = Utility.Clamp(angular_velocity, -MathHelper.PiOver4, MathHelper.PiOver4);
+
             angle += angular_velocity;
             angle = Utility.WrapAngle(angle);
 

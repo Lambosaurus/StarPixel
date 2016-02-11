@@ -12,6 +12,50 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+    public class HullThrusterPort
+    {
+        public Vector2 position;
+        public float angle;
+        
+        public float kx;
+        public float ky;
+        public float kt;
+
+        public HullThrusterPort(Vector2 arg_pos, float arg_angle, float x_response, float y_response, float t_response)
+        {
+            position = arg_pos;
+            angle = arg_angle;
+            
+            kx = x_response;
+            ky = y_response;
+            kt = t_response;
+        }
+    }
+
+
+
+    public class HullTemplate
+    {
+        public string hull_art_resource;
+
+        public float base_mass;
+        public float base_intertia;
+
+
+        public List<HullThrusterPort> thruster_ports;
+
+
+        public Ship New()
+        {
+            Ship ship = new Ship();
+            return ship;
+        }
+    }
+
+
+
+
+
     public class Ship : Physical
     {
 
