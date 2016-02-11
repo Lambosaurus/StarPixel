@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    class Hitbox
+    public class Hitbox
     {
     }
 }

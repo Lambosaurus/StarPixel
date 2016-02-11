@@ -21,25 +21,29 @@ namespace StarPixel
             entities = new List<Entity>();
 
 
-            
-            Ship playership = new Ship();
+
+            Ship playership = CreateNewShip("corvette");
             playership.ai = new IntellegenceHuman();
             
-            entities.Add(playership);
 
-
-            Ship othership = new Ship();
+            Ship othership = CreateNewShip("corvette");
             othership.ai = new IntellegenceHunter(playership);
-            foreach (ThrusterNozzle nozzle in othership.thrusters.nozzles)
-            {
-                nozzle.vent.ejection_temperature = 5000;
-            }
-            othership.pos = Utility.Rand(1000);
             
+            foreach (ArtVent vent in othership.thrusters.particle_vents)
+            {
+                vent.ejection_temperature = 5000;
+            }
+            
+            othership.pos = Utility.Rand(1000);
 
-            entities.Add(othership);
+        }
 
-
+        // creates a new ship from given template name, and adds it into the universe.
+        public Ship CreateNewShip( string template_name )
+        {
+            Ship ship = AssetShipTemplates.ship_templates[template_name].New();
+            entities.Add(ship);
+            return ship;
         }
 
         public void Start()

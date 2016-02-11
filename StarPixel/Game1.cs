@@ -55,6 +55,9 @@ namespace StarPixel
         /// LoadContent will be called once per game
         protected override void LoadContent()
         {
+            AssetShipTemplates.GenerateAssets();
+
+
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -140,7 +143,6 @@ namespace StarPixel
             base.Update(gameTime);
         }
 
-        int time = 0;
 
         /// This is called when the game should draw itself.
         protected override void Draw(GameTime gameTime)

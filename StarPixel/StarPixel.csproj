@@ -70,6 +70,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Ship.cs" />
     <Compile Include="ShipModules.cs" />
+    <Compile Include="AssetShipTemplates.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="Utility.cs" />
   </ItemGroup>

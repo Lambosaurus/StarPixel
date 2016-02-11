@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class HullThrusterPort
+    public class ThrusterPort
     {
         public Vector2 position;
         public float angle;
@@ -21,8 +21,12 @@ namespace StarPixel
         public float ky;
         public float kt;
 
-        public HullThrusterPort(Vector2 arg_pos, float arg_angle, float x_response, float y_response, float t_response)
+        public float size;
+
+        public ThrusterPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
         {
+            size = arg_size;
+
             position = arg_pos;
             angle = arg_angle;
             
@@ -30,11 +34,21 @@ namespace StarPixel
             ky = y_response;
             kt = t_response;
         }
+
+        public ThrusterPort(ThrusterPort example )
+        {
+            position = example.position;
+            angle = example.angle;
+
+            kx = example.kx;
+            ky = example.ky;
+            kt = example.kt;
+        }
     }
 
 
 
-    public class HullTemplate
+    public class ShipTemplate
     {
         public string hull_art_resource;
 
@@ -42,13 +56,18 @@ namespace StarPixel
         public float base_intertia;
 
 
-        public List<HullThrusterPort> thruster_ports;
+        public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
 
 
         public Ship New()
         {
-            Ship ship = new Ship();
+            Ship ship = new Ship(this);
             return ship;
+        }
+
+        public void AddPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
+        {
+            thruster_ports.Add(new ThrusterPort(arg_pos, arg_angle, arg_size, x_response, y_response, t_response));
         }
     }
 
@@ -58,25 +77,28 @@ namespace StarPixel
 
     public class Ship : Physical
     {
-
+        public ShipTemplate template;
         public ArtSprite hull_sprite;
         
-        public Intellegence ai;
-
+        
         public Thrusters thrusters;
 
-        private bool selected = false;
         
-
+        public Intellegence ai;
         public IntInputs ai_inputs = new IntInputs();
-        
 
-        public Ship() : base()
+
+        private bool selected = false;
+
+
+        public Ship(ShipTemplate arg_template ) : base()
         {
-            mass = 200;
-            inertia = 800;
+            template = arg_template;
 
-            hull_sprite = ArtManager.NewArtSprite("ship");
+            mass = template.base_mass;
+            inertia = template.base_intertia;
+
+            hull_sprite = ArtManager.NewArtSprite( template.hull_art_resource );
             
             thrusters = new Thrusters(this);
 
