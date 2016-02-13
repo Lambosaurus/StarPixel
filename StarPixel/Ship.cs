@@ -12,41 +12,6 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ThrusterPort
-    {
-        public Vector2 position;
-        public float angle;
-        
-        public float kx;
-        public float ky;
-        public float kt;
-
-        public float size;
-
-        public ThrusterPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
-        {
-            size = arg_size;
-
-            position = arg_pos;
-            angle = arg_angle;
-            
-            kx = x_response;
-            ky = y_response;
-            kt = t_response;
-        }
-
-        public ThrusterPort(ThrusterPort example )
-        {
-            position = example.position;
-            angle = example.angle;
-
-            kx = example.kx;
-            ky = example.ky;
-            kt = example.kt;
-        }
-    }
-
-
 
     public class ShipTemplate
     {
@@ -81,7 +46,7 @@ namespace StarPixel
         public ArtSprite hull_sprite;
         
         
-        public Thrusters thrusters;
+        public Thruster thrusters;
 
         
         public Intellegence ai;
@@ -100,7 +65,7 @@ namespace StarPixel
 
             hull_sprite = ArtManager.NewArtSprite( template.hull_art_resource );
             
-            thrusters = new Thrusters(this);
+            thrusters = new Thruster(this);
 
         }
 

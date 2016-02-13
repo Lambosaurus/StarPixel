@@ -61,6 +61,7 @@
     <Compile Include="ArtSprite.cs" />
     <Compile Include="ArtVent.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="ComponentThrusters.cs" />
     <Compile Include="Entity.cs" />
     <Compile Include="Hitbox.cs" />
     <Compile Include="Intellegence.cs" />
@@ -69,7 +70,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
     <Compile Include="Ship.cs" />
-    <Compile Include="ShipModules.cs" />
+    <Compile Include="Component.cs" />
     <Compile Include="AssetShipTemplates.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="Utility.cs" />

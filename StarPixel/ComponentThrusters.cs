@@ -9,78 +9,93 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+
 namespace StarPixel
 {
-    public class Component
+
+    public class ThrusterPort
     {
-        // do i have component parent classes?
-        // I dunno. It gets messy, but i feel like i need them to abstract out component generation
-        public float max_hp = 100;
-        public float hp;
-        public float mass;
-        int max_size;
-        public float max_usage;
-        public float usage;
+        public Vector2 position;
+        public float angle;
 
-        public bool destroyed;
+        public float kx;
+        public float ky;
+        public float kt;
 
-        public Ship ship;
+        public float size;
 
-        public Component( Ship arg_ship )
+        public ThrusterPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
         {
-            destroyed = false;
-            hp = max_hp;
+            size = arg_size;
 
-            ship = arg_ship;
+            position = arg_pos;
+            angle = arg_angle;
+
+            kx = x_response;
+            ky = y_response;
+            kt = t_response;
         }
 
-        public virtual void Damage(float damage)
+        public ThrusterPort(ThrusterPort example)
         {
-            hp -= damage;
-            
-            if (hp <= 0)
-            {
-                if (!destroyed)
-                {
-                    destroyed = true;
-                    Destroy();
-                }
-            }
-        }
+            position = example.position;
+            angle = example.angle;
 
-        public virtual void Update()
-        {
+            kx = example.kx;
+            ky = example.ky;
+            kt = example.kt;
         }
-
-        public virtual void Destroy()
-        {
-        }
-        public virtual void CalculateUsage()
-        {
-    }
-    
     }
 
 
 
-    public class Thrusters : Component
+
+
+    public class ThrusterTemplate
     {
-        public float main_thrust = 4;
-        public float manouvering_thrust = 2;
-        public float torque = 0.5f;
+        public float main_thrust;
+        public float reverse_thrust;
+        public float side_thrust;
+        public float torque;
+
+        public string particle_effects;
+        public string sparkle_effects;
+
+        public ThrusterTemplate()
+        {
+        }
+
+        public Thruster New()
+        {
+            Thruster thrusters = new Thruster(this); //, ship);
+
+            return thrusters;
+        }
+    }
+
+
+    public class Thruster : Component
+    {
+        public float main_thrust;
+        public float reverse_thrust;
+        public float side_thrust;
+        public float torque;
+
 
         public Vector2 control_thrust_vector;
         public float control_torque_scalar;
-        public float thrust_temperature = 5000;
+        
 
         public List<ThrusterPort> particle_ports = new List<ThrusterPort>();
         public List<ArtVent> particle_vents = new List<ArtVent>();
 
         ArtVent sparkles;
-        
+
         public float efficiency;
-        
-        public Thrusters(Ship ship) : base(ship)
+
+        ThrusterTemplate template;
+
+        public Thruster(Ship ship) : base(ship)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
@@ -88,25 +103,34 @@ namespace StarPixel
             efficiency = 1.0f;
 
             sparkles = ArtManager.NewArtVent("sparkles", 0.75f);
-
-            foreach( ThrusterPort port in ship.template.thruster_ports )
+            
+            foreach (ThrusterPort port in ship.template.thruster_ports)
             {
                 particle_ports.Add(new ThrusterPort(port));
-                particle_vents.Add(ArtManager.NewArtVent("TODO", port.size));
+                ArtVent vent = ArtManager.NewArtVent("TODO", port.size);
+                particle_vents.Add(vent);
             }
 
 
-            max_usage = 4.0f; // TODO: This is very wrong.
+            max_usage = 4.0f; // TODO: This is very wrong on multiple levels.
             usage = 0.0f;
+        }
+
+        public void ApplyTemplate(ThrusterTemplate arg_template)
+        {
+            template = arg_template;
+            side_thrust = template.side_thrust;
+            reverse_thrust = template.reverse_thrust;
+            main_thrust = template.main_thrust;
         }
 
         public override void CalculateUsage()
         {
             // TODO: This calcualtes the total thrust output. Not quite the usage.
             // perhaps this works if max_usage is equal to the sum of the thrusts and torques.
-            usage = ((control_thrust_vector.X > 0.0f) ? (control_thrust_vector.X * main_thrust) : (control_thrust_vector.X * manouvering_thrust)) +
-                (control_thrust_vector.Y * manouvering_thrust) +
-                (control_torque_scalar * manouvering_thrust);
+            usage = ((control_thrust_vector.X > 0.0f) ? (control_thrust_vector.X * main_thrust) : (control_thrust_vector.X * reverse_thrust)) +
+                (control_thrust_vector.Y * side_thrust) +
+                (control_torque_scalar * side_thrust);
         }
 
         public override void Update()
@@ -120,8 +144,8 @@ namespace StarPixel
 
 
             float output_torque = control_t * torque;
-            float output_thrust_y = control_y * manouvering_thrust;
-            float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : manouvering_thrust);
+            float output_thrust_y = control_y * side_thrust;
+            float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : reverse_thrust);
 
 
             int i = 0;
@@ -136,16 +160,17 @@ namespace StarPixel
 
                 i++;
             }
-            
-            
+
+
             // TODO. this is nihilistic and therefore: not practical.
-            if( control_x > 0 && Utility.Randf(1.0f) > 0.94f / control_x ) {
+            if (control_x > 0 && Utility.Randf(1.0f) > 0.94f / control_x)
+            {
                 sparkles.Generate(ship.pos + Utility.Rotate(particle_ports[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, 1);
             }
             sparkles.Update();
 
             // out thrust vector we have calculated needs to be rotated by the ships angle.
-            ship.Push( Utility.Rotate( new Vector2(output_thrust_x, output_thrust_y), ship.angle ) , output_torque);
+            ship.Push(Utility.Rotate(new Vector2(output_thrust_x, output_thrust_y), ship.angle), output_torque);
         }
 
         public void Draw(Camera camera)
@@ -159,40 +184,4 @@ namespace StarPixel
 
         }
     }
-
-
-
-    enum ReactorType
-    {
-        URANIUM, THORIUM, PLUTONIUM
-    }
-
-
-    public class Reactor : Component
-    {
-        float Max_output;
-        float fuel_efficiency;
-        ReactorType fuel_type;
-        float power_usage;
-        List<Component> connected;
-
-        public Reactor(Ship ship) : base(ship)
-        {
-            Max_output = 3.0f;
-            connected.Add(ship.thrusters);
-        }
-
-        public override void Update()
-        {
-            foreach (Component comp in connected)
-            {
-                
-            }
-        }
-    }
-
 }
-
-
-
-
