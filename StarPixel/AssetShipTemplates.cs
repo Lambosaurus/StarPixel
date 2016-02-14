@@ -39,6 +39,10 @@ namespace StarPixel
             template.AddPort(new Vector2(-6, -11), -0.2f,   0.75f, -0.25f, 0, 0);
 
             ship_templates.Add("corvette", template);
+
+
+            ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
+
         }
     }
 }

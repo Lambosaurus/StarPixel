@@ -56,7 +56,7 @@ namespace StarPixel
         protected override void LoadContent()
         {
             AssetShipTemplates.GenerateAssets();
-
+            AssetThrusterTemplates.GenerateAssets();
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -65,21 +65,6 @@ namespace StarPixel
 
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
 
-            ArtManager.sprites.Add("ship", new ArtSpriteResource("ship", 0.2f));
-
-            ArtVentResource sparkles = new ArtVentResource("particle");
-            sparkles.std_ejection_temperature = 2000;
-            sparkles.std_particle_count = 30;
-            sparkles.std_particle_length = 0.75f;
-            sparkles.std_particle_stretch = 4f;
-            sparkles.std_particle_life = 5f;
-            sparkles.std_particle_width = 0.75f;
-            sparkles.std_temperature_scatter = 0;
-            sparkles.std_temp_halflife = 3f;
-            sparkles.std_velocity_scatter = 0.1f;
-            sparkles.std_ejection_velocity = 1f;
-
-            ArtManager.vents.Add("sparkles", sparkles );
 
             
             ArtManager.Load(Content);

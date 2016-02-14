@@ -64,13 +64,6 @@ namespace StarPixel
         public ThrusterTemplate()
         {
         }
-
-        public Thruster New()
-        {
-            Thruster thrusters = new Thruster(this); //, ship);
-
-            return thrusters;
-        }
     }
 
 
@@ -86,8 +79,8 @@ namespace StarPixel
         public float control_torque_scalar;
         
 
-        public List<ThrusterPort> particle_ports = new List<ThrusterPort>();
-        public List<ArtVent> particle_vents = new List<ArtVent>();
+        public List<ThrusterPort> particle_ports;
+        public List<ArtVent> particle_vents;
 
         ArtVent sparkles;
 
@@ -102,26 +95,35 @@ namespace StarPixel
 
             efficiency = 1.0f;
 
-            sparkles = ArtManager.NewArtVent("sparkles", 0.75f);
-            
-            foreach (ThrusterPort port in ship.template.thruster_ports)
-            {
-                particle_ports.Add(new ThrusterPort(port));
-                ArtVent vent = ArtManager.NewArtVent("TODO", port.size);
-                particle_vents.Add(vent);
-            }
-
-
             max_usage = 4.0f; // TODO: This is very wrong on multiple levels.
             usage = 0.0f;
         }
 
         public void ApplyTemplate(ThrusterTemplate arg_template)
         {
+            // so all kinds of errors will occurr if a thruster is used without a template being applied
             template = arg_template;
             side_thrust = template.side_thrust;
             reverse_thrust = template.reverse_thrust;
             main_thrust = template.main_thrust;
+            torque = template.torque;
+
+            sparkles = ArtManager.NewArtVent(arg_template.sparkle_effects, 0.75f);
+
+            particle_ports = new List<ThrusterPort>();
+            particle_vents = new List<ArtVent>();
+
+            foreach (ThrusterPort port in ship.template.thruster_ports)
+            {
+                particle_ports.Add(new ThrusterPort(port));
+                ArtVent vent = ArtManager.NewArtVent(arg_template.particle_effects, port.size);
+                particle_vents.Add(vent);
+            }
+        }
+
+        public void ApplyTemplate(string template_name)
+        {
+            ApplyTemplate(AssetThrusterTemplates.thruster_templates[template_name]);
         }
 
         public override void CalculateUsage()

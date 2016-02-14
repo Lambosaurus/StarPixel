@@ -24,15 +24,12 @@ namespace StarPixel
 
             Ship playership = CreateNewShip("corvette");
             playership.ai = new IntellegenceHuman();
-            
+            playership.thrusters.ApplyTemplate("better");
+
 
             Ship othership = CreateNewShip("corvette");
             othership.ai = new IntellegenceHunter(playership);
             
-            foreach (ArtVent vent in othership.thrusters.particle_vents)
-            {
-                vent.ejection_temperature = 5000;
-            }
             
             othership.pos = Utility.Rand(1000);
 

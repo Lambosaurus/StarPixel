@@ -35,11 +35,11 @@ namespace StarPixel
 
 
             vent_default = new ArtVentResource("particle");
-            vent_default.std_ejection_temperature = 2000;
+            vent_default.std_ejection_temperature = 0;
             vent_default.std_particle_count = 200;
             vent_default.std_particle_length = 1.0f;
             vent_default.std_particle_stretch = 4f;
-            vent_default.std_particle_life = 0.6f;
+            vent_default.std_particle_life = 2f;
             vent_default.std_particle_width = 0.75f;
             vent_default.std_temp_halflife = 0.33f;
             vent_default.std_temperature_scatter = 0.0f;

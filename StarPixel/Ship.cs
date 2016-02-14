@@ -66,6 +66,7 @@ namespace StarPixel
             hull_sprite = ArtManager.NewArtSprite( template.hull_art_resource );
             
             thrusters = new Thruster(this);
+            thrusters.ApplyTemplate("default");
 
         }
 
