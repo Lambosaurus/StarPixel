@@ -29,6 +29,13 @@ namespace StarPixel
         Universe universe;
         Entity selectedEntity = null;
 
+
+        public double time_accelleration = 1.0;
+        public double time_update_counter = 0.0;
+        public bool paused = false;
+
+        KeyboardState old_keys;
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -46,6 +53,7 @@ namespace StarPixel
         {
             base.Initialize();
 
+            old_keys = Keyboard.GetState();
 
             universe = new Universe();
 
@@ -89,6 +97,44 @@ namespace StarPixel
             {
                 this.Exit();
             }
+
+
+            KeyboardState new_keys = Keyboard.GetState();
+            
+            if ( new_keys.IsKeyDown(Keys.P) && !old_keys.IsKeyDown(Keys.P) )
+            {
+                paused = !paused;
+                time_accelleration = (paused) ? 0.0 : 1.0;
+            }
+
+            if (new_keys.IsKeyDown(Keys.OemMinus) && !old_keys.IsKeyDown(Keys.OemMinus))
+            {
+                if (paused)
+                {
+                    paused = false;
+                    time_accelleration = 1.0;
+                }
+                else
+                {
+                    time_accelleration /= 1.25;
+                }
+            }
+
+            if (new_keys.IsKeyDown(Keys.OemPlus) && !old_keys.IsKeyDown(Keys.OemPlus))
+            {
+                if (paused)
+                {
+                    paused = false;
+                    time_accelleration = 1.0;
+                }
+                else
+                {
+                    time_accelleration *= 1.25;
+                }
+            }
+
+
+
             //if scroll has been used, zoom in/out
             if (Mouse.GetState().ScrollWheelValue > scrollVal)
             {
@@ -119,12 +165,21 @@ namespace StarPixel
                 selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y)));
             }
             mouse_left = Mouse.GetState().LeftButton;
-            universe.Update();
+
+
+            time_update_counter += time_accelleration;
+            while (time_update_counter > 1.0)
+            {
+                time_update_counter--;
+                universe.Update();
+            }
+
             if (selectedEntity != null)
             {
                 camera.pos = selectedEntity.pos;
             }
 
+            old_keys = new_keys;
             base.Update(gameTime);
         }
 
