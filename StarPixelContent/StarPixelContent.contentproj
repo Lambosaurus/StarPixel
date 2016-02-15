@@ -72,15 +72,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LG1.png">
-      <Name>LG1</Name>
+    <Compile Include="F2.png">
+      <Name>F2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LG1 paint.png">
-      <Name>LG1 paint</Name>
+    <Compile Include="F2 paint.png">
+      <Name>F2 paint</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

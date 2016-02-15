@@ -52,7 +52,7 @@ namespace StarPixel
             vent.std_particle_life = 0.6f;
             vent.std_particle_width = 0.75f;
             vent.std_temp_halflife = 0.33f;
-            vent.std_velocity_scatter = 0.1f;
+            vent.std_velocity_scatter = 0.15f;
             vent.std_ejection_velocity = 1f;
             ArtManager.vents.Add("default_thruster", vent);
 
@@ -81,7 +81,7 @@ namespace StarPixel
             vent.std_particle_life = 0.7f;
             vent.std_particle_width = 0.75f;
             vent.std_temp_halflife = 0.33f;
-            vent.std_velocity_scatter = 0.12f;
+            vent.std_velocity_scatter = 0.2f;
             vent.std_ejection_velocity = 1f;
             ArtManager.vents.Add("better_thruster", vent);
 

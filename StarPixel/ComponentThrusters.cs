@@ -71,6 +71,8 @@ namespace StarPixel
 
     public class Thruster : Component
     {
+        // TODO: Add sparkles
+
         public float main_thrust;
         public float reverse_thrust;
         public float side_thrust;
@@ -110,7 +112,7 @@ namespace StarPixel
             main_thrust = template.main_thrust;
             torque = template.torque;
 
-            sparkles = ArtManager.NewArtVent(arg_template.sparkle_effects, 0.75f);
+            sparkles = ArtManager.NewArtVent(arg_template.sparkle_effects, 0.5f);
 
             particle_ports = new List<ThrusterPort>();
             particle_vents = new List<ArtVent>();

@@ -41,21 +41,21 @@ namespace StarPixel
             ShipTemplate template = new ShipTemplate();
             template.base_mass = 200;
             template.base_intertia = 800;
-            template.hull_art_resource = "LG1";
-            template.paint_art_resource = "LG1 paint";
+            template.hull_art_resource = "F2";
+            template.paint_art_resource = "F2 paint";
 
-            template.AddPort(new Vector2(-10, 0), reverse,  0.9f , 1, 0, 0);
-            template.AddPort(new Vector2(8, 4), right ,     0.6f, 0, -0.5f, -0.5f);
-            template.AddPort(new Vector2(-8, 7), right,     0.6f, 0, -0.5f, 0.5f);
-            template.AddPort(new Vector2(8, -4), left,      0.6f, 0, 0.5f, 0.5f);
-            template.AddPort(new Vector2(-8, -7), left,     0.6f, 0, 0.5f, -0.5f);
-            template.AddPort(new Vector2(-6, 9), 0.2f,     0.6f, -0.5f, 0, 0);
-            template.AddPort(new Vector2(-6, -9), -0.2f,   0.6f, -0.5f, 0, 0);
+            template.AddPort(new Vector2(-10, 0), reverse,  0.6f , 1, 0, 0);
+            template.AddPort(new Vector2(8, 4), right ,     0.4f, 0, -0.5f, -0.5f);
+            template.AddPort(new Vector2(-8, 9), right,     0.4f, 0, -0.5f, 0.5f);
+            template.AddPort(new Vector2(8, -4), left,      0.4f, 0, 0.5f, 0.5f);
+            template.AddPort(new Vector2(-8, -9), left,     0.4f, 0, 0.5f, -0.5f);
+            template.AddPort(new Vector2(-3, 9), 0.2f,     0.4f, -0.5f, 0, 0);
+            template.AddPort(new Vector2(-3, -9), -0.2f,   0.4f, -0.5f, 0, 0);
 
-            ship_templates.Add("LG1", template);
+            ship_templates.Add("F2", template);
 
-            ArtManager.sprites.Add("LG1 paint", new ArtSpriteResource("LG1 paint", 0.5f));
-            ArtManager.sprites.Add("LG1", new ArtSpriteResource("LG1", 0.5f));
+            ArtManager.sprites.Add("F2 paint", new ArtSpriteResource("F2 paint", 0.5f));
+            ArtManager.sprites.Add("F2", new ArtSpriteResource("F2", 0.5f));
 
         }
     }

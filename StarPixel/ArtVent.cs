@@ -61,7 +61,7 @@ namespace StarPixel
             vent.alpha_decay = 1.0f / (std_particle_life * scale * 60);
 
             vent.temperature_scatter = std_temperature_scatter;
-            vent.velocity_scatter = std_velocity_scatter;
+            vent.velocity_scatter = std_velocity_scatter * scale;
 
             vent.particle_size_0.Y = (std_particle_width * std_particle_stretch_width) * scale;
             vent.particle_size_1.Y = (std_particle_width - std_particle_width * (std_particle_stretch_width)) * scale;
