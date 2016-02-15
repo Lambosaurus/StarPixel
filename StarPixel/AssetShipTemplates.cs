@@ -31,12 +31,12 @@ namespace StarPixel
             template.hull_art_resource = "ship";
 
             template.AddPort(new Vector2(-10, 0), reverse,  0.9f , 1, 0, 0);
-            template.AddPort(new Vector2(8, 4), right ,     0.75f, 0, -0.25f, -0.25f);
-            template.AddPort(new Vector2(-8, 7), right,     0.75f, 0, -0.25f, 0.25f);
-            template.AddPort(new Vector2(8, -4), left,      0.75f, 0, 0.25f, 0.25f);
-            template.AddPort(new Vector2(-8, -7), left,     0.75f, 0, 0.25f, -0.25f);
-            template.AddPort(new Vector2(-6, 11), 0.2f,     0.75f, -0.25f, 0, 0);
-            template.AddPort(new Vector2(-6, -11), -0.2f,   0.75f, -0.25f, 0, 0);
+            template.AddPort(new Vector2(8, 4), right ,     0.6f, 0, -0.5f, -0.5f);
+            template.AddPort(new Vector2(-8, 7), right,     0.6f, 0, -0.5f, 0.5f);
+            template.AddPort(new Vector2(8, -4), left,      0.6f, 0, 0.5f, 0.5f);
+            template.AddPort(new Vector2(-8, -7), left,     0.6f, 0, 0.5f, -0.5f);
+            template.AddPort(new Vector2(-6, 11), 0.2f,     0.6f, -0.5f, 0, 0);
+            template.AddPort(new Vector2(-6, -11), -0.2f,   0.6f, -0.5f, 0, 0);
 
             ship_templates.Add("corvette", template);
 

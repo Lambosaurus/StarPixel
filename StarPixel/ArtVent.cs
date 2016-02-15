@@ -21,17 +21,19 @@ namespace StarPixel
 
         const float natural_log_half = -0.693147180559f; // close enough....
 
-        public float std_particle_life;
-        public float std_temp_halflife;
-        public float std_velocity_scatter;
-        public float std_temperature_scatter;
+        public float std_particle_life = 1.0f;
+        public float std_temp_halflife = 1.0f;
+        public float std_velocity_scatter = 0.1f;
+        public float std_temperature_scatter = 0.0f;
 
-        public float std_ejection_velocity;
-        public float std_ejection_temperature;
+        public float std_ejection_velocity = 1.0f;
+        public float std_ejection_temperature = 1000f;
 
-        public float std_particle_width;
-        public float std_particle_length;
-        public float std_particle_stretch;
+        public float std_particle_width = 1.0f;
+        public float std_particle_length = 1.0f;
+        public float std_particle_stretch_length = 1.0f;
+        public float std_particle_stretch_width = 1.0f;
+
 
         public int std_particle_count;
 
@@ -60,9 +62,12 @@ namespace StarPixel
 
             vent.temperature_scatter = std_temperature_scatter;
             vent.velocity_scatter = std_velocity_scatter;
-            vent.particle_width = std_particle_width * scale;
-            vent.particle_length_0 = (std_particle_length*std_particle_stretch) * scale;
-            vent.particle_length_1 = (std_particle_length - std_particle_length *(std_particle_stretch)) * scale;
+
+            vent.particle_size_0.Y = (std_particle_width * std_particle_stretch_width) * scale;
+            vent.particle_size_1.Y = (std_particle_width - std_particle_width * (std_particle_stretch_width)) * scale;
+
+            vent.particle_size_0.X = (std_particle_length * std_particle_stretch_length) * scale;
+            vent.particle_size_1.X = (std_particle_length - std_particle_length *(std_particle_stretch_length)) * scale;
 
             vent.ejection_temperature = std_ejection_temperature;
             vent.ejection_velocity = std_ejection_velocity;
@@ -86,9 +91,8 @@ namespace StarPixel
         public float temperature_scatter;
 
 
-        public float particle_width;
-        public float particle_length_0;
-        public float particle_length_1;
+        public Vector2 particle_size_0;
+        public Vector2 particle_size_1;
 
 
         Vector2[] position;
@@ -201,7 +205,8 @@ namespace StarPixel
             {
                 Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
 
-                Vector2 transform = new Vector2( particle_length_0 + (particle_length_1*alpha[i]), particle_width);
+                //Vector2 transform = new Vector2( particle_length_0 + (particle_length_1*alpha[i]), particle_length_0 + (particle_length_1 * alpha[i]));
+                Vector2 transform = particle_size_0 + (particle_size_1*alpha[i]);
 
                 // TODO: fill this shit out.
                 camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i], resource.sprite_center, transform * camera.scale, SpriteEffects.None, 0);

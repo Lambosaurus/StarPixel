@@ -38,6 +38,8 @@ namespace StarPixel
 
         public ThrusterPort(ThrusterPort example)
         {
+            size = example.size;
+
             position = example.position;
             angle = example.angle;
 
@@ -132,7 +134,7 @@ namespace StarPixel
             // perhaps this works if max_usage is equal to the sum of the thrusts and torques.
             usage = ((control_thrust_vector.X > 0.0f) ? (control_thrust_vector.X * main_thrust) : (control_thrust_vector.X * reverse_thrust)) +
                 (control_thrust_vector.Y * side_thrust) +
-                (control_torque_scalar * side_thrust);
+                (control_torque_scalar * torque);
         }
 
         public override void Update()

@@ -20,6 +20,7 @@ namespace StarPixel
         public float base_mass;
         public float base_intertia;
 
+        public string description;
 
         public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
 
@@ -55,7 +56,7 @@ namespace StarPixel
 
         private bool selected = false;
 
-
+        
         public Ship(ShipTemplate arg_template ) : base()
         {
             template = arg_template;
@@ -67,7 +68,6 @@ namespace StarPixel
             
             thrusters = new Thruster(this);
             thrusters.ApplyTemplate("default");
-
         }
 
         public override void Update()
