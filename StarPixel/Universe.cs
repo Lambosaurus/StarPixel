@@ -22,15 +22,14 @@ namespace StarPixel
 
 
 
-            Ship playership = CreateNewShip("corvette");
+            Ship playership = CreateNewShip("LG1");
             playership.ai = new IntellegenceHuman();
             playership.thrusters.ApplyTemplate("better");
 
 
-            Ship othership = CreateNewShip("corvette");
+            Ship othership = CreateNewShip("LG1");
             othership.ai = new IntellegenceHunter(playership);
-            
-            
+
             othership.pos = Utility.Rand(1000);
 
         }
