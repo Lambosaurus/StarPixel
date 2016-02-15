@@ -16,6 +16,7 @@ namespace StarPixel
     public class ShipTemplate
     {
         public string hull_art_resource;
+        public string paint_art_resource;
 
         public float base_mass;
         public float base_intertia;
@@ -44,8 +45,9 @@ namespace StarPixel
     public class Ship : Physical
     {
         public ShipTemplate template;
+
         public ArtSprite hull_sprite;
-        
+        public ArtSprite paint_sprite = null;
         
         public Thruster thrusters;
 
@@ -70,6 +72,19 @@ namespace StarPixel
             thrusters.ApplyTemplate("default");
         }
 
+        public void Paint( Color color )
+        {
+            if (color != null)
+            {
+                paint_sprite = ArtManager.NewArtSprite(template.paint_art_resource);
+                paint_sprite.color = color;
+            }
+            else
+            {
+                paint_sprite = null;
+            }
+        }
+
         public override void Update()
         {
             
@@ -91,6 +106,11 @@ namespace StarPixel
 
             hull_sprite.pos = pos;
             hull_sprite.angle = angle;
+            if ( paint_sprite != null )
+            {
+                paint_sprite.pos = pos;
+                paint_sprite.angle = angle;
+            }
 
             /*
             if (selected)
@@ -108,6 +128,10 @@ namespace StarPixel
         {
             thrusters.Draw(camera);
             hull_sprite.Draw(camera);
+            if ( paint_sprite != null)
+            {
+                paint_sprite.Draw(camera);
+            }
             
         }
     }

@@ -25,6 +25,7 @@ namespace StarPixel
             Ship playership = CreateNewShip("LG1");
             playership.ai = new IntellegenceHuman();
             playership.thrusters.ApplyTemplate("better");
+            playership.Paint(Color.Fuchsia);
 
 
             Ship othership = CreateNewShip("LG1");

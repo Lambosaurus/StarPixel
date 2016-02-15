@@ -42,6 +42,7 @@ namespace StarPixel
             template.base_mass = 200;
             template.base_intertia = 800;
             template.hull_art_resource = "LG1";
+            template.paint_art_resource = "LG1 paint";
 
             template.AddPort(new Vector2(-10, 0), reverse,  0.9f , 1, 0, 0);
             template.AddPort(new Vector2(8, 4), right ,     0.6f, 0, -0.5f, -0.5f);
@@ -53,7 +54,7 @@ namespace StarPixel
 
             ship_templates.Add("LG1", template);
 
-
+            ArtManager.sprites.Add("LG1 paint", new ArtSpriteResource("LG1 paint", 0.5f));
             ArtManager.sprites.Add("LG1", new ArtSpriteResource("LG1", 0.5f));
 
         }

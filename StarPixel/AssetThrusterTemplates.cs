@@ -73,7 +73,7 @@ namespace StarPixel
 
 
             vent = new ArtVentResource("particle");
-            vent.std_ejection_temperature = 8000;
+            vent.std_ejection_temperature = 4000;
             vent.std_particle_count = 200;
             vent.std_particle_length = 1.0f;
             vent.std_particle_stretch_length = 4f;
