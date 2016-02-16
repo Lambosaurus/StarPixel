@@ -18,6 +18,7 @@ namespace StarPixel
         public float max_hp = 100;
         public float hp;
         public float mass;
+
         int max_size;
         public float max_usage;
         public float usage;
@@ -57,8 +58,7 @@ namespace StarPixel
         }
         public virtual void CalculateUsage()
         {
-    }
-    
+        }
     }
 
 

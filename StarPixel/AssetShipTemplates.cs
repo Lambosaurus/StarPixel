@@ -39,7 +39,7 @@ namespace StarPixel
 
 
             ShipTemplate template = new ShipTemplate();
-            template.base_mass = 200;
+            template.base_mass = 50;
             template.base_intertia = 800;
             template.hull_art_resource = "F2";
             template.paint_art_resource = "F2 paint";
