@@ -46,11 +46,11 @@ namespace StarPixel
 
             template.AddPort(new Vector2(-10, 0), reverse,  0.6f , 1, 0, 0);
             template.AddPort(new Vector2(8, 4), right ,     0.4f, 0, -0.5f, -0.5f);
-            template.AddPort(new Vector2(-8, 9), right,     0.4f, 0, -0.5f, 0.5f);
+            template.AddPort(new Vector2(-8, 11), right,     0.4f, 0, -0.5f, 0.5f);
             template.AddPort(new Vector2(8, -4), left,      0.4f, 0, 0.5f, 0.5f);
-            template.AddPort(new Vector2(-8, -9), left,     0.4f, 0, 0.5f, -0.5f);
-            template.AddPort(new Vector2(-3, 9), 0.2f,     0.4f, -0.5f, 0, 0);
-            template.AddPort(new Vector2(-3, -9), -0.2f,   0.4f, -0.5f, 0, 0);
+            template.AddPort(new Vector2(-8, -11), left,     0.4f, 0, 0.5f, -0.5f);
+            template.AddPort(new Vector2(0, 9), 0.2f,     0.4f, -0.5f, 0, 0);
+            template.AddPort(new Vector2(0, -9), -0.2f,   0.4f, -0.5f, 0, 0);
 
             ship_templates.Add("F2", template);
 

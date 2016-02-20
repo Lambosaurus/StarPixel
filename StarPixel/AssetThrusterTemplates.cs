@@ -46,7 +46,7 @@ namespace StarPixel
 
             vent = new ArtVentResource("particle");
             vent.std_ejection_temperature = 2000;
-            vent.std_particle_count = 200;
+            vent.std_particle_count = 50;
             vent.std_particle_length = 1.0f;
             vent.std_particle_stretch_length = 4f;
             vent.std_particle_life = 0.6f;
@@ -74,17 +74,17 @@ namespace StarPixel
 
             vent = new ArtVentResource("particle");
             vent.std_ejection_temperature = 4000;
-            vent.std_particle_count = 200;
+            vent.std_particle_count = 50;
             vent.std_particle_length = 1.0f;
             vent.std_particle_stretch_length = 4f;
             vent.std_particle_stretch_width = 1f;
             vent.std_particle_life = 0.7f;
             vent.std_particle_width = 0.75f;
-            vent.std_temp_halflife = 0.33f;
+            vent.std_temp_halflife = 0.3f;
             vent.std_velocity_scatter = 0.2f;
             vent.std_ejection_velocity = 1f;
             ArtManager.vents.Add("better_thruster", vent);
 
-        }
+       }
     }
 }
