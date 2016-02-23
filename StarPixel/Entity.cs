@@ -114,4 +114,17 @@ namespace StarPixel
             angular_velocity += torque / inertia;
         }
     }
+
+
+
+    public class Projectile : Entity
+    {
+    }
+
+
+
+
 }
+
+
+

@@ -92,7 +92,7 @@ namespace StarPixel
 
         ThrusterTemplate template;
 
-        public Thruster(Ship ship) : base(ship)
+        public Thruster(Ship ship, float arg_size) : base(ship, arg_size)
         {
             control_thrust_vector = new Vector2(0, 0);
             control_torque_scalar = 0;
@@ -107,11 +107,12 @@ namespace StarPixel
         {
             // so all kinds of errors will occurr if a thruster is used without a template being applied
             template = arg_template;
-            side_thrust = template.side_thrust;
-            reverse_thrust = template.reverse_thrust;
-            main_thrust = template.main_thrust;
-            torque = template.torque;
+            side_thrust = template.side_thrust * size;
+            reverse_thrust = template.reverse_thrust * size;
+            main_thrust = template.main_thrust * size;
+            torque = template.torque * size;
 
+            // this needs to be dynamic
             sparkles = ArtManager.NewArtVent(arg_template.sparkle_effects, 0.5f);
 
             particle_ports = new List<ThrusterPort>();
@@ -157,7 +158,8 @@ namespace StarPixel
             int i = 0;
             foreach (ThrusterPort port in particle_ports)
             {
-                float strength = (port.kx * control_x) + (port.ky * control_y) + (port.kt * control_t);
+                float strength = (port.kx * control_x) + (port.ky * control_y) + (port.kt * control_t) ;
+                strength *= 0.5f;
                 if (strength > 0)
                 {
                     particle_vents[i].Generate(ship.pos + Utility.Rotate(port.position, ship.angle), ship.velocity, port.angle + ship.angle, strength);

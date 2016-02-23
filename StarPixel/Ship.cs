@@ -23,8 +23,9 @@ namespace StarPixel
 
         public string description;
 
+        public float component_thruster_size = 1.0f;
         public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
-
+        public List<WeaponPort> weapon_ports = new List<WeaponPort>();
 
         public Ship New()
         {
@@ -32,9 +33,14 @@ namespace StarPixel
             return ship;
         }
 
-        public void AddPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
+        public void AddThrusterPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
         {
             thruster_ports.Add(new ThrusterPort(arg_pos, arg_angle, arg_size, x_response, y_response, t_response));
+        }
+
+        public void AddWeaponPort( Vector2 arg_pos, float arg_size, float arc_center, float arc_width)
+        {
+            weapon_ports.Add(new WeaponPort(arg_pos, arg_size, arc_center, arc_width));
         }
     }
 
@@ -68,7 +74,7 @@ namespace StarPixel
 
             hull_sprite = ArtManager.NewArtSprite( template.hull_art_resource );
             
-            thrusters = new Thruster(this);
+            thrusters = new Thruster(this, template.component_thruster_size);
             thrusters.ApplyTemplate("default");
         }
 

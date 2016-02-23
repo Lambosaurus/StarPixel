@@ -19,7 +19,8 @@ namespace StarPixel
         public float hp;
         public float mass;
 
-        int max_size;
+        public float size;
+
         public float max_usage;
         public float usage;
 
@@ -27,8 +28,10 @@ namespace StarPixel
 
         public Ship ship;
 
-        public Component( Ship arg_ship )
+        public Component( Ship arg_ship, float arg_size )
         {
+            size = arg_size;
+
             destroyed = false;
             hp = max_hp;
 
@@ -77,7 +80,7 @@ namespace StarPixel
         float power_usage;
         List<Component> connected;
 
-        public Reactor(Ship ship) : base(ship)
+        public Reactor(Ship ship, float arg_size) : base(ship, arg_size)
         {
             Max_output = 3.0f;
             connected.Add(ship.thrusters);

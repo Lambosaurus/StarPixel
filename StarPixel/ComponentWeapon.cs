@@ -20,15 +20,15 @@ namespace StarPixel
         public float angle_min;
         public float angle_max;
 
-        public int size;
+        public float size;
 
-        public WeaponPort(Vector2 arg_pos, int arg_size, float firing_arc, float direction)
+        public WeaponPort(Vector2 arg_pos, float arg_size, float arc_center, float arc_width)
         {
             position = arg_pos;
             size = arg_size;
 
-            angle_min = direction - firing_arc / 2;
-            angle_max = direction + firing_arc / 2;
+            angle_min = arc_center - (arc_width / 2);
+            angle_max = arc_center + (arc_width / 2);
         }
 
         public WeaponPort( WeaponPort example )
@@ -44,6 +44,14 @@ namespace StarPixel
 
     public class WeaponTemplate
     {
+        public WeaponTemplate()
+        {
+        }
+
+        public virtual ComponentWeapon New(Ship arg_ship, WeaponPort arg_port)
+        {
+            return null;
+        }
 
     }
 
@@ -52,9 +60,80 @@ namespace StarPixel
     public class ComponentWeapon : Component
     {
 
-        public ComponentWeapon(Ship arg_ship) : base (arg_ship)
+        WeaponPort port;
+
+        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port) : base(arg_ship, arg_port.size )
+        {
+            port = arg_port;
+        }
+
+        public virtual void Fire(Universe universe, float angle )
         {
 
         }
     }
+
+
+
+    public class ProjectileSlug : Projectile
+    {
+        
+    }
+
+
+
+    public class WeaponTemplateSlug : WeaponTemplate
+    {
+
+        Vector2 projectile_scale;
+
+        float projectile_temperature;
+        float projectile_life;
+        float projectile_thermo_halflife;
+        float projectile_velocity;
+
+        public override ComponentWeapon New(Ship arg_ship, WeaponPort port)
+        {
+            return new ComponentWeaponSlug(arg_ship, this, port);
+        }
+
+    }
+
+
+    public class ComponentWeaponSlug : ComponentWeapon
+    {
+        public WeaponTemplateSlug template;
+
+        public ComponentWeaponSlug( Ship arg_ship, WeaponTemplateSlug arg_template, WeaponPort arg_port) : base(arg_ship, arg_port)
+        {
+            
+            template = arg_template;
+        }
+
+        public override void Fire(Universe universe, float angle)
+        {
+            ProjectileSlug proj = new ProjectileSlug();
+            
+            base.Fire(universe, angle);
+        }
+
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

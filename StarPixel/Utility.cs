@@ -51,7 +51,7 @@ namespace StarPixel
         {
             // Utility.WrapAngle(alpha) inline
             alpha = alpha % MathHelper.TwoPi;
-            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+            if (alpha < 0) { alpha += MathHelper.TwoPi; }
 
             return cos_values[ (int)(alpha * LOOKUP_CONSTANT)];
         }
@@ -60,7 +60,7 @@ namespace StarPixel
         {
             // Utility.WrapAngle(alpha) inline
             alpha = alpha % MathHelper.TwoPi;
-            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+            if (alpha < 0) { alpha += MathHelper.TwoPi; }
             return sin_values[(int)(alpha * LOOKUP_CONSTANT)];
         }
 
@@ -73,7 +73,7 @@ namespace StarPixel
         {
             // Utility.WrapAngle(alpha) inline
             alpha = alpha % MathHelper.TwoPi;
-            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+            if (alpha < 0) { alpha += MathHelper.TwoPi; }
 
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
@@ -87,7 +87,7 @@ namespace StarPixel
         {
             // Utility.WrapAngle(alpha) inline
             alpha = alpha % MathHelper.TwoPi;
-            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+            if (alpha < 0) { alpha += MathHelper.TwoPi; }
 
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
@@ -98,7 +98,7 @@ namespace StarPixel
         {
             // Utility.WrapAngle(alpha) inline
             alpha = alpha % MathHelper.TwoPi;
-            alpha = alpha > 0 ? alpha : alpha + MathHelper.TwoPi;
+            if (alpha < 0) { alpha += MathHelper.TwoPi; }
 
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
@@ -109,7 +109,23 @@ namespace StarPixel
         public static float WrapAngle(float alpha)
         {
             alpha = alpha % MathHelper.TwoPi;
-            return (alpha > 0) ? alpha : alpha + MathHelper.TwoPi;
+            if (alpha < 0) { return alpha + MathHelper.TwoPi; }
+            return alpha;
+        }
+
+
+        public static bool AngleWithin(float value, float min, float max)
+        {
+            max -= min;
+            value -= min;
+
+            // here i am just inlining the contents of WrapAngle
+            max = max % MathHelper.TwoPi;
+            if (max < 0) { max += MathHelper.TwoPi; }
+            value = value % MathHelper.TwoPi;
+            if (value < 0) { value += MathHelper.TwoPi; }
+
+            return (value <= max);
         }
 
 
