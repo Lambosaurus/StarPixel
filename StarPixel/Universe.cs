@@ -31,7 +31,7 @@ namespace StarPixel
             Ship othership = CreateNewShip("F2");
             othership.ai = new IntellegenceHunter(playership);
 
-            othership.pos = Utility.Rand(1000);
+            othership.pos = Utility.RandVec(1000);
 
         }
 

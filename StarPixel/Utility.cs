@@ -11,6 +11,9 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 
+// This is where i'd put my #defines
+// IF I HAD ANY.
+
 
 namespace StarPixel
 {
@@ -29,6 +32,8 @@ namespace StarPixel
         static Random random;
 
 
+        // There is a lot of inlining done in this library.
+        // its nasty and it takes ages to change stuff, but this stuff is used a lot.. so..
         static Utility()
         {
             random = new Random();
@@ -83,6 +88,9 @@ namespace StarPixel
 
         }
 
+
+        // returns a vector at a given angle.
+        // length can be specified for speed.
         public static Vector2 CosSin(float alpha)
         {
             // Utility.WrapAngle(alpha) inline
@@ -114,6 +122,8 @@ namespace StarPixel
         }
 
 
+        // returns true if the value is between the minimum and maximum angles
+        // It does take care of the angle wrapping.
         public static bool AngleWithin(float value, float min, float max)
         {
             max -= min;
@@ -128,27 +138,30 @@ namespace StarPixel
             return (value <= max);
         }
 
-
-        public static Vector2 Rand(float scale)
+        
+        // returns a vector of length scale with a random angle
+        // Nice for generating a circular distribution
+        public static Vector2 RandVec(float scale)
         {
             int a = random.Next(SINE_RESOLUTION);
+            scale = Rand(scale);
 
             float c = cos_values[a];
             float s = sin_values[a];
             return new Vector2(c*scale, s*scale);
         }
 
-
-        public static float Randf(float max)
+        // returns a random value
+        public static float Rand(float max)
         {
             return (max * random.Next(10000) / 10000f);
         }
 
-        public static float Randf(float min, float max)
+        // option for min & max
+        public static float Rand(float min, float max)
         {
             return min + ((max - min) * random.Next(10000) / 10000f);
         }
-
 
         public static float Clamp(float value, float min = -1.0f, float max = 1.0f)
         {
@@ -157,21 +170,30 @@ namespace StarPixel
             return value;
         }
 
-        // i wish i could inline this shit
+        // I wish i could inline this shit
         public static float Abs(float value)
         {
             if (value < 0) { return -value; }
             return value;
         }
 
-        public static bool Window(Vector2 p1, Vector2 p2, float window = 10.0f) // i dont think a default value is healthy here.
+        // Checks whether two points are within a windows distance of each other
+        public static bool Window(Vector2 p1, Vector2 p2, Vector2 window)
         {
-            // TODO: this functions needs to be tested sometime
+            return p1.X + window.X > p2.X &&
+                   p1.Y + window.Y > p2.Y &&
+                   p1.X - window.X < p2.X &&
+                   p1.Y - window.Y < p2.Y;
+        }
+
+        public static bool Window(Vector2 p1, Vector2 p2, float window)
+        {
             return p1.X + window > p2.X &&
                    p1.Y + window > p2.Y &&
                    p1.X - window < p2.X &&
                    p1.Y - window < p2.Y;
         }
+
         
         // gets the angle from the origin to the given point
         public static float Angle( Vector2 point )
@@ -179,14 +201,15 @@ namespace StarPixel
             return (float)Math.Atan2(point.Y, point.X);
         }
 
-        // mod with positive results only
+        // modulus with positive results only
         public static float Mod( float a, float b )
         {
             float m = a % b;
             return (m > 0) ? m : m + b;
         }
 
-        // gets the shortest angle to the target angle from the current angle
+        // gets the shortest angle to the target angle from the current angle (with correct sign!)
+        // It can be used to tell you which direction you should turn
         public static float AngleDelta( float target, float current )
         {
             float a = target - current;

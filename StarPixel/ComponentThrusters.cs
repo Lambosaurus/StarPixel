@@ -171,7 +171,7 @@ namespace StarPixel
 
 
             // TODO. this is nihilistic and therefore: not practical.
-            if (control_x > 0 && Utility.Randf(1.0f) > 0.94f / control_x)
+            if (control_x > 0 && Utility.Rand(1.0f) > 0.94f / control_x)
             {
                 sparkles.Generate(ship.pos + Utility.Rotate(particle_ports[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, 1);
             }

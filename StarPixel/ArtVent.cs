@@ -144,7 +144,7 @@ namespace StarPixel
         public void Add(Vector2 pos, Vector2 vel, float p_angle)
         {
             position[index_end] = pos;
-            velocity[index_end] = vel + Utility.CosSin(p_angle, ejection_velocity) + Utility.Rand(velocity_scatter);
+            velocity[index_end] = vel + Utility.CosSin(p_angle, ejection_velocity) + Utility.RandVec(velocity_scatter);
 
             temperature[index_end] = ejection_temperature + (temperature_scatter * Utility.Randf(-1, 1));
             alpha[index_end] = 1.0f;
