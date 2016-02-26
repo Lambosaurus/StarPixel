@@ -60,6 +60,7 @@
     <Compile Include="Art.cs" />
     <Compile Include="ArtSprite.cs" />
     <Compile Include="ArtVent.cs" />
+    <Compile Include="AssetWeaponTemplates.cs" />
     <Compile Include="AssetThrusterTemplates.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="ComponentThrusters.cs" />

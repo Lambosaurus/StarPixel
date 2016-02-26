@@ -19,7 +19,7 @@ namespace StarPixel
 
         public float angle_min;
         public float angle_max;
-
+        
         public float size;
 
         public WeaponPort(Vector2 arg_pos, float arg_size, float arc_center, float arc_width)
@@ -44,13 +44,34 @@ namespace StarPixel
 
     public class WeaponTemplate
     {
+        public string projectile_sprite_resource;
+        //public string weapon_sprite_resource;
+        public Color projectile_color;
+
+        public float projectile_velocity = 4;
+        public float projectile_scatter = 0.04f;
+        public Vector2 projectile_scale = new Vector2(1,1);
+        public float projectile_range = 2000f;
+
+        public float fire_rate = 1.0f;
+
+
         public WeaponTemplate()
         {
         }
 
         public virtual ComponentWeapon New(Ship arg_ship, WeaponPort arg_port)
         {
-            return null;
+            float size = arg_port.size;
+            ComponentWeapon weapon = new ComponentWeapon(arg_ship, arg_port, size, this);
+
+            weapon.cooldown = 60f / (fire_rate);
+            weapon.projectile_velocity = projectile_velocity;
+            weapon.projectile_frame_life = (int)(projectile_range * size / projectile_velocity);
+            weapon.projectile_scatter = projectile_scatter;
+            weapon.projectile_scale = projectile_scale * size;
+
+            return weapon;
         }
 
     }
@@ -60,65 +81,72 @@ namespace StarPixel
     public class ComponentWeapon : Component
     {
 
-        WeaponPort port;
+        public WeaponPort port;
 
-        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port) : base(arg_ship, arg_port.size )
+        public WeaponTemplate template;
+
+        // we use floats here, because then a CD of 1.5 will allow bonus shots  
+        public float current_cooldown;
+        public float cooldown;
+
+        public float projectile_velocity;
+        public float projectile_scatter;
+        public int projectile_frame_life;
+        public Vector2 projectile_scale;
+
+        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port, float arg_size, WeaponTemplate arg_template) : base(arg_ship, arg_size)
         {
             port = arg_port;
-        }
-
-        public virtual void Fire(Universe universe, float angle )
-        {
-
-        }
-    }
-
-
-
-    public class ProjectileSlug : Projectile
-    {
-        
-    }
-
-
-
-    public class WeaponTemplateSlug : WeaponTemplate
-    {
-
-        Vector2 projectile_scale;
-
-        float projectile_temperature;
-        float projectile_life;
-        float projectile_thermo_halflife;
-        float projectile_velocity;
-
-        public override ComponentWeapon New(Ship arg_ship, WeaponPort port)
-        {
-            return new ComponentWeaponSlug(arg_ship, this, port);
-        }
-
-    }
-
-
-    public class ComponentWeaponSlug : ComponentWeapon
-    {
-        public WeaponTemplateSlug template;
-
-        public ComponentWeaponSlug( Ship arg_ship, WeaponTemplateSlug arg_template, WeaponPort arg_port) : base(arg_ship, arg_port)
-        {
-            
             template = arg_template;
         }
 
-        public override void Fire(Universe universe, float angle)
+        public bool ReadyToFire()
         {
-            ProjectileSlug proj = new ProjectileSlug();
-            
-            base.Fire(universe, angle);
+            return current_cooldown <= 0 && !destroyed;
         }
 
-    }
+        public virtual void Fire(float angle )
+        {
+            if (this.ReadyToFire())
+            {
+                if ( Utility.AngleWithin(angle, port.angle_min, port.angle_max) )
+                {
+                    this.SpawnProjectile(angle);
 
+                    current_cooldown = cooldown;
+                }
+            }
+        }
+
+        public override void Update()
+        {
+            if ( current_cooldown > 0 )
+            {
+                current_cooldown--;
+            }
+
+            base.Update();
+        }
+
+        public virtual void SpawnProjectile(float angle )
+        {
+            Projectile projectile = new Projectile();
+
+            float fire_angle = angle + ship.angle;
+
+            projectile.angle = fire_angle;
+            projectile.velocity = ship.velocity + Utility.CosSin(fire_angle, projectile_velocity) + Utility.RandVec(projectile_scatter);
+            projectile.life = projectile_frame_life;
+            projectile.pos = ship.pos + Utility.Rotate(port.position, ship.angle);
+
+            projectile.sprite = ArtManager.NewArtSprite(template.projectile_sprite_resource);
+            projectile.sprite.color = template.projectile_color;
+            projectile.sprite.scale = projectile_scale;
+
+            ship.universe.projectiles.Add(projectile);
+        }
+    }
+    
 }
 
 

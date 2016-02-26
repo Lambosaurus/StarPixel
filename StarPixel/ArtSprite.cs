@@ -20,14 +20,14 @@ namespace StarPixel
         public Vector2 size;
         public Vector2 center;
 
-        public float scale;
+        public Vector2 scale;
 
         public float radius;
 
         public ArtSpriteResource(string arg_name, float arg_scale = 1.0f)
         {
             name = arg_name;
-            scale = arg_scale;
+            scale = new Vector2( arg_scale );
         }
 
 
@@ -53,9 +53,12 @@ namespace StarPixel
         public Vector2 pos;
         public float angle;
 
+        public Vector2 scale;
+
         public ArtSprite(ArtSpriteResource arg_resource)
         {
             resource = arg_resource;
+            scale = resource.scale;
         }
 
         public bool InView(Camera camera)
@@ -73,7 +76,7 @@ namespace StarPixel
         {
             if (!InView(camera)) { return; }
 
-            camera.batch.Draw(resource.sprite, camera.Map(pos), null, color, angle, resource.center, camera.scale*resource.scale, SpriteEffects.None, 0);
+            camera.batch.Draw(resource.sprite, camera.Map(pos), null, color, angle, resource.center, camera.scale*scale, SpriteEffects.None, 0);
 
         }
     }

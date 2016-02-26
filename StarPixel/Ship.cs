@@ -17,6 +17,7 @@ namespace StarPixel
     {
         public string hull_art_resource;
         public string paint_art_resource;
+        public string heat_art_resource;
 
         public float base_mass;
         public float base_intertia;
@@ -27,9 +28,9 @@ namespace StarPixel
         public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
         public List<WeaponPort> weapon_ports = new List<WeaponPort>();
 
-        public Ship New()
+        public Ship New(Universe universe)
         {
-            Ship ship = new Ship(this);
+            Ship ship = new Ship(this, universe);
             return ship;
         }
 
@@ -64,8 +65,9 @@ namespace StarPixel
 
         private bool selected = false;
 
-        
-        public Ship(ShipTemplate arg_template ) : base()
+        public ComponentWeapon[] weapons;
+
+        public Ship(ShipTemplate arg_template, Universe arg_universe ) : base(arg_universe)
         {
             template = arg_template;
 
@@ -74,8 +76,30 @@ namespace StarPixel
 
             hull_sprite = ArtManager.NewArtSprite( template.hull_art_resource );
             
+            // I do not like this sam i am. I do not like this one bit.
+            // Thrusters should follow the model set out by weapons, and should be null
+            // then we set them separeately
             thrusters = new Thruster(this, template.component_thruster_size);
             thrusters.ApplyTemplate("default");
+
+            weapons = new ComponentWeapon[template.weapon_ports.Count];
+        }
+
+        public void MountWeapon( string template_name, int port_number )
+        {
+            if (port_number >= 0 && port_number <= template.weapon_ports.Count )
+            {
+
+                if (template_name == null)
+                {
+                    weapons[port_number] = null;
+                }
+                else
+                {
+                    weapons[port_number] = AssetWeaponTemplates.weapon_templates[template_name].New(this, template.weapon_ports[port_number]);
+                }
+
+            }
         }
 
         public void Paint( Color color )
@@ -102,12 +126,36 @@ namespace StarPixel
 
                 thrusters.control_thrust_vector = orders.control_thrust;
                 thrusters.control_torque_scalar = orders.control_torque;
+
+                if( orders.firing )
+                {
+                    foreach (ComponentWeapon weapon in weapons)
+                    {
+                        if (weapon != null)
+                        {
+                            if (weapon.ReadyToFire())
+                            {
+                                weapon.Fire(0.0f);
+                            }
+                        }
+                    }
+                }
                 
             }
 
             
             thrusters.Update();
-            
+
+
+            foreach (ComponentWeapon weapon in weapons)
+            {
+                if (weapon != null)
+                {
+                    weapon.Update();
+                }
+            }
+
+
             base.Update();
 
             hull_sprite.pos = pos;

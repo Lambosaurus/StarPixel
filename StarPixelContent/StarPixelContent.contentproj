@@ -58,8 +58,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="particle.png">
-      <Name>particle</Name>
+    <Compile Include="particle - large.png">
+      <Name>particle - large</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -81,6 +81,27 @@
   <ItemGroup>
     <Compile Include="F2 paint.png">
       <Name>F2 paint</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="bullet.png">
+      <Name>bullet</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="F2 heat.png">
+      <Name>F2 heat</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="particle.png">
+      <Name>particle</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

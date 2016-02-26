@@ -69,7 +69,7 @@ namespace StarPixel
         {
         }
 
-        public void Destory( Universe universe )
+        public void Destory( )
         {
             if ( ! destroyed )
             {
@@ -86,12 +86,14 @@ namespace StarPixel
         public float inertia;
         public float angular_velocity;
 
+        public Universe universe;
 
         public Hitbox hitbox;
 
 
-        public Physical() : base()
+        public Physical(Universe arg_universe) : base()
         {
+            universe = arg_universe;
             mass = 10;
             inertia = 50; // things feel right with the current thruster torque model when inertia is about 5x mass.
 
@@ -119,6 +121,27 @@ namespace StarPixel
 
     public class Projectile : Entity
     {
+        public int life;
+
+        public ArtSprite sprite;
+
+        public override void Update()
+        {
+            if ( life-- <= 0 )
+            {
+                this.Destory();
+            }
+
+            base.Update();
+
+            sprite.pos = pos;
+            sprite.angle = angle;
+        }
+
+        public override void Draw(Camera camera)
+        {
+            sprite.Draw(camera);
+        }
     }
 
 

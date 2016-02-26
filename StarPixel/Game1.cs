@@ -57,6 +57,7 @@ namespace StarPixel
 
             universe = new Universe();
 
+            universe.Start();
         }
 
 
@@ -65,6 +66,7 @@ namespace StarPixel
         {
             AssetShipTemplates.GenerateAssets();
             AssetThrusterTemplates.GenerateAssets();
+            AssetWeaponTemplates.GenerateAssets();
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -85,6 +87,8 @@ namespace StarPixel
         protected override void UnloadContent()
         {
 
+            // probably not the spot for this. but where else?
+            universe.End();
         }
         
 

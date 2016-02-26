@@ -146,7 +146,7 @@ namespace StarPixel
             position[index_end] = pos;
             velocity[index_end] = vel + Utility.CosSin(p_angle, ejection_velocity) + Utility.RandVec(velocity_scatter);
 
-            temperature[index_end] = ejection_temperature + (temperature_scatter * Utility.Randf(-1, 1));
+            temperature[index_end] = ejection_temperature + (temperature_scatter * Utility.Rand(-1, 1));
             alpha[index_end] = 1.0f;
             angle[index_end] = p_angle;
 

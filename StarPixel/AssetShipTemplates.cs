@@ -42,6 +42,7 @@ namespace StarPixel
             template.base_mass = 50;
             template.base_intertia = 800;
             template.hull_art_resource = "F2";
+            template.heat_art_resource = "F2 heat";
             template.paint_art_resource = "F2 paint";
             template.component_thruster_size = 1.0f;
 
@@ -59,6 +60,7 @@ namespace StarPixel
             ship_templates.Add("F2", template);
 
             ArtManager.sprites.Add("F2 paint", new ArtSpriteResource("F2 paint", 0.5f));
+            ArtManager.sprites.Add("F2 heat", new ArtSpriteResource("F2 heat", 0.5f));
             ArtManager.sprites.Add("F2", new ArtSpriteResource("F2", 0.5f));
 
         }
