@@ -79,6 +79,7 @@ namespace StarPixel
             if (UPSAMPLE_GRAPHICS)
             {
                 camera = new Camera(GraphicsDevice, spriteBatch, window_res_x * 2, window_res_y * 2);
+                camera.scale *= 2;
             }
             else
             {
