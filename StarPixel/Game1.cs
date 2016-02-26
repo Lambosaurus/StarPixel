@@ -11,9 +11,13 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+
     /// This is the main type for your game
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        bool UPSAMPLE_GRAPHICS = true;
+
+
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
@@ -71,7 +75,16 @@ namespace StarPixel
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y);
+
+            if (UPSAMPLE_GRAPHICS)
+            {
+                camera = new Camera(GraphicsDevice, spriteBatch, window_res_x * 2, window_res_y * 2);
+            }
+            else
+            {
+                camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y);
+            }
+
 
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
 
@@ -201,7 +214,16 @@ namespace StarPixel
             // now we write the cameras result to the screen
             spriteBatch.Begin();
 
-            spriteBatch.Draw(camera.surface, new Vector2(0, 0), Color.White);
+
+            
+            if (UPSAMPLE_GRAPHICS)
+            {
+                spriteBatch.Draw(camera.surface, new Vector2(0, 0), null, Color.White, 0.0f, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            }
+            else
+            {
+                spriteBatch.Draw(camera.surface, new Vector2(0, 0), Color.White);
+            }
 
             spriteBatch.Draw(cursor, mouse_pos - new Vector2(7,7), Color.White);
 
