@@ -31,7 +31,7 @@ namespace StarPixel
             return null;
         }
 
-        public virtual float SurfaceNormal()
+        public virtual float SurfaceNormal(Vector2 point)
         {
             return 0.0f;
         }
@@ -61,9 +61,9 @@ namespace StarPixel
             return new HitboxCircle(radius);
         }
 
-        public override float SurfaceNormal(  )
+        public override float SurfaceNormal( Vector2 point )
         {
-            return 0.0f;
+            return Utility.Angle(point - pos);
         }
     }
 }

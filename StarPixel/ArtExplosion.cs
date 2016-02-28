@@ -62,9 +62,11 @@ namespace StarPixel
             // this might look a bit nasty.
             for (int i = 0; i < count; i++ )
             {
-                float angle = Utility.RandAngle();
+                //float angle = Utility.RandAngle();
+                //Vector2 vel = Utility.CosSin(angle, Utility.Rand(0.5f * std_velocity, std_velocity));
 
-                Vector2 vel = Utility.CosSin(angle, Utility.Rand(0.5f * std_velocity, std_velocity));
+                Vector2 vel = Utility.RandVec(std_velocity) + skew/4;
+                float angle = Utility.Angle(vel);
 
                 exp.Add(vel, angle, std_temperature, Utility.Rand(1.0f, 1.5f));
             }
