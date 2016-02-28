@@ -17,62 +17,43 @@ namespace StarPixel
     {
 
         public static Dictionary<string, ArtSpriteResource> sprites = new Dictionary<string, ArtSpriteResource>();
-        static ArtSpriteResource sprite_default;
-
+        
         public static Dictionary<string, ArtVentResource> vents = new Dictionary<string, ArtVentResource>();
-        static ArtVentResource vent_default;
+
+        public static Dictionary<string, ArtExplosionResource> explosions = new Dictionary<string, ArtExplosionResource>();
 
         public static void Load(ContentManager content)
         {
-
-            sprite_default = new ArtSpriteResource("default_sprite");
-            sprite_default.Load(content);
-
             foreach (ArtSpriteResource sprite in sprites.Values)
             {
                 sprite.Load(content);
             }
 
-
-            vent_default = new ArtVentResource("particle");
-            vent_default.std_ejection_temperature = 0;
-            vent_default.std_particle_count = 200;
-            vent_default.std_particle_length = 1.0f;
-            vent_default.std_particle_stretch_length = 4f;
-            vent_default.std_particle_life = 2f;
-            vent_default.std_particle_width = 0.75f;
-            vent_default.std_temp_halflife = 0.33f;
-            vent_default.std_temperature_scatter = 0.0f;
-            vent_default.std_velocity_scatter = 0.1f;
-            vent_default.std_ejection_velocity = 1f;
-
-
-            vent_default.Load(content);
-
             foreach (ArtVentResource vent in vents.Values)
             {
                 vent.Load(content);
             }
+
+            foreach ( ArtExplosionResource exp in explosions.Values)
+            {
+                exp.Load(content);
+            }
         }
 
-        public static ArtSprite NewArtSprite(string key)
+        // TODO, change all these to GetTemplate form
+        public static ArtSpriteResource GetSpriteResource(string key)
         {
-            if (sprites.ContainsKey(key))
-            {
-                return sprites[key].New();
-            }
-
-            return sprite_default.New();
+            return sprites[key];
         }
 
-        public static ArtVent NewArtVent(string key, float scale)
+        public static ArtVentResource GetVentResource(string key)
         {
-            if (vents.ContainsKey(key))
-            {
-                return vents[key].New(scale);
-            }
+            return vents[key];
+        }
 
-            return vent_default.New(scale);
+        public static ArtExplosionResource GetExplosionResource(string key)
+        {
+            return explosions[key];
         }
     }
 
@@ -105,10 +86,30 @@ namespace StarPixel
     }
 
 
-    public class ArtSpaceDust
+
+
+
+    public class ArtTemporary
     {
-        public Vector2 TileSize;
+        public virtual bool ReadyForRemoval()
+        {
+            return true;
+        }
+
+        public virtual void Update()
+        {
+        }
+
+        public virtual bool InView(Camera camera)
+        {
+            return false;
+        }
+
+        public virtual void Draw(Camera camera)
+        {
+        }
     }
+       
 
 }
 

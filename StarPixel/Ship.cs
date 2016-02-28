@@ -28,6 +28,8 @@ namespace StarPixel
         public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
         public List<WeaponPort> weapon_ports = new List<WeaponPort>();
 
+        public Hitbox hitbox;
+
         public Ship New(Universe universe)
         {
             Ship ship = new Ship(this, universe);
@@ -63,18 +65,18 @@ namespace StarPixel
         public IntInputs ai_inputs = new IntInputs();
 
 
-        private bool selected = false;
-
         public ComponentWeapon[] weapons;
 
         public Ship(ShipTemplate arg_template, Universe arg_universe ) : base(arg_universe)
         {
             template = arg_template;
 
+            hitbox = template.hitbox.Copy();
+
             mass = template.base_mass;
             inertia = template.base_intertia;
 
-            hull_sprite = ArtManager.NewArtSprite( template.hull_art_resource );
+            hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
             
             // I do not like this sam i am. I do not like this one bit.
             // Thrusters should follow the model set out by weapons, and should be null
@@ -106,7 +108,7 @@ namespace StarPixel
         {
             if (color != null)
             {
-                paint_sprite = ArtManager.NewArtSprite(template.paint_art_resource);
+                paint_sprite = ArtManager.GetSpriteResource(template.paint_art_resource).New();
                 paint_sprite.color = color;
             }
             else
@@ -158,24 +160,13 @@ namespace StarPixel
 
             base.Update();
 
-            hull_sprite.pos = pos;
-            hull_sprite.angle = angle;
+            hitbox.pos = pos;
+
+            hull_sprite.Update(pos, angle);
             if ( paint_sprite != null )
             {
-                paint_sprite.pos = pos;
-                paint_sprite.angle = angle;
+                paint_sprite.Update(pos, angle);
             }
-
-            /*
-            if (selected)
-            {
-                hull_sprite.color = Color.CadetBlue;
-            }
-            else
-            {
-                hull_sprite.color = Color.White;
-            }
-            */
         }
 
         public override void Draw(Camera camera)

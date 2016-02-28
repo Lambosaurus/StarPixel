@@ -45,6 +45,7 @@ namespace StarPixel
     public class WeaponTemplate
     {
         public string projectile_sprite_resource;
+        public string projectile_explosion_resource;
         //public string weapon_sprite_resource;
         public Color projectile_color;
 
@@ -139,9 +140,13 @@ namespace StarPixel
             projectile.life = projectile_frame_life;
             projectile.pos = ship.pos + Utility.Rotate(port.position, ship.angle);
 
-            projectile.sprite = ArtManager.NewArtSprite(template.projectile_sprite_resource);
+            projectile.sprite = ArtManager.GetSpriteResource(template.projectile_sprite_resource).New();
             projectile.sprite.color = template.projectile_color;
             projectile.sprite.scale = projectile_scale;
+
+            projectile.explosion_resource = ArtManager.GetExplosionResource(template.projectile_explosion_resource);
+
+            projectile.parent = ship;
 
             ship.universe.projectiles.Add(projectile);
         }

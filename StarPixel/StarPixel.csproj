@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Art.cs" />
+    <Compile Include="ArtExplosion.cs" />
     <Compile Include="ArtSprite.cs" />
     <Compile Include="ArtVent.cs" />
     <Compile Include="AssetWeaponTemplates.cs" />
@@ -83,6 +84,7 @@
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </Content>
+    <Content Include="TODO.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\StarPixelContent\StarPixelContent.contentproj">

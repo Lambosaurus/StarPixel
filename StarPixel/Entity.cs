@@ -78,6 +78,11 @@ namespace StarPixel
 
             destroyed = true;
         }
+
+        public bool ReadyForRemoval()
+        {
+            return destroyed;
+        }
     }
 
     public class Physical : Entity
@@ -125,6 +130,10 @@ namespace StarPixel
 
         public ArtSprite sprite;
 
+        public Ship parent;
+
+        public ArtExplosionResource explosion_resource;
+
         public override void Update()
         {
             if ( life-- <= 0 )
@@ -134,13 +143,32 @@ namespace StarPixel
 
             base.Update();
 
-            sprite.pos = pos;
-            sprite.angle = angle;
+            sprite.Update(pos, angle);
         }
 
         public override void Draw(Camera camera)
         {
             sprite.Draw(camera);
+        }
+
+        public bool Hits(Physical phys)
+        {
+            if (phys != parent)
+            {
+                if (phys.hitbox.Contains(pos))
+                {
+
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        public void Explode(Universe universe, Physical phys)
+        {
+            universe.art_temp.Add(explosion_resource.New(1.0f, pos, phys.velocity, new Vector2(0, 0)));
+
+            this.Destory();
         }
     }
 

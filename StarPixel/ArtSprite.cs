@@ -50,8 +50,8 @@ namespace StarPixel
     {
         ArtSpriteResource resource;
         public Color color = Color.White;
-        public Vector2 pos;
-        public float angle;
+        private Vector2 pos;
+        private float angle;
 
         public Vector2 scale;
 
@@ -59,6 +59,12 @@ namespace StarPixel
         {
             resource = arg_resource;
             scale = resource.scale;
+        }
+
+        public void Update( Vector2 arg_pos, float arg_angle )
+        {
+            pos = arg_pos;
+            angle = arg_angle;
         }
 
         public bool InView(Camera camera)

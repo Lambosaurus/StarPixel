@@ -163,6 +163,11 @@ namespace StarPixel
             return min + ((max - min) * random.Next(10000) / 10000f);
         }
 
+        public static float RandAngle()
+        {
+            return (MathHelper.TwoPi * random.Next(10000) / 10000f);
+        }
+
         public static float Clamp(float value, float min = -1.0f, float max = 1.0f)
         {
             if (value < min) { return min; }
@@ -214,6 +219,11 @@ namespace StarPixel
         {
             float a = target - current;
             return Mod(a + MathHelper.Pi, MathHelper.TwoPi) - MathHelper.Pi;
+        }
+
+        public static float Sqrt(float value)
+        {
+            return (float)Math.Sqrt(value);
         }
 
 

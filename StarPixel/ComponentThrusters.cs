@@ -36,16 +36,9 @@ namespace StarPixel
             kt = t_response;
         }
 
-        public ThrusterPort(ThrusterPort example)
+        public ThrusterPort Copy()
         {
-            size = example.size;
-
-            position = example.position;
-            angle = example.angle;
-
-            kx = example.kx;
-            ky = example.ky;
-            kt = example.kt;
+            return new ThrusterPort(position, angle, size, kx, ky, kt);
         }
     }
 
@@ -113,17 +106,21 @@ namespace StarPixel
             torque = template.torque * size;
 
             // this needs to be dynamic
-            sparkles = ArtManager.NewArtVent(arg_template.sparkle_effects, 0.5f);
+            sparkles = ArtManager.GetVentResource(arg_template.sparkle_effects).New(0.5f);
 
-            particle_ports = new List<ThrusterPort>();
+
+            // I was copying particle_ports from the template, when there is no need to. Just take a pointer.
+            //particle_ports = new List<ThrusterPort>();
+            particle_ports = ship.template.thruster_ports;
             particle_vents = new List<ArtVent>();
-
+            
             foreach (ThrusterPort port in ship.template.thruster_ports)
             {
-                particle_ports.Add(new ThrusterPort(port));
-                ArtVent vent = ArtManager.NewArtVent(arg_template.particle_effects, port.size);
+                //particle_ports.Add( port.Copy() );
+                ArtVent vent = ArtManager.GetVentResource(arg_template.particle_effects).New(port.size);
                 particle_vents.Add(vent);
             }
+            
         }
 
         public void ApplyTemplate(string template_name)

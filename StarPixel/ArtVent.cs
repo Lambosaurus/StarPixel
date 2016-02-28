@@ -34,7 +34,6 @@ namespace StarPixel
         public float std_particle_stretch_length = 1.0f;
         public float std_particle_stretch_width = 1.0f;
 
-
         public int std_particle_count;
 
 
@@ -72,6 +71,9 @@ namespace StarPixel
             vent.ejection_temperature = std_ejection_temperature;
             vent.ejection_velocity = std_ejection_velocity;
 
+            vent.radius = vent.ejection_velocity + (std_particle_life * scale * 60);
+            vent.radius *= 2;
+
             return vent;
         }
     }
@@ -90,6 +92,8 @@ namespace StarPixel
         public float velocity_scatter;
         public float temperature_scatter;
 
+
+        public float radius;
 
         public Vector2 particle_size_0;
         public Vector2 particle_size_1;
@@ -111,8 +115,6 @@ namespace StarPixel
 
         public ArtVent( ArtVentResource arg_resource, int particle_max )
         {
-            // TODO: fill out properties
-
             generator_counter = 0.0f;
 
             resource = arg_resource;
@@ -126,6 +128,7 @@ namespace StarPixel
             alpha = new float[particle_max];
             temperature = new float[particle_max];
             angle = new float[particle_max];
+
         }
 
         public void Generate(Vector2 pos, Vector2 vel, float p_angle, float rate)
@@ -189,7 +192,20 @@ namespace StarPixel
 
         public bool InView(Camera camera)
         {
-            return true; // TODO: yep. Nothing wrong this this. We fine boys.
+            // if index_start == index_end we have no particles left!
+            if (index_start != index_end)
+            {
+                // get the position of the most recent particle....
+                Vector2 onscreen = camera.Map( position[index_start] );
+
+                float cull_radius = radius * camera.scale;
+
+                return onscreen.X + cull_radius > 0 &&
+                       onscreen.Y + cull_radius > 0 &&
+                       onscreen.X - cull_radius < camera.res.X &&
+                       onscreen.Y - cull_radius < camera.res.Y;
+            }
+            return false;
         }
 
         public void Draw(Camera camera)
@@ -208,7 +224,6 @@ namespace StarPixel
                 //Vector2 transform = new Vector2( particle_length_0 + (particle_length_1*alpha[i]), particle_length_0 + (particle_length_1 * alpha[i]));
                 Vector2 transform = particle_size_0 + (particle_size_1*alpha[i]);
 
-                // TODO: fill this shit out.
                 camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i], resource.sprite_center, transform * camera.scale, SpriteEffects.None, 0);
 
                 c--;

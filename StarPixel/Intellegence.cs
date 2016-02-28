@@ -140,7 +140,7 @@ namespace StarPixel
     public class IntellegenceRoamer : Intellegence
     {
 
-        float target_range = 800;
+        float target_range = 1200;
         Vector2 target;
         float target_ok_distance;
 
