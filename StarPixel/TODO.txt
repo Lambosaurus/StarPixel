@@ -2,21 +2,17 @@
 
 > Clean up all the public variable interfaces. Lot of nasty work.
 
-> Standardise how AssetTemplates are retrieved
-  > atm its nasty. We just crash if a template name isnt present
-  > We should use a getter to get the template, nto automatically call template.New()
-    > This means an item can store a pointer to the template, which will save string comps
 
 > Standardise up how things are handed to the universe.
 
-> Add new hitbox types
-> look into a line based collision detection
+
+> add a new surface normal calculation method for HitboxPolygon
+
 
 > Have damage handed out to victim ships
 
 > Thrusters
   > Have sparkles assigned dynamically
-  > remove applyTemplate(), and have thrusters generated like other components
 
 
 

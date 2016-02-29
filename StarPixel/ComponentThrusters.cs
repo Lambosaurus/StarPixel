@@ -72,8 +72,8 @@ namespace StarPixel
         public float torque;
 
 
-        public Vector2 control_thrust_vector;
-        public float control_torque_scalar;
+        public Vector2 control_thrust_vector = new Vector2(0,0);
+        public float control_torque_scalar = 0;
         
 
         public List<ThrusterPort> particle_ports;
@@ -81,51 +81,34 @@ namespace StarPixel
 
         ArtVent sparkles;
 
-        public float efficiency;
-
         ThrusterTemplate template;
 
-        public Thruster(Ship ship, float arg_size) : base(ship, arg_size)
+        public float efficiency = 1.0f;
+
+        public Thruster( string template_name, Ship ship, float arg_size) : base(ship, arg_size)
         {
-            control_thrust_vector = new Vector2(0, 0);
-            control_torque_scalar = 0;
 
-            efficiency = 1.0f;
-
-            max_usage = 4.0f; // TODO: This is very wrong on multiple levels.
-            usage = 0.0f;
-        }
-
-        public void ApplyTemplate(ThrusterTemplate arg_template)
-        {
-            // so all kinds of errors will occurr if a thruster is used without a template being applied
-            template = arg_template;
+            template = AssetThrusterTemplates.thruster_templates[template_name];
             side_thrust = template.side_thrust * size;
             reverse_thrust = template.reverse_thrust * size;
             main_thrust = template.main_thrust * size;
             torque = template.torque * size;
 
             // this needs to be dynamic
-            sparkles = ArtManager.GetVentResource(arg_template.sparkle_effects).New(0.5f);
+            sparkles = ArtManager.GetVentResource(template.sparkle_effects).New(0.5f);
 
 
             // I was copying particle_ports from the template, when there is no need to. Just take a pointer.
             //particle_ports = new List<ThrusterPort>();
             particle_ports = ship.template.thruster_ports;
             particle_vents = new List<ArtVent>();
-            
+
             foreach (ThrusterPort port in ship.template.thruster_ports)
             {
                 //particle_ports.Add( port.Copy() );
-                ArtVent vent = ArtManager.GetVentResource(arg_template.particle_effects).New(port.size);
+                ArtVent vent = ArtManager.GetVentResource(template.particle_effects).New(port.size);
                 particle_vents.Add(vent);
             }
-            
-        }
-
-        public void ApplyTemplate(string template_name)
-        {
-            ApplyTemplate(AssetThrusterTemplates.thruster_templates[template_name]);
         }
 
         public override void CalculateUsage()

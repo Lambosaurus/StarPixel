@@ -38,7 +38,7 @@ namespace StarPixel
         {
             Ship playership = CreateNewShip("F2");
             playership.ai = new IntellegenceHuman();
-            playership.thrusters.ApplyTemplate("better");
+            playership.MountThruster("better");
             playership.Paint(Color.Blue);
 
             playership.MountWeapon("shooter", 0);
@@ -51,6 +51,7 @@ namespace StarPixel
                 othership.ai = new IntellegenceRoamer();
                 
                 othership.Paint(Color.Black);
+                othership.MountThruster("default");
 
                 othership.angle = Utility.Rand(MathHelper.TwoPi);
                 othership.pos = Utility.RandVec(1200);

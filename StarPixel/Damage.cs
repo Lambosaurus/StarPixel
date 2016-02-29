@@ -13,6 +13,5 @@ namespace StarPixel
 {
     public class Damage
     {
-
     }
 }

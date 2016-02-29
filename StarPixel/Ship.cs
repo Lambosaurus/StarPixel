@@ -58,7 +58,7 @@ namespace StarPixel
         public ArtSprite hull_sprite;
         public ArtSprite paint_sprite = null;
         
-        public Thruster thrusters;
+        public Thruster thrusters = null;
 
         
         public Intellegence ai;
@@ -77,13 +77,7 @@ namespace StarPixel
             inertia = template.base_intertia;
 
             hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
-            
-            // I do not like this sam i am. I do not like this one bit.
-            // Thrusters should follow the model set out by weapons, and should be null
-            // then we set them separeately
-            thrusters = new Thruster(this, template.component_thruster_size);
-            thrusters.ApplyTemplate("default");
-
+           
             weapons = new ComponentWeapon[template.weapon_ports.Count];
         }
 
@@ -102,6 +96,11 @@ namespace StarPixel
                 }
 
             }
+        }
+
+        public void MountThruster(string template_name)
+        {
+            thrusters = new Thruster(template_name, this, template.component_thruster_size);
         }
 
         public void Paint( Color color )
@@ -126,8 +125,11 @@ namespace StarPixel
                 ai_inputs.angle = angle;
                 IntOutputs orders = ai.Process(ai_inputs);
 
-                thrusters.control_thrust_vector = orders.control_thrust;
-                thrusters.control_torque_scalar = orders.control_torque;
+                if (thrusters != null)
+                {
+                    thrusters.control_thrust_vector = orders.control_thrust;
+                    thrusters.control_torque_scalar = orders.control_torque;
+                }
 
                 if( orders.firing )
                 {
@@ -145,37 +147,29 @@ namespace StarPixel
                 
             }
 
-            
-            thrusters.Update();
+
+            if (thrusters != null) { thrusters.Update(); }
 
 
             foreach (ComponentWeapon weapon in weapons)
             {
-                if (weapon != null)
-                {
-                    weapon.Update();
-                }
+                if (weapon != null) { weapon.Update(); }
             }
 
 
             base.Update();
 
-
             hull_sprite.Update(pos, angle);
-            if ( paint_sprite != null )
-            {
-                paint_sprite.Update(pos, angle);
-            }
+            if ( paint_sprite != null ) { paint_sprite.Update(pos, angle); }
         }
 
         public override void Draw(Camera camera)
         {
-            thrusters.Draw(camera);
+            if (thrusters != null) { thrusters.Draw(camera); }
+            
             hull_sprite.Draw(camera);
-            if ( paint_sprite != null)
-            {
-                paint_sprite.Draw(camera);
-            }
+
+            if ( paint_sprite != null) { paint_sprite.Draw(camera); }
             
         }
     }
