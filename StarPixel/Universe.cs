@@ -44,21 +44,26 @@ namespace StarPixel
             playership.MountWeapon("shooter", 0);
             playership.MountWeapon("shooter", 1);
 
+            
             for (int i = 0; i < 20; i++)
             {
                 Ship othership = CreateNewShip("F2");
                 othership.ai = new IntellegenceRoamer();
+                
+                othership.Paint(Color.Black);
 
                 othership.angle = Utility.Rand(MathHelper.TwoPi);
                 othership.pos = Utility.RandVec(1200);
             }
+            
 
-            //Ship othership2 = CreateNewShip("F2");
+            /*
+            Ship othership2 = CreateNewShip("F2");
             //othership2.ai = new IntellegenceHunter(othership);
-            //othership2.thrusters.ApplyTemplate("worse");
-            //othership2.Paint(Color.Blue);
-
-            //othership2.pos = Utility.RandVec(1000);
+            othership2.thrusters.ApplyTemplate("worse");
+            othership2.Paint(Color.Blue);
+            othership2.pos = Utility.RandVec(200);
+            */
         }
 
         public void End()

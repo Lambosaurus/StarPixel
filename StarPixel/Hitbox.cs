@@ -31,9 +31,9 @@ namespace StarPixel
             return null;
         }
 
-        public virtual float SurfaceNormal(Vector2 point)
+        public virtual Vector2 SurfaceNormal(Vector2 point)
         {
-            return 0.0f;
+            return Vector2.UnitX;
         }
     }
 
@@ -53,7 +53,7 @@ namespace StarPixel
         {
             // we do this test with radius squared, because its faster than
             // the square root involved in gettign a normal length
-            return (pos - point).LengthSquared() < (radius_squared);
+            return Vector2.DistanceSquared(point, pos) < (radius_squared);
         }
         
         public override Hitbox Copy()
@@ -61,9 +61,15 @@ namespace StarPixel
             return new HitboxCircle(radius);
         }
 
-        public override float SurfaceNormal( Vector2 point )
+        public override Vector2 SurfaceNormal( Vector2 point )
         {
-            return Utility.Angle(point - pos);
+            return point - pos;
         }
+    }
+
+
+    public class HitboxPolygon : Hitbox
+    {
+
     }
 }

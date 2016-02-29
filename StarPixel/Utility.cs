@@ -168,6 +168,11 @@ namespace StarPixel
             return (MathHelper.TwoPi * random.Next(10000) / 10000f);
         }
 
+        public static bool RandBool(float probability)
+        {
+            return Rand(1.0f) < probability ? true : false;
+        }
+
         public static float Clamp(float value, float min = -1.0f, float max = 1.0f)
         {
             if (value < min) { return min; }

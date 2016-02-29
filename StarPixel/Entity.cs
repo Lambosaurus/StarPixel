@@ -124,65 +124,6 @@ namespace StarPixel
 
 
 
-    public class Projectile : Entity
-    {
-        public int life;
-
-        public ArtSprite sprite;
-
-        public Ship parent;
-
-        public ArtExplosionResource explosion_resource;
-
-        public override void Update()
-        {
-            if ( life-- <= 0 )
-            {
-                this.Destory();
-            }
-
-            base.Update();
-
-            sprite.Update(pos, angle);
-        }
-
-        public override void Draw(Camera camera)
-        {
-            sprite.Draw(camera);
-        }
-
-        public bool Hits(Physical phys)
-        {
-            if (phys != parent)
-            {
-                if (phys.hitbox.Contains(pos))
-                {
-
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public void Explode(Universe universe, Physical phys)
-        {
-            float normal = phys.hitbox.SurfaceNormal(pos);
-
-            Vector2 relative_velocity = velocity - phys.velocity;
-
-            relative_velocity = Utility.Rotate(relative_velocity, normal);
-            relative_velocity.Y *= -1;
-            relative_velocity = Utility.Rotate(relative_velocity, -normal);
-
-            universe.art_temp.Add(explosion_resource.New(1.0f, pos, phys.velocity, relative_velocity));
-
-            this.Destory();
-        }
-    }
-
-
-
-
 }
 
 

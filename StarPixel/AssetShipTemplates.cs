@@ -45,6 +45,7 @@ namespace StarPixel
             template.heat_art_resource = "F2 heat";
             template.paint_art_resource = "F2 paint";
             template.component_thruster_size = 1.0f;
+
             template.hitbox = new HitboxCircle(12);
 
             template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.6f , 1, 0, 0);

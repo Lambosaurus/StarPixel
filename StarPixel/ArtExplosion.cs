@@ -19,6 +19,7 @@ namespace StarPixel
         public int std_particle_count = 10;
 
         public float std_velocity = 4;
+        public float std_scatter = 2;
         public float std_particle_life = 0.5f;
         public float std_temp_halflife = 0.2f;
         public float std_temperature = 2000f;
@@ -59,15 +60,18 @@ namespace StarPixel
 
             exp.alpha_max = 1.5f;
 
+            skew.Normalize();
+            skew *= std_velocity;
+
             // this might look a bit nasty.
             for (int i = 0; i < count; i++ )
             {
                 //float angle = Utility.RandAngle();
                 //Vector2 vel = Utility.CosSin(angle, Utility.Rand(0.5f * std_velocity, std_velocity));
 
-                Vector2 vel = Utility.RandVec(std_velocity) + skew/4;
+                Vector2 vel = Utility.RandVec(std_scatter) + skew;
                 float angle = Utility.Angle(vel);
-
+                
                 exp.Add(vel, angle, std_temperature, Utility.Rand(1.0f, 1.5f));
             }
 

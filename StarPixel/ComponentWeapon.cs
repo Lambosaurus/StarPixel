@@ -142,10 +142,10 @@ namespace StarPixel
 
             projectile.sprite = ArtManager.GetSpriteResource(template.projectile_sprite_resource).New();
             projectile.sprite.color = template.projectile_color;
-            projectile.sprite.scale = projectile_scale;
+            projectile.sprite.scale = new Vector2(Utility.Sqrt(projectile_scale.X), Utility.Sqrt(projectile_scale.Y) );
 
             projectile.explosion_resource = ArtManager.GetExplosionResource(template.projectile_explosion_resource);
-
+            projectile.explosion_size = size;
             projectile.parent = ship;
 
             ship.universe.projectiles.Add(projectile);
