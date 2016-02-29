@@ -112,6 +112,8 @@ namespace StarPixel
             angle += angular_velocity;
             angle = Utility.WrapAngle(angle);
 
+            hitbox.Update(pos, angle);
+
             base.Update();
         }
         

@@ -22,8 +22,12 @@ namespace StarPixel
 
         public static Dictionary<string, ArtExplosionResource> explosions = new Dictionary<string, ArtExplosionResource>();
 
+        public static Texture2D pixel;
+
         public static void Load(ContentManager content)
         {
+            pixel = content.Load<Texture2D>("px");
+
             foreach (ArtSpriteResource sprite in sprites.Values)
             {
                 sprite.Load(content);

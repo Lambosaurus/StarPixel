@@ -27,6 +27,8 @@ namespace StarPixel
         public Vector2 res;
         public Vector2 midpoint;
 
+        public bool DRAW_HITBOXES = false;
+
 
         public Camera(GraphicsDevice arg_device, SpriteBatch arg_batch, int x, int y)
         {

@@ -39,7 +39,7 @@ namespace StarPixel
             Ship playership = CreateNewShip("F2");
             playership.ai = new IntellegenceHuman();
             playership.thrusters.ApplyTemplate("better");
-            playership.Paint(Color.Red);
+            playership.Paint(Color.Blue);
 
             playership.MountWeapon("shooter", 0);
             playership.MountWeapon("shooter", 1);
@@ -165,6 +165,14 @@ namespace StarPixel
             foreach (ArtTemporary temp in art_temp)
             {
                 temp.Draw(camera);
+            }
+
+            if ( camera.DRAW_HITBOXES )
+            {
+                foreach (Physical phys in physicals)
+                {
+                    phys.hitbox.Draw(camera);
+                }
             }
         }
     }

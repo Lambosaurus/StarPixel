@@ -16,7 +16,6 @@ namespace StarPixel
     public class Game1 : Microsoft.Xna.Framework.Game
     {
         int UPSAMPLE_MULTIPLIER = 1; // may be 1 or 2. x3 will violate the 4096x4096 texture limit
-        
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -43,7 +42,6 @@ namespace StarPixel
         public Game1()
         {
             UPSAMPLE_MULTIPLIER = 2; // ALRIGHTY, LETS DO THIS.
-
 
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = window_res_y;
@@ -81,6 +79,7 @@ namespace StarPixel
 
             camera = new Camera(GraphicsDevice, spriteBatch, window_res_x * UPSAMPLE_MULTIPLIER, window_res_y * UPSAMPLE_MULTIPLIER);
             camera.scale *= UPSAMPLE_MULTIPLIER;
+            camera.DRAW_HITBOXES = true;
             
 
 

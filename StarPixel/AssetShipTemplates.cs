@@ -46,7 +46,15 @@ namespace StarPixel
             template.paint_art_resource = "F2 paint";
             template.component_thruster_size = 1.0f;
 
-            template.hitbox = new HitboxCircle(12);
+            //template.hitbox = new HitboxCircle(12);
+            template.hitbox = new HitboxPolygon( new Vector2[] {
+                new Vector2(18,-3),
+                new Vector2(-12, -14),
+                new Vector2(-18, -8),
+                new Vector2(-18, 8),
+                new Vector2(-12, 14),
+                new Vector2(18, 3),
+            } );
 
             template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.6f , 1, 0, 0);
             template.AddThrusterPort(new Vector2(12, 4), right ,     0.4f, 0, -0.5f, -0.5f);

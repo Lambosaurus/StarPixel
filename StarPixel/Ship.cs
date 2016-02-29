@@ -160,7 +160,6 @@ namespace StarPixel
 
             base.Update();
 
-            hitbox.pos = pos;
 
             hull_sprite.Update(pos, angle);
             if ( paint_sprite != null )
