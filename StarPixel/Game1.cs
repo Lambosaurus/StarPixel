@@ -79,7 +79,7 @@ namespace StarPixel
 
             camera = new Camera(GraphicsDevice, spriteBatch, window_res_x * UPSAMPLE_MULTIPLIER, window_res_y * UPSAMPLE_MULTIPLIER);
             camera.scale *= UPSAMPLE_MULTIPLIER;
-            camera.DRAW_HITBOXES = true;
+            //camera.DRAW_HITBOXES = true;
             
 
 

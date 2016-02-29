@@ -112,9 +112,9 @@ namespace StarPixel
             angle += angular_velocity;
             angle = Utility.WrapAngle(angle);
 
-            hitbox.Update(pos, angle);
-
             base.Update();
+
+            hitbox.Update(pos, angle);
         }
         
         public void Push( Vector2 force, float torque )

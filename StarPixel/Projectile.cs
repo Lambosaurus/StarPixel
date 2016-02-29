@@ -56,7 +56,7 @@ namespace StarPixel
 
         public void Explode(Universe universe, Physical phys)
         {
-            Vector2 normal = phys.hitbox.SurfaceNormal(pos);
+            Vector2 normal = phys.hitbox.SurfaceNormal(pos - velocity);
 
             Vector2 relative_velocity = velocity - phys.velocity;
 
