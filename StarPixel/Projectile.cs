@@ -56,17 +56,13 @@ namespace StarPixel
 
         public void Explode(Universe universe, Physical phys)
         {
-            Vector2 normal = phys.hitbox.SurfaceNormal(pos - velocity);
-
+            float normal_angle = phys.hitbox.SurfaceNormal(pos - velocity);
+            
             Vector2 relative_velocity = velocity - phys.velocity;
 
-            /*
-            relative_velocity = Utility.Rotate(relative_velocity, -normal);
+            relative_velocity = Utility.Rotate(relative_velocity, -normal_angle);
             relative_velocity.X *= -1;
-            relative_velocity = Utility.Rotate(relative_velocity, normal);
-            */
-
-            relative_velocity = Vector2.Reflect(relative_velocity, normal);
+            relative_velocity = Utility.Rotate(relative_velocity, normal_angle);
 
             universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, relative_velocity));
 

@@ -43,8 +43,9 @@ namespace StarPixel
             explosion.std_particle_width = 0.5f;
             explosion.std_temperature = 4500;
             explosion.std_temp_halflife = 0.15f;
-            explosion.std_velocity = 1f;
+            explosion.std_bounce = 1f;
             explosion.std_scatter = 0.5f;
+            explosion.std_particle_size_scatter = 1.5f;
             explosion.std_particle_life = 0.4f;
 
             ArtManager.explosions.Add("boom", explosion);

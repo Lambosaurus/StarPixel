@@ -45,13 +45,13 @@ namespace StarPixel
             playership.MountWeapon("shooter", 1);
 
             
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 1; i++)
             {
                 Ship othership = CreateNewShip("F2");
                 othership.ai = new IntellegenceRoamer();
                 
                 othership.Paint(Color.Black);
-                othership.MountThruster("default");
+                //othership.MountThruster("default");
 
                 othership.angle = Utility.Rand(MathHelper.TwoPi);
                 othership.pos = Utility.RandVec(1200);

@@ -18,15 +18,16 @@ namespace StarPixel
 
         public int std_particle_count = 10;
 
-        public float std_velocity = 4;
+        public float std_bounce = 4;
         public float std_scatter = 2;
         public float std_particle_life = 0.5f;
         public float std_temp_halflife = 0.2f;
         public float std_temperature = 2000f;
 
-        public float std_particle_width = 1.0f;
+        public float std_particle_width = 1.0f; // this is a multiplier on the sprite dimensions
         public float std_particle_length = 1.0f;
-        public float std_particle_stretch_length = 1.0f;
+        public float std_particle_size_scatter = 2.0f; // this a maximum multiplier that may be rolled. (multiplier applied ontop of existing std sizes) 
+        public float std_particle_stretch_length = 1.0f; // this an additional multiplier that will be applied as the particle decays
         public float std_particle_stretch_width = 1.0f;
 
         string sprite_name;
@@ -56,12 +57,14 @@ namespace StarPixel
             exp.temperature_decay = (float)Math.Exp(natural_log_half / (std_temp_halflife * 60 * scale)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
             exp.alpha_decay = 1.0f / (std_particle_life * scale * 60);
 
-            exp.radius = std_velocity * (1.0f / exp.alpha_decay);
+            exp.radius = std_bounce * (1.0f / exp.alpha_decay);
 
             exp.alpha_max = 1.5f;
 
             skew.Normalize();
-            skew *= std_velocity;
+            skew *= std_bounce;
+
+            float std_scatter_min = 1.0f / std_particle_size_scatter;
 
             // this might look a bit nasty.
             for (int i = 0; i < count; i++ )
@@ -71,8 +74,9 @@ namespace StarPixel
 
                 Vector2 vel = Utility.RandVec(std_scatter) + skew;
                 float angle = Utility.Angle(vel);
-                
-                exp.Add(vel, angle, std_temperature, Utility.Rand(1.0f, 1.5f));
+                float particle_scale = 1.0f / Utility.Rand(std_scatter_min, std_particle_size_scatter);
+
+                exp.Add(vel * particle_scale, angle, particle_scale, std_temperature, Utility.Rand(1.0f, 1.5f));
             }
 
             exp.particle_size_0.Y = (std_particle_width * std_particle_stretch_width) * scale;
@@ -102,6 +106,7 @@ namespace StarPixel
 
         Vector2[] position;
         Vector2[] velocity;
+        float[] scale;
         float[] angle;
         float[] alpha;
         float[] temperature;
@@ -125,18 +130,20 @@ namespace StarPixel
             angle = new float[count];
             alpha = new float[count];
             temperature = new float[count];
+            scale = new float[count];
 
             index = 0;
 
             alpha_max = 0.0f;
         }
         
-        public void Add( Vector2 vel, float arg_angle, float temp, float arg_alpha = 1.0f )
+        public void Add( Vector2 vel, float arg_angle, float arg_scale, float temp, float arg_alpha = 1.0f )
         {
             position[index] = cloud_center;
             velocity[index] = vel + cloud_velocity;
             angle[index] = arg_angle;
             temperature[index] = temp;
+            scale[index] = arg_scale;
 
             alpha[index] = arg_alpha;
 
@@ -187,9 +194,10 @@ namespace StarPixel
                 {
                     float alpha2 = Utility.Clamp(alpha[i], 0, 1);
                     Color k = ColorManager.GetThermo(temperature[i]) * (alpha2);
-                    Vector2 transform = particle_size_0 + (particle_size_1 * alpha2);
-
-                    camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i], resource.sprite_center, transform * camera.scale, SpriteEffects.None, 0);
+                    Vector2 transform = (particle_size_0 + (particle_size_1 * alpha2));
+                    transform.X *= scale[i];
+                    
+                    camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i], resource.sprite_center, transform * (camera.scale), SpriteEffects.None, 0);
 
                 }
             }

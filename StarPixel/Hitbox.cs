@@ -78,9 +78,9 @@ namespace StarPixel
         }
 
         // Warning. Surface normals not guaranteed to have a normal length
-        public virtual Vector2 SurfaceNormal(Vector2 point)
+        public virtual float SurfaceNormal(Vector2 point)
         {
-            return Vector2.UnitX;
+            return 0.0f;
         }
 
         public virtual void Draw(Camera camera)
@@ -110,9 +110,9 @@ namespace StarPixel
             return new HitboxCircle(radius);
         }
 
-        public override Vector2 SurfaceNormal( Vector2 point )
+        public override float SurfaceNormal( Vector2 point )
         {
-            return point - pos;
+            return Utility.Angle(point - pos);
         }
     }
 
@@ -172,12 +172,42 @@ namespace StarPixel
             return c;
         }
 
-        public override Vector2 SurfaceNormal(Vector2 point)
+        public override float SurfaceNormal(Vector2 point)
         {
-            return (point - pos);
+            // first shift the point into the reference frame of the hitbox
+            point = Utility.Rotate(point - pos, -angle);
+
+            float min_dist = float.MaxValue;
+            int best_segment = 0;
+
+            // look through every segment, finding the one closest to the point
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 p1 = corners[i];
+                Vector2 p2 = (i == count-1) ? corners[0] : corners[i+1];
+                Vector2 pd = p2 - p1;
+
+                float t = Utility.Clamp( Vector2.Dot( point - p1, pd) / pd.LengthSquared() , 0.0f, 1.0f );
+                Vector2 projection = p1 + (t * pd);
+
+                float dist_sq = Vector2.DistanceSquared(projection, point);
+
+                if (dist_sq < min_dist)
+                {
+                    min_dist = dist_sq;
+                    best_segment = i;
+                }
+            }
+
+            // now get the angle of the segment
+            Vector2 segment_p1 = corners[best_segment];
+            Vector2 segment_p2 = (best_segment == count - 1) ? corners[0] : corners[best_segment + 1];
+            float segment_angle = Utility.Angle(segment_p2 - segment_p1);
+
+            // return the normal, and compensate for the hitbox rotation
+            return segment_angle + angle - MathHelper.PiOver2;
+            
         }
-
-
 
         public override void Draw(Camera camera)
         {
