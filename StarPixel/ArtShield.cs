@@ -55,6 +55,7 @@ namespace StarPixel
         float[] speed;
         float[] angle;
         float[] alpha;
+        float[] size;
 
         Color color = Color.LightBlue;
 
@@ -71,13 +72,15 @@ namespace StarPixel
             speed = new float[count];
             angle = new float[count];
             alpha = new float[count];
+            size = new float[count];
 
             
             for (int i = 0; i < count; i++)
             {
-                float r = Utility.Rand(0.00f, 0.8f);
+                float r = Utility.Rand(0.00f, 0.7f);
                 depth[i] = (1 - ( r *r *r  )) * radius;
-                speed[i] = Utility.Rand(-0.03f, 0.03f);
+                size[i] = Utility.Rand( 0.5f,1.5f);
+                speed[i] = Utility.Rand(-0.03f, 0.03f) / size[i];
                 angle[i] = Utility.RandAngle();
                 alpha[i] = 0; //Utility.Rand(0.2f, 1.0f);
             }
@@ -90,7 +93,7 @@ namespace StarPixel
             for (int i = 0; i < count; i++)
             {
                 angle[i] += speed[i];
-                alpha[i] *= 0.990f;
+                alpha[i] *= 0.985f;
             }
         }
 
@@ -99,7 +102,7 @@ namespace StarPixel
             Vector2 rel = arg_pos - pos;
             for (int i = 0; i < count; i++)
             {
-                float dst = 1.0f / ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared());
+                float dst = 1.3f / (size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
                 alpha[i] += dst;
                 alpha[i] = Utility.Clamp(alpha[i], 0, 1);
             }
@@ -131,7 +134,7 @@ namespace StarPixel
 
                 Color k = color * alpha[i];
 
-                camera.batch.Draw(resource.sprite, ppos, null, k, angle[i], resource.sprite_center, new Vector2(0.3f,1.0f) * camera.scale, SpriteEffects.None, 0);
+                camera.batch.Draw(resource.sprite, ppos, null, k, angle[i], resource.sprite_center, size[i] * new Vector2(0.3f,1.0f) * camera.scale, SpriteEffects.None, 0);
             }
         }
             

@@ -99,14 +99,14 @@ namespace StarPixel
             thruster_templates.Add("worse", template);
 
             vent = new ArtVentResource("particle");
-            vent.std_ejection_temperature = 1000;
+            vent.std_ejection_temperature = 1500;
             vent.std_particle_count = 50;
             vent.std_particle_stretch_length = 4f;
             vent.std_particle_stretch_width = 1f;
             vent.std_particle_life = 0.6f;
             vent.std_particle_width = 1.0f;
             vent.std_particle_length = 1.0f;
-            vent.std_temp_halflife = 0.2f;
+            vent.std_temp_halflife = 0.3f;
             vent.std_velocity_scatter = 0.5f;
             vent.std_ejection_velocity = 1f;
             ArtManager.vents.Add("worse_thruster", vent);
