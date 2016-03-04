@@ -22,6 +22,9 @@ namespace StarPixel
 
         public static Dictionary<string, ArtExplosionResource> explosions = new Dictionary<string, ArtExplosionResource>();
 
+        public static Dictionary<string, ArtShieldResource> shields = new Dictionary<string, ArtShieldResource>();
+
+
         public static Texture2D pixel;
 
         public static void Load(ContentManager content)
@@ -42,6 +45,11 @@ namespace StarPixel
             {
                 exp.Load(content);
             }
+
+            foreach (ArtShieldResource shield in shields.Values)
+            {
+                shield.Load(content);
+            }
         }
 
         // TODO, change all these to GetTemplate form
@@ -58,6 +66,11 @@ namespace StarPixel
         public static ArtExplosionResource GetExplosionResource(string key)
         {
             return explosions[key];
+        }
+
+        public static ArtShieldResource GetShieldResource(string key)
+        {
+            return shields[key];
         }
     }
 

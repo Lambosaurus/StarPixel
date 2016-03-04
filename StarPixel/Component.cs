@@ -38,6 +38,7 @@ namespace StarPixel
             ship = arg_ship;
         }
 
+        /*
         public virtual void Damage(float damage)
         {
             hp -= damage;
@@ -51,6 +52,7 @@ namespace StarPixel
                 }
             }
         }
+        */
 
         public virtual void Update()
         {

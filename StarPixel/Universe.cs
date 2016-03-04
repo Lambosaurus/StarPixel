@@ -39,12 +39,12 @@ namespace StarPixel
             Ship playership = CreateNewShip("F2");
             playership.ai = new IntellegenceHuman();
             playership.MountThruster("better");
-            playership.Paint(Color.Blue);
+            playership.Paint(Color.Red);
 
             playership.MountWeapon("shooter", 0);
             playership.MountWeapon("shooter", 1);
 
-            
+            /*
             for (int i = 0; i < 20; i++)
             {
                 Ship othership = CreateNewShip("F2");
@@ -56,15 +56,22 @@ namespace StarPixel
                 othership.angle = Utility.Rand(MathHelper.TwoPi);
                 othership.pos = Utility.RandVec(1200);
             }
-            
-
-            /*
-            Ship othership2 = CreateNewShip("F2");
-            //othership2.ai = new IntellegenceHunter(othership);
-            othership2.thrusters.ApplyTemplate("worse");
-            othership2.Paint(Color.Blue);
-            othership2.pos = Utility.RandVec(200);
             */
+
+
+            Ship ship0 = CreateNewShip("F2");
+            ship0.ai = new IntellegenceRoamer();
+            ship0.MountThruster("worse");
+            ship0.MountShield("default");
+            ship0.Paint(Color.Blue);
+            ship0.pos = Utility.RandVec(400);
+
+            ship0 = CreateNewShip("F2");
+            ship0.ai = new IntellegenceRoamer();
+            ship0.MountThruster("worse");
+            //ship0.MountShield("default");
+            //ship0.Paint(Color.Blue);
+            ship0.pos = Utility.RandVec(400);
         }
 
         public void End()
@@ -86,9 +93,8 @@ namespace StarPixel
 
                 foreach (Physical phys in physicals)
                 {
-                    if ( proj.Hits(phys) )
+                    if ( proj.HitCheck(this, phys) )
                     {
-                        proj.Explode(this, phys);
                         break;
                     }
                     

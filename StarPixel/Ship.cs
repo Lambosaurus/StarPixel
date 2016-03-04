@@ -15,20 +15,30 @@ namespace StarPixel
 
     public class ShipTemplate
     {
+        // lore data
+        public string description; // FILL IT OUT, THE LORE MUST BE DEEP
+
+        // hull data
         public string hull_art_resource;
         public string paint_art_resource;
         public string heat_art_resource;
 
+        public Hitbox hitbox;
+
         public float base_mass;
         public float base_intertia;
 
-        public string description;
 
+        // thruster data
         public float component_thruster_size = 1.0f;
         public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
+
+        // weapon data
         public List<WeaponPort> weapon_ports = new List<WeaponPort>();
 
-        public Hitbox hitbox;
+        // shield data
+        public float component_shield_size = 1.0f;
+        public Hitbox shield_hitbox;
 
         public Ship New(Universe universe)
         {
@@ -60,6 +70,7 @@ namespace StarPixel
         
         public Thruster thrusters = null;
 
+        public ComponentShield shield = null;
         
         public Intellegence ai;
         public IntInputs ai_inputs = new IntInputs();
@@ -96,6 +107,23 @@ namespace StarPixel
                 }
 
             }
+        }
+
+        public void MountShield(string template_name)
+        {
+            shield = AssetShieldTemplates.shield_templates[template_name].New(this);
+        }
+
+        public override ComponentShield GetActiveShield()
+        {
+            if (shield != null)
+            {
+                if (shield.active)
+                {
+                    return shield;
+                }
+            }
+            return null;
         }
 
         public void MountThruster(string template_name)
@@ -150,6 +178,7 @@ namespace StarPixel
 
             if (thrusters != null) { thrusters.Update(); }
 
+            if (shield != null) { shield.Update(); }
 
             foreach (ComponentWeapon weapon in weapons)
             {
@@ -163,14 +192,16 @@ namespace StarPixel
             if ( paint_sprite != null ) { paint_sprite.Update(pos, angle); }
         }
 
+
+
         public override void Draw(Camera camera)
         {
             if (thrusters != null) { thrusters.Draw(camera); }
             
             hull_sprite.Draw(camera);
-
             if ( paint_sprite != null) { paint_sprite.Draw(camera); }
-            
+
+            if (shield != null) { shield.Draw(camera); }
         }
     }
 }

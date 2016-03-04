@@ -89,10 +89,10 @@ namespace StarPixel
 
             template = new ThrusterTemplate();
 
-            template.main_thrust = 0.8f;
-            template.reverse_thrust = 0.4f;
-            template.side_thrust = 0.4f;
-            template.torque = 0.2f;
+            template.main_thrust = 0.2f;
+            template.reverse_thrust = 0.1f;
+            template.side_thrust = 0.1f;
+            template.torque = 0.05f;
             template.particle_effects = "worse_thruster";
             template.sparkle_effects = "default_sparkles";
 

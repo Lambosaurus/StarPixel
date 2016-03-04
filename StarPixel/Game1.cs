@@ -63,6 +63,12 @@ namespace StarPixel
             universe = new Universe();
 
             universe.Start();
+
+            if (universe.physicals.Count != 0)
+            {
+                selectedEntity = universe.physicals[0];
+            }
+
         }
 
 
@@ -72,6 +78,7 @@ namespace StarPixel
             AssetShipTemplates.GenerateAssets();
             AssetThrusterTemplates.GenerateAssets();
             AssetWeaponTemplates.GenerateAssets();
+            AssetShieldTemplates.GenerateAssets();
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -152,11 +159,11 @@ namespace StarPixel
             //if scroll has been used, zoom in/out
             if (Mouse.GetState().ScrollWheelValue > scrollVal)
             {
-                camera.scale *= 1.25f;
+                camera.scale *= 1.1f;
             }
             else if(Mouse.GetState().ScrollWheelValue < scrollVal)
             {
-                camera.scale /= 1.25f;
+                camera.scale /= 1.1f;
             }
             scrollVal = Mouse.GetState().ScrollWheelValue;
 

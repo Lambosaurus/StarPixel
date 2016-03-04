@@ -1,17 +1,15 @@
 ﻿
 
-> Clean up all the public variable interfaces. Lot of nasty work.
+> Standardise up how things are handed to the universe... maybe... eh.
 
 
-> Standardise up how things are handed to the universe.
-
-
-> add a new surface normal calculation method for HitboxPolygon
+> add oval hitbox.. is there a better name for an oval?
 
 
 > Have damage handed out to victim ships
 
 > Thrusters
+  > move to same format as weapons and shields
   > Have sparkles assigned dynamically
 
 

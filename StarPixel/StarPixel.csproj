@@ -59,11 +59,14 @@
   <ItemGroup>
     <Compile Include="Art.cs" />
     <Compile Include="ArtExplosion.cs" />
+    <Compile Include="ArtShield.cs" />
     <Compile Include="ArtSprite.cs" />
     <Compile Include="ArtVent.cs" />
+    <Compile Include="AssetShieldTemplates.cs" />
     <Compile Include="AssetWeaponTemplates.cs" />
     <Compile Include="AssetThrusterTemplates.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="ComponentShield.cs" />
     <Compile Include="ComponentThrusters.cs" />
     <Compile Include="ComponentWeapon.cs" />
     <Compile Include="Damage.cs" />

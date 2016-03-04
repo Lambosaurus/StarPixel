@@ -116,11 +116,21 @@ namespace StarPixel
 
             hitbox.Update(pos, angle);
         }
-        
+
+        public void Damage(Damage dmg, Vector2 position)
+        {
+
+        }
+
         public void Push( Vector2 force, float torque )
         {
             velocity += force / mass;
             angular_velocity += torque / inertia;
+        }
+
+        public virtual ComponentShield GetActiveShield(  )
+        {
+            return null;
         }
     }
 

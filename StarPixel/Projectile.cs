@@ -24,6 +24,8 @@ namespace StarPixel
 
         public float explosion_size;
 
+        public float penetration;
+
         public override void Update()
         {
             if (life-- <= 0)
@@ -41,12 +43,36 @@ namespace StarPixel
             sprite.Draw(camera);
         }
 
-        public bool Hits(Physical phys)
+        public bool HitCheck(Universe universe, Physical phys)
         {
             if (phys != parent)
             {
-                if (phys.hitbox.Contains(pos))
+                ComponentShield shield = phys.GetActiveShield();
+                if ( shield != null)
                 {
+                    if ( shield.hitbox.Contains(pos) )
+                    {
+
+                        Vector2 bounce = this.CalcBounceAngle(phys.velocity, shield.hitbox);
+
+
+                        universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, bounce));
+
+                        shield.ExternalDamage(null, pos);
+
+                        this.Destory();
+
+                        return true;
+                    }
+                }
+                else if (phys.hitbox.Contains(pos))
+                {
+                    Vector2 bounce = this.CalcBounceAngle(phys.velocity, phys.hitbox);
+                    universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, bounce));
+
+                    phys.Damage(null, pos);
+
+                    this.Destory();
 
                     return true;
                 }
@@ -54,19 +80,18 @@ namespace StarPixel
             return false;
         }
 
-        public void Explode(Universe universe, Physical phys)
+        Vector2 CalcBounceAngle( Vector2 surface_velocity, Hitbox surface_hitbox )
         {
-            float normal_angle = phys.hitbox.SurfaceNormal(pos - velocity);
-            
-            Vector2 relative_velocity = velocity - phys.velocity;
+            Vector2 relative_velocity = velocity - surface_velocity;
+
+            float normal_angle = surface_hitbox.SurfaceNormal(pos - relative_velocity);            
+
 
             relative_velocity = Utility.Rotate(relative_velocity, -normal_angle);
             relative_velocity.X *= -1;
             relative_velocity = Utility.Rotate(relative_velocity, normal_angle);
 
-            universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, relative_velocity));
-
-            this.Destory();
+            return relative_velocity;
         }
     }
 

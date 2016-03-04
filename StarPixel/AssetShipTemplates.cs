@@ -46,6 +46,9 @@ namespace StarPixel
             template.paint_art_resource = "F2 paint";
             template.component_thruster_size = 1.0f;
 
+            template.shield_hitbox = new HitboxCircle(28);
+            template.component_shield_size = 1.0f;
+
             //template.hitbox = new HitboxCircle(12);
             template.hitbox = new HitboxPolygon( new Vector2[] {
                 new Vector2(18,-3),
