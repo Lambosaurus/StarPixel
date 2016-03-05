@@ -21,8 +21,8 @@ namespace StarPixel
         SpriteBatch spriteBatch;
 
         // meh. Its a semi comfortable res for developing in.
-        int window_res_x = 900;
-        int window_res_y = 900;
+        int window_res_x = 1200;
+        int window_res_y = 800;
 
         Camera camera;
         int scrollVal = 0;
