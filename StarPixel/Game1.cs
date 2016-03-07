@@ -15,7 +15,7 @@ namespace StarPixel
     /// This is the main type for your game
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        int UPSAMPLE_MULTIPLIER = 1; // may be 1 or 2. x3 will violate the 4096x4096 texture limit
+        int UPSAMPLE_MULTIPLIER = 2; // may be 1 or 2. x3 will violate the 4096x4096 texture limit
 
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
@@ -25,6 +25,9 @@ namespace StarPixel
         int window_res_y = 800;
 
         Camera camera;
+        StatusCamera status_camera;
+        int status_camera_width = 100;
+
         int scrollVal = 0;
         Vector2 mouse_pos = new Vector2(0, 0);
         Texture2D cursor;
@@ -84,15 +87,13 @@ namespace StarPixel
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
 
-            camera = new Camera(GraphicsDevice, spriteBatch, window_res_x * UPSAMPLE_MULTIPLIER, window_res_y * UPSAMPLE_MULTIPLIER);
-            camera.scale *= UPSAMPLE_MULTIPLIER;
+            camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y, UPSAMPLE_MULTIPLIER);
             //camera.DRAW_HITBOXES = true;
-            
+
+            status_camera = new StatusCamera(GraphicsDevice, spriteBatch, 100);
 
 
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
-
-
             
             ArtManager.Load(Content);
 
@@ -177,7 +178,7 @@ namespace StarPixel
                 {
                     Vector2 delta = (mouse_pos - new_pos) / camera.scale;
 
-                    camera.pos += delta* UPSAMPLE_MULTIPLIER;
+                    camera.pos += delta* camera.upsample_multiplier;
                     
                 }
             }
@@ -185,7 +186,7 @@ namespace StarPixel
 
             if (mouse_left == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Released)
             {
-                selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X* UPSAMPLE_MULTIPLIER, Mouse.GetState().Y* UPSAMPLE_MULTIPLIER)));
+                selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X* camera.upsample_multiplier, Mouse.GetState().Y* camera.upsample_multiplier)));
                 
             }
             mouse_left = Mouse.GetState().LeftButton;
@@ -213,29 +214,24 @@ namespace StarPixel
         {
             camera.Draw(universe);
 
-            
+            if (selectedEntity is Ship)
+            {
+                status_camera.DrawTarget((Ship)selectedEntity);
+            }
+
 
             GraphicsDevice.SetRenderTarget(null); // draw to windows now
-            GraphicsDevice.Clear(Color.CornflowerBlue); // so we can see what we forgot TODO: remove this.
+            //GraphicsDevice.Clear(Color.CornflowerBlue); // so we can see what we forgot TODO: remove this.
 
             // now we write the cameras result to the screen
             spriteBatch.Begin();
 
-
-            
-            if (UPSAMPLE_MULTIPLIER != 1)
-            {
-                spriteBatch.Draw(camera.surface, new Vector2(0, 0), null, Color.White, 0.0f, new Vector2(0, 0), 1.0f/ UPSAMPLE_MULTIPLIER, SpriteEffects.None, 0);
-            }
-            else
-            {
-                spriteBatch.Draw(camera.surface, new Vector2(0, 0), Color.White);
-            }
-
+            camera.Blit(spriteBatch, new Vector2(0, 0));
+            status_camera.Blit(spriteBatch, camera.onscreen_res - status_camera.onscreen_res);
             spriteBatch.Draw(cursor, mouse_pos - new Vector2(7,7), Color.White);
 
             spriteBatch.End();
-
+            
             base.Draw(gameTime);
         }
     }

@@ -20,6 +20,15 @@ namespace StarPixel
         public Texture2D sprite;
         public Vector2 sprite_center;
 
+        public float std_particle_size_min;
+        public float std_particle_size_max;
+        public float particle_density;
+        public float std_particle_speed;
+
+        public float std_particle_halflife = 1.0f;
+
+        public Color color;
+
         public ArtShieldResource(string particle_name)
         {
             sprite_name = particle_name;
@@ -33,10 +42,39 @@ namespace StarPixel
             sprite_center = size / 2;
         }
 
-        public ArtShield New( )
+        public ArtShield New(float radius, float size)
         {
-            ArtShield shield = new ArtShield(this);
+            float rad_sq = Utility.Sqrt(radius);
+            int count = (int)(particle_density * rad_sq);
 
+            ArtShield shield = new ArtShield(this, count, radius);
+
+            shield.color = color;
+
+            shield.particle_decay = (float)Math.Exp(natural_log_half / (std_particle_halflife * 60 * size)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
+
+
+            size = Utility.Sqrt(size);
+
+            for (int i = 0; i < count; i++)
+            {
+                // this picks a radius, which is heavily encouraged to be near max
+                // and will be in the outer 21%
+                float r = Utility.Rand(0.00f, 0.6f);
+                shield.depth[i] = (1 - (r * r * r)) * radius;
+
+                // particle size scalar
+                float mass = Utility.Rand(1.0f);
+                shield.size[i] = size * (std_particle_size_min + mass*std_particle_size_max);
+
+                // note that the speed is an angular value
+                // the speed is randomly generated, but then modified by the mass
+                // this should encourage, but not force, heavy particles to be slow
+                shield.speed[i] = Utility.Rand(-std_particle_speed, std_particle_speed) / (rad_sq*(0.5f + mass));
+
+                shield.angle[i] = Utility.RandAngle();
+            }
+            
             return shield;
         }
     }
@@ -49,56 +87,54 @@ namespace StarPixel
         Vector2 pos;
         float radius;
 
+        public float particle_decay;
 
         int count;
-        float[] depth;
-        float[] speed;
-        float[] angle;
-        float[] alpha;
-        float[] size;
+        public float[] depth;
+        public float[] speed;
+        public float[] angle;
+        public float[] alpha;
+        public float[] size;
 
-        Color color = Color.LightBlue;
+        public Color color;
 
+        float total_alpha = 0.0f;
 
-        public ArtShield(ArtShieldResource arg_resource)
+        public ArtShield(ArtShieldResource arg_resource, int arg_count, float arg_radius)
         {
             resource = arg_resource;
 
-            radius = 28;
+            radius = arg_radius;
 
-            count = 100;
+            count = arg_count;
 
             depth = new float[count];
             speed = new float[count];
             angle = new float[count];
             alpha = new float[count];
             size = new float[count];
-
-            
-            for (int i = 0; i < count; i++)
-            {
-                float r = Utility.Rand(0.00f, 0.7f);
-                depth[i] = (1 - ( r *r *r  )) * radius;
-                size[i] = Utility.Rand( 0.5f,1.5f);
-                speed[i] = Utility.Rand(-0.03f, 0.03f) / size[i];
-                angle[i] = Utility.RandAngle();
-                alpha[i] = 0; //Utility.Rand(0.2f, 1.0f);
-            }
         }
 
         public void Update(Vector2 arg_pos)
         {
             pos = arg_pos;
 
+            // why bother doing particles if particles not visible?
+            if (total_alpha < 0.01) { return; }
+            
+            total_alpha *= particle_decay;
+
             for (int i = 0; i < count; i++)
             {
                 angle[i] += speed[i];
-                alpha[i] *= 0.985f;
+                alpha[i] *= particle_decay;
             }
         }
 
         public void Ping( Vector2 arg_pos )
         {
+            total_alpha = 1.0f;
+
             Vector2 rel = arg_pos - pos;
             for (int i = 0; i < count; i++)
             {
@@ -111,6 +147,9 @@ namespace StarPixel
 
         public bool InView(Camera camera)
         {
+            // shield not visible if alpha very low
+            if (total_alpha < 0.01) { return false; }
+
             // get the position of the most recent particle....
             Vector2 onscreen = camera.Map( pos );
 
@@ -132,6 +171,7 @@ namespace StarPixel
 
                 Vector2 ppos = camera.Map( pos + Utility.CosSin(angle[i], depth[i]) );
 
+                
                 Color k = color * alpha[i];
 
                 camera.batch.Draw(resource.sprite, ppos, null, k, angle[i], resource.sprite_center, size[i] * new Vector2(0.3f,1.0f) * camera.scale, SpriteEffects.None, 0);

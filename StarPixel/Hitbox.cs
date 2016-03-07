@@ -221,12 +221,9 @@ namespace StarPixel
                 if ( i == count ) { i = 0; }
 
                 p2 = Utility.Rotate(corners[i], angle) + pos;
-
                 p2 = camera.Map(p2);
-                Vector2 center = (p1 + p2) / 2;
-                Vector2 stretch = new Vector2(Vector2.Distance(p1, p2), 4);
-                float angle2 = Utility.Angle(p1 - p2);
-                camera.batch.Draw(ArtManager.pixel, center, null, Color.Red, angle2, new Vector2(0.5f, 0.5f), stretch, SpriteEffects.None, 0);
+
+                ArtLine.DrawLineU(camera, p1, p2, Color.Red, 4);
 
                 p1 = p2;
             }

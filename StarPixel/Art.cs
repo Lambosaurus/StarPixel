@@ -103,7 +103,47 @@ namespace StarPixel
     }
 
 
+    public static class ArtLine
+    {
+        public static void DrawLineU( Camera camera, Vector2 p1, Vector2 p2, Color color, float width)
+        {
+            Vector2 center = (p1 + p2) / 2;
+            Vector2 stretch = new Vector2(Vector2.Distance(p1, p2), width);
+            float angle2 = Utility.Angle(p1 - p2);
+            camera.batch.Draw(ArtManager.pixel, center, null, color, angle2, new Vector2(0.5f, 0.5f), stretch, SpriteEffects.None, 0);
+        }
 
+
+
+        const int ARC_COUNT = 80;
+
+        public static void DrawArcU( Camera camera, Vector2 center, float angle_start, float arc_length, float radius, Color color, float width )
+        {
+            angle_start = Utility.WrapAngle(angle_start);
+
+            int segments = (int)(ARC_COUNT * arc_length / MathHelper.TwoPi);
+
+            Vector2 p1 = Utility.CosSin(angle_start, radius) + center;
+            for (int i = 0; i < (segments+1); i++)
+            {
+                Vector2 p2 = Utility.CosSin(angle_start + (i * MathHelper.TwoPi / ARC_COUNT), radius) + center;
+
+                DrawLineU(camera, p1, p2, color, width);
+
+                p1 = p2;
+            }
+
+
+            float last = (arc_length - (((float)segments / ARC_COUNT) * MathHelper.TwoPi));
+            last /= (MathHelper.TwoPi / ARC_COUNT);
+
+            Vector2 p3 = Utility.CosSin(angle_start + ((segments+1) * MathHelper.TwoPi / ARC_COUNT), radius) + center;
+
+            DrawLineU(camera, p1, p3, color * last, width);
+            
+        }
+
+    }
 
 
     public class ArtTemporary

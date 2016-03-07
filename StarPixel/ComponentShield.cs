@@ -20,8 +20,6 @@ namespace StarPixel
         {
             ComponentShield shield = new ComponentShield(ship, ship.template.component_shield_size, this);
 
-            shield.art = ArtManager.shields[art_resource].New();
-            
             return shield;
         }
     }
@@ -34,21 +32,31 @@ namespace StarPixel
 
         public Hitbox hitbox;
 
-        public bool active;
+        public float regen_rate = 0.05f;
+        public bool active = false;
+        public float integrity = 0f;
+        public float max_integrity = 100f;
 
+        public float radius;
+        
 
         public ComponentShield( Ship arg_ship, float arg_size, ShieldTemplate arg_template): base(arg_ship, arg_size)
         {
             template = arg_template;
 
-            hitbox = ship.template.shield_hitbox.Copy();
-            
+            radius = arg_ship.template.shield_radius;
+
+            hitbox = new HitboxCircle(radius);
+            art = ArtManager.shields[template.art_resource].New(radius, size);
+
 
             active = true;
         }
 
         public void ExternalDamage(Damage dmg, Vector2 arg_pos)
         {
+            integrity -= 1; // quality code
+
             art.Ping(arg_pos);
         }
 
@@ -57,8 +65,13 @@ namespace StarPixel
             hitbox.Update(ship.pos, ship.angle);
 
             art.Update(ship.pos);
-
+            
             base.Update();
+
+            if (active) { integrity += regen_rate; }
+            if ( integrity < 0 ) { active = false; }
+
+            integrity = Utility.Clamp(integrity, 0.0f, max_integrity);
         }
 
         public void Draw(Camera camera)

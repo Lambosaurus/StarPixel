@@ -38,7 +38,10 @@ namespace StarPixel
 
         // shield data
         public float component_shield_size = 1.0f;
-        public Hitbox shield_hitbox;
+        public float shield_radius;
+
+        // armor data
+        public float component_armor_size = 1.0f;
 
         public Ship New(Universe universe)
         {
@@ -205,3 +208,10 @@ namespace StarPixel
         }
     }
 }
+
+
+
+
+
+
+
