@@ -117,7 +117,7 @@ namespace StarPixel
 
         const int ARC_COUNT = 80;
 
-        public static void DrawArcU( Camera camera, Vector2 center, float angle_start, float arc_length, float radius, Color color, float width )
+        public static void DrawArcUF( Camera camera, Vector2 center, float angle_start, float arc_length, float radius, Color color, float width )
         {
             angle_start = Utility.WrapAngle(angle_start);
 
@@ -141,6 +141,28 @@ namespace StarPixel
 
             DrawLineU(camera, p1, p3, color * last, width);
             
+        }
+
+        public static void DrawArcU(Camera camera, Vector2 center, float angle_start, float arc_length, float radius, Color color, float width)
+        {
+            angle_start = Utility.WrapAngle(angle_start);
+            int segments = (int)(ARC_COUNT * arc_length / MathHelper.TwoPi);
+
+            float da = arc_length / segments;
+
+            float a = angle_start;
+            Vector2 p1 = Utility.CosSin(a, radius) + center;
+            for (int i = 0; i < segments; i++)
+            {
+
+                a += da;
+                Vector2 p2 = Utility.CosSin(a, radius) + center;   
+
+                DrawLineU(camera, p1, p2, color, width);
+
+                p1 = p2;
+                
+            }
         }
 
     }

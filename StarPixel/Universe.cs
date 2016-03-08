@@ -43,6 +43,7 @@ namespace StarPixel
 
             playership.MountWeapon("shooter", 0);
             playership.MountWeapon("shooter", 1);
+            playership.MountArmor("default");
 
             /*
             for (int i = 0; i < 20; i++)
@@ -63,8 +64,15 @@ namespace StarPixel
             ship0.ai = new IntellegenceRoamer();
             ship0.MountThruster("worse");
             ship0.MountShield("default");
+            ship0.MountArmor("default");
             ship0.Paint(Color.Blue);
             ship0.pos = Utility.RandVec(400);
+
+
+            ship0.armor.integrity[1] = 0.0f;
+            ship0.armor.integrity[2] = 33;
+            ship0.armor.integrity[3] = 66;
+
 
             ship0 = CreateNewShip("F2");
             ship0.ai = new IntellegenceRoamer();

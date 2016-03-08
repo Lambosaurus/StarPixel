@@ -82,6 +82,7 @@ namespace StarPixel
             AssetThrusterTemplates.GenerateAssets();
             AssetWeaponTemplates.GenerateAssets();
             AssetShieldTemplates.GenerateAssets();
+            AssetArmorTemplates.GenerateAssets();
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);

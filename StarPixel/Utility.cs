@@ -20,7 +20,7 @@ namespace StarPixel
     public static class Utility
     {
         // lol, 32KB right here. Ez.
-        const int SINE_RESOLUTION = 4000;
+        const int SINE_RESOLUTION = 8192;
         static float[] sin_values = new float[SINE_RESOLUTION+1];
         static float[] cos_values = new float[SINE_RESOLUTION+1];
 

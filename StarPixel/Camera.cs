@@ -103,9 +103,10 @@ namespace StarPixel
 
         public bool autoscale = true;
 
-        public float bar_pad = 2;
+        public float bar_pad = 3;
         public float shield_bar_width = 4;
 
+        public float armor_bar_sep = 0.04f;
 
         public StatusCamera(GraphicsDevice arg_device, SpriteBatch arg_batch, int size, int arg_upsample_multiplier = 2) : base (  arg_device, arg_batch, size, size, arg_upsample_multiplier)
         {
@@ -142,6 +143,30 @@ namespace StarPixel
                     MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity,
                     midpoint.X - (shield_bar_width* upsample_multiplier / 2) - (bar_pad* upsample_multiplier),
                     shield_bar_color , shield_bar_width* upsample_multiplier);
+            }
+
+            if (ship.armor != null)
+            {
+                float a1 = ship.armor.start_angle + angle;
+                a1 = Utility.WrapAngle(a1);
+
+                for (int i = 0; i < ship.armor.segment_count; i++)
+                {
+                    float a2 = a1 + ship.armor.per_segment_angle;
+
+                    float k = ship.armor.integrity[i] / ship.armor.max_integrity;
+
+                    if (k > 0)
+                    {
+                        Color c = (k > 0.5) ? Color.Lerp(Color.Yellow, Color.Green, (k-0.5f)*2) : Color.Lerp(Color.Red, Color.Yellow, (k)/2);
+
+                        ArtLine.DrawArcU(this, midpoint, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
+                            midpoint.X - (1.5f * shield_bar_width * upsample_multiplier) - (2 * bar_pad * upsample_multiplier),
+                            c , shield_bar_width * upsample_multiplier);
+                    }
+
+                    a1 = a2;
+                }
             }
 
             batch.End();

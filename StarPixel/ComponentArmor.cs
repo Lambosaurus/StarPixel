@@ -13,14 +13,15 @@ namespace StarPixel
 {
     public class ArmorTemplate
     {
-        public string art_resource;
 
+        public float std_segment_integrity;
 
         public ComponentArmor New( Ship ship )
         {
-            ComponentArmor shield = new ComponentArmor(ship, ship.template.component_armor_size, this);
+            ComponentArmor armor = new ComponentArmor(ship, ship.template.component_armor_size, this);
+            
 
-            return shield;
+            return armor;
         }
     }
 
@@ -28,19 +29,60 @@ namespace StarPixel
     {
         ArmorTemplate template;
 
-        public float segments;
-        
+        public int segment_count;
+
+        public float[] integrity;
+        public float max_integrity;
+
+        public float start_angle;
+        public float per_segment_angle;
 
         public ComponentArmor( Ship arg_ship, float arg_size, ArmorTemplate arg_template): base(arg_ship, arg_size)
         {
             template = arg_template;
 
-            
+            segment_count = ship.template.armor_segment_count;
+
+            max_integrity = template.std_segment_integrity * size;
+            integrity = new float[segment_count];
+
+            for (int i = 0; i < segment_count; i++)
+            {
+                integrity[i] = max_integrity;
+            }
+
+            per_segment_angle = MathHelper.TwoPi / segment_count;
+            start_angle = (ship.template.armor_seam_on_rear == (segment_count%2 == 0)) ? 0.0f : -per_segment_angle / 2;
+
         }
         
+        public int GetSegment(float incoming_angle)
+        {
+            return 0;
+        }
+
         public override void Update()
         {
 
         }
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

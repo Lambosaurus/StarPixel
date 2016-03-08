@@ -42,6 +42,9 @@ namespace StarPixel
 
         // armor data
         public float component_armor_size = 1.0f;
+        public int armor_segment_count = 4;
+        public bool armor_seam_on_rear = false;
+
 
         public Ship New(Universe universe)
         {
@@ -74,6 +77,7 @@ namespace StarPixel
         public Thruster thrusters = null;
 
         public ComponentShield shield = null;
+        public ComponentArmor armor = null;
         
         public Intellegence ai;
         public IntInputs ai_inputs = new IntInputs();
@@ -116,6 +120,12 @@ namespace StarPixel
         {
             shield = AssetShieldTemplates.shield_templates[template_name].New(this);
         }
+
+        public void MountArmor(string template_name)
+        {
+            armor = AssetArmorTemplates.armor_templates[template_name].New(this);
+        }
+
 
         public override ComponentShield GetActiveShield()
         {
@@ -182,6 +192,8 @@ namespace StarPixel
             if (thrusters != null) { thrusters.Update(); }
 
             if (shield != null) { shield.Update(); }
+
+            if (armor != null) { armor.Update(); }
 
             foreach (ComponentWeapon weapon in weapons)
             {

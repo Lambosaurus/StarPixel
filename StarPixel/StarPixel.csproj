@@ -62,6 +62,7 @@
     <Compile Include="ArtShield.cs" />
     <Compile Include="ArtSprite.cs" />
     <Compile Include="ArtVent.cs" />
+    <Compile Include="AssetArmorTemplates.cs" />
     <Compile Include="AssetShieldTemplates.cs" />
     <Compile Include="AssetWeaponTemplates.cs" />
     <Compile Include="AssetThrusterTemplates.cs" />
