@@ -68,17 +68,29 @@ namespace StarPixel
             return true;
         }
 
- 
 
-        public void Draw(Universe universe)
+
+        public void Draw(Universe universe, bool draw_all_ship_stats)
         {
-
             device.SetRenderTarget(surface);
             device.Clear(Color.Black);
             batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             universe.Draw(this);
 
+            if (draw_all_ship_stats)
+            {
+                foreach (Physical phys in universe.physicals)
+                {
+                    if (phys is Ship)
+                    {
+                        Ship sh = (Ship)phys;
+
+                        DrawTargetBars(sh, sh.pos, sh.angle);
+                    }
+                }
+            }
+            
             batch.End();
         }
 
@@ -92,6 +104,48 @@ namespace StarPixel
             else
             {
                 arg_batch.Draw(surface, arg_pos, Color.White);
+            }
+        }
+
+
+        public void DrawTargetBars(Ship ship, Vector2 shippos, float angle = -MathHelper.PiOver2, bool tile = false)
+        {
+            Color shield_bar_color = Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f);
+            float shield_bar_width = 4;
+            float bar_pad = 4;
+            float armor_bar_sep = 0.04f;
+            float r = ship.template.shield_radius * scale;
+
+            Vector2 cen = (tile) ? midpoint : this.Map(ship.pos);
+
+            if (ship.shield != null)
+            {
+                ArtLine.DrawArcU(this, cen, -MathHelper.PiOver2,
+                    MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity,
+                    r + (1.5f* shield_bar_width * upsample_multiplier) + (1 * bar_pad * upsample_multiplier),
+                    shield_bar_color, shield_bar_width * upsample_multiplier);
+            }
+
+            if (ship.armor != null)
+            {
+                float a1 = ship.armor.start_angle + angle;
+                a1 = Utility.WrapAngle(a1);
+
+                for (int i = 0; i < ship.armor.segment_count; i++)
+                {
+                    float a2 = a1 + ship.armor.per_segment_angle;
+
+                    float k = ship.armor.integrity[i] / ship.armor.max_integrity;
+
+                    if (k > 0)
+                    {
+                        ArtLine.DrawArcU(this, cen, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
+                            r + (0.5f * shield_bar_width * upsample_multiplier),
+                            ColorManager.HPColor(k) , shield_bar_width * upsample_multiplier);
+                    }
+
+                    a1 = a2;
+                }
             }
         }
     }
@@ -123,7 +177,7 @@ namespace StarPixel
 
             if (autoscale)
             {
-                scale = (midpoint.X) / ship.template.shield_radius;
+                scale = (midpoint.X) / (ship.template.shield_radius + (bar_pad) + (2f * shield_bar_width * upsample_multiplier));
             }
 
             ship.hull_sprite.Update(new Vector2(0, 0), angle);
@@ -137,41 +191,11 @@ namespace StarPixel
                 ship.paint_sprite.Update(ship.pos, ship.angle);
             }
 
-            if (ship.shield != null)
-            {
-                ArtLine.DrawArcU(this, midpoint, angle,
-                    MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity,
-                    midpoint.X - (shield_bar_width* upsample_multiplier / 2) - (bar_pad* upsample_multiplier),
-                    shield_bar_color , shield_bar_width* upsample_multiplier);
-            }
-
-            if (ship.armor != null)
-            {
-                float a1 = ship.armor.start_angle + angle;
-                a1 = Utility.WrapAngle(a1);
-
-                for (int i = 0; i < ship.armor.segment_count; i++)
-                {
-                    float a2 = a1 + ship.armor.per_segment_angle;
-
-                    float k = ship.armor.integrity[i] / ship.armor.max_integrity;
-
-                    if (k > 0)
-                    {
-                        Color c = (k > 0.5) ? Color.Lerp(Color.Yellow, Color.Green, (k-0.5f)*2) : Color.Lerp(Color.Red, Color.Yellow, (k)/2);
-
-                        ArtLine.DrawArcU(this, midpoint, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
-                            midpoint.X - (1.5f * shield_bar_width * upsample_multiplier) - (2 * bar_pad * upsample_multiplier),
-                            c , shield_bar_width * upsample_multiplier);
-                    }
-
-                    a1 = a2;
-                }
-            }
+            this.DrawTargetBars(ship, ship.pos, angle, true);
+            
 
             batch.End();
         }
-
-        
+            
     }
 }

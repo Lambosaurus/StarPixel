@@ -42,7 +42,7 @@ namespace StarPixel
 
         // armor data
         public float component_armor_size = 1.0f;
-        public int armor_segment_count = 4;
+        public int armor_segment_count = 16;
         public bool armor_seam_on_rear = false;
 
 
@@ -137,6 +137,14 @@ namespace StarPixel
                 }
             }
             return null;
+        }
+
+        public override void Damage(Damage dmg, Vector2 position)
+        {
+            if (armor != null)
+            {
+                Damage remaining = armor.AdsorbDamage(dmg, position);
+            }
         }
 
         public void MountThruster(string template_name)

@@ -117,7 +117,7 @@ namespace StarPixel
             hitbox.Update(pos, angle);
         }
 
-        public void Damage(Damage dmg, Vector2 position)
+        public virtual void Damage(Damage dmg, Vector2 position)
         {
 
         }

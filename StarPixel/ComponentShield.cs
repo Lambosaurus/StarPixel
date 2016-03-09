@@ -53,7 +53,7 @@ namespace StarPixel
             active = true;
         }
 
-        public void ExternalDamage(Damage dmg, Vector2 arg_pos)
+        public void AdsorbDamage(Damage dmg, Vector2 arg_pos)
         {
             integrity -= 1; // quality code
 

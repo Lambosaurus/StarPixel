@@ -58,7 +58,7 @@ namespace StarPixel
 
                         universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, bounce));
 
-                        shield.ExternalDamage(null, pos);
+                        shield.AdsorbDamage(null, pos);
 
                         this.Destory();
 

@@ -49,7 +49,6 @@ namespace StarPixel
             template.shield_radius = 30f;
             template.component_shield_size = 1.0f;
 
-            //template.hitbox = new HitboxCircle(12);
             template.hitbox = new HitboxPolygon( new Vector2[] {
                 new Vector2(18,-3),
                 new Vector2(-12, -14),

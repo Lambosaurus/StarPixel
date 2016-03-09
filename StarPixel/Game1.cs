@@ -36,9 +36,11 @@ namespace StarPixel
         Entity selectedEntity = null;
 
 
-        public double time_accelleration = 1.0;
-        public double time_update_counter = 0.0;
-        public bool paused = false;
+        double time_accelleration = 1.0;
+        double time_update_counter = 0.0;
+        bool paused = false;
+
+        bool show_all_ship_status = false;
 
         KeyboardState old_keys;
 
@@ -156,6 +158,7 @@ namespace StarPixel
                 }
             }
 
+            show_all_ship_status = new_keys.IsKeyDown(Keys.Tab);
 
 
             //if scroll has been used, zoom in/out
@@ -213,7 +216,7 @@ namespace StarPixel
         /// This is called when the game should draw itself.
         protected override void Draw(GameTime gameTime)
         {
-            camera.Draw(universe);
+            camera.Draw(universe, show_all_ship_status);
 
             if (selectedEntity is Ship)
             {

@@ -40,24 +40,10 @@ namespace StarPixel
             playership.ai = new IntellegenceHuman();
             playership.MountThruster("better");
             playership.Paint(Color.Red);
-
+            playership.MountShield("default");
             playership.MountWeapon("shooter", 0);
             playership.MountWeapon("shooter", 1);
             playership.MountArmor("default");
-
-            /*
-            for (int i = 0; i < 20; i++)
-            {
-                Ship othership = CreateNewShip("F2");
-                othership.ai = new IntellegenceRoamer();
-                
-                othership.Paint(Color.Black);
-                othership.MountThruster("default");
-
-                othership.angle = Utility.Rand(MathHelper.TwoPi);
-                othership.pos = Utility.RandVec(1200);
-            }
-            */
 
 
             Ship ship0 = CreateNewShip("F2");
@@ -67,11 +53,6 @@ namespace StarPixel
             ship0.MountArmor("default");
             ship0.Paint(Color.Blue);
             ship0.pos = Utility.RandVec(400);
-
-
-            ship0.armor.integrity[1] = 0.0f;
-            ship0.armor.integrity[2] = 33;
-            ship0.armor.integrity[3] = 66;
 
 
             ship0 = CreateNewShip("F2");
@@ -165,7 +146,7 @@ namespace StarPixel
 
 
 
-        public void Draw( Camera camera )
+        public void Draw( Camera camera)
         {
             foreach (Physical phys in physicals)
             {

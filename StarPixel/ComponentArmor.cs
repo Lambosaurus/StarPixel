@@ -58,7 +58,25 @@ namespace StarPixel
         
         public int GetSegment(float incoming_angle)
         {
-            return 0;
+            float aoa = Utility.WrapAngle(incoming_angle - start_angle - ship.angle);
+            return (int)((aoa) / per_segment_angle);
+        }
+
+        public Damage AdsorbDamage(Damage dmg, Vector2 arg_pos)
+        {
+            int segment = this.GetSegment(Utility.Angle(arg_pos - ship.pos));
+
+            if (integrity[segment] > 0)
+            {
+                integrity[segment] -= 4;
+            }
+            else
+            {
+                return dmg;
+            }
+
+            return null;
+
         }
 
         public override void Update()

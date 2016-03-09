@@ -100,6 +100,21 @@ namespace StarPixel
             else if (temp > max_temperature) { return thermo_colors[thermo_scale_length - 1]; }
             return thermo_colors[(int)(thermo_color_constant * temp)];
         }
+
+        static Color HP_G = new Color(0, 0.65f, 0);
+        static Color HP_Y = new Color(0.65f, 0.65f, 0);
+        static Color HP_R = new Color(0.65f, 0, 0);
+
+        static float HP_MID = 0.66f;
+        
+        public static Color HPColor(float value)
+        {
+            value = Utility.Clamp(value, 0.0f, 1.0f);
+
+            return (value > HP_MID) ?
+                Color.Lerp(HP_Y, HP_G, (value - HP_MID)/(1.0f - HP_MID)) :
+                Color.Lerp(HP_R, HP_Y, (value)/ HP_MID);
+        }
     }
 
 
