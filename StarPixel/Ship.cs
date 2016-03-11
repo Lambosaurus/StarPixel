@@ -42,7 +42,7 @@ namespace StarPixel
 
         // armor data
         public float component_armor_size = 1.0f;
-        public int armor_segment_count = 16;
+        public int armor_segment_count = 3;
         public bool armor_seam_on_rear = false;
 
 
@@ -149,7 +149,7 @@ namespace StarPixel
 
         public void MountThruster(string template_name)
         {
-            thrusters = new Thruster(template_name, this, template.component_thruster_size);
+            thrusters = AssetThrusterTemplates.thruster_templates[template_name].New(this);
         }
 
         public void Paint( Color color )

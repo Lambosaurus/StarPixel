@@ -21,7 +21,7 @@ namespace StarPixel
         public float angle_max;
         
         public float size;
-
+        
         public WeaponPort(Vector2 arg_pos, float arg_size, float arc_center, float arc_width)
         {
             position = arg_pos;
@@ -42,7 +42,7 @@ namespace StarPixel
 
 
 
-    public class WeaponTemplate
+    public class WeaponTemplate : ComponentTemplate
     {
         public string projectile_sprite_resource;
         public string projectile_explosion_resource;
@@ -56,6 +56,7 @@ namespace StarPixel
 
         public float fire_rate = 1.0f;
 
+        public Explosion explosion;
 
         public WeaponTemplate()
         {
@@ -94,11 +95,16 @@ namespace StarPixel
         public float projectile_scatter;
         public int projectile_frame_life;
         public Vector2 projectile_scale;
+        
+        public Explosion explosion { get; private set; }
 
-        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port, float arg_size, WeaponTemplate arg_template) : base(arg_ship, arg_size)
+
+        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port, float arg_size, WeaponTemplate arg_template) : base(arg_ship, arg_size, arg_template)
         {
             port = arg_port;
             template = arg_template;
+
+            explosion = template.explosion * size;
         }
 
         public bool ReadyToFire()
@@ -144,8 +150,7 @@ namespace StarPixel
             projectile.sprite.color = template.projectile_color;
             projectile.sprite.scale = new Vector2(Utility.Sqrt(projectile_scale.X), Utility.Sqrt(projectile_scale.Y) );
 
-            projectile.explosion_resource = ArtManager.GetExplosionResource(template.projectile_explosion_resource);
-            projectile.explosion_size = size;
+            projectile.explosion = explosion;
             projectile.parent = ship;
 
             ship.universe.projectiles.Add(projectile);

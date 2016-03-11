@@ -32,7 +32,7 @@ namespace StarPixel
             // Ie, HCG is a heavy cargo gunship
 
 
-            float forward = 0.0f;
+            float forward = 0.0f; // STFU WARNINGS, IT WILL GET USED. IT WILL.
             float right = MathHelper.PiOver2;
             float reverse = MathHelper.Pi;
             float left = -MathHelper.PiOver2;

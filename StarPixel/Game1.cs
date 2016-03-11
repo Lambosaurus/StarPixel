@@ -88,12 +88,11 @@ namespace StarPixel
 
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-
+            
             camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y, UPSAMPLE_MULTIPLIER);
             //camera.DRAW_HITBOXES = true;
 
-            status_camera = new StatusCamera(GraphicsDevice, spriteBatch, 100);
+            status_camera = new StatusCamera(GraphicsDevice, spriteBatch, status_camera_width);
 
 
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors

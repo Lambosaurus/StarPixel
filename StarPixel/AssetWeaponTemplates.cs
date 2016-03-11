@@ -19,6 +19,28 @@ namespace StarPixel
 
         public static void GenerateAssets()
         {
+            
+
+            ArtExplosionResource exp_art = new ArtExplosionResource("particle");
+
+            exp_art.std_particle_count = 6;
+            exp_art.std_particle_length = 0.55f;
+            exp_art.std_particle_stretch_width = 1;
+            exp_art.std_particle_stretch_length = 5;
+            exp_art.std_particle_width = 0.35f;
+            exp_art.std_temperature = 4500;
+            exp_art.std_temp_halflife = 0.1f;
+            exp_art.std_bounce = 1f;
+            exp_art.std_scatter = 0.5f;
+            exp_art.std_particle_size_scatter = 1.5f;
+            exp_art.std_particle_life = 0.3f;
+
+            ArtManager.explosions.Add("boom", exp_art);
+
+            Explosion exp = new Explosion(new Damage(3), 0, exp_art);
+
+
+
             WeaponTemplate template = new WeaponTemplate();
 
             template.projectile_color = new Color(1f, 0.9f, 0.5f);
@@ -28,27 +50,11 @@ namespace StarPixel
             template.fire_rate = 10;
             template.projectile_velocity = 6f;
             template.projectile_scatter = 0.5f;
+            template.explosion = exp;
 
-            weapon_templates.Add("shooter",template);
-            
+            weapon_templates.Add("shooter", template);
+
             ArtManager.sprites.Add("bullet", new ArtSpriteResource("bullet"));
-
-
-            ArtExplosionResource explosion = new ArtExplosionResource("particle");
-
-            explosion.std_particle_count = 6;
-            explosion.std_particle_length = 0.55f;
-            explosion.std_particle_stretch_width = 1;
-            explosion.std_particle_stretch_length = 5;
-            explosion.std_particle_width = 0.35f;
-            explosion.std_temperature = 4500;
-            explosion.std_temp_halflife = 0.1f;
-            explosion.std_bounce = 1f;
-            explosion.std_scatter = 0.5f;
-            explosion.std_particle_size_scatter = 1.5f;
-            explosion.std_particle_life = 0.3f;
-
-            ArtManager.explosions.Add("boom", explosion);
 
 
         }

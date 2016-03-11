@@ -131,14 +131,14 @@ namespace StarPixel
             }
         }
 
-        public void Ping( Vector2 arg_pos )
+        public void Ping( Vector2 arg_pos, float dmg )
         {
             total_alpha = 1.0f;
 
             Vector2 rel = arg_pos - pos;
             for (int i = 0; i < count; i++)
             {
-                float dst = 1.3f / (size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
+                float dst = dmg / ( 2 * size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
                 alpha[i] += dst;
                 alpha[i] = Utility.Clamp(alpha[i], 0, 1);
             }

@@ -11,10 +11,14 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ArmorTemplate
+    public class ArmorTemplate : ComponentTemplate
     {
+        public float electro_block = 0.2f;
+
 
         public float std_segment_integrity;
+
+        public Resistance resistance = Resistance.Zero;
 
         public ComponentArmor New( Ship ship )
         {
@@ -27,6 +31,8 @@ namespace StarPixel
 
     public class ComponentArmor : Component
     {
+        public static Resistance ARMOR_BASE_RESISTANCE = new Resistance(0.15f, 0, 0, 0.7f);
+
         ArmorTemplate template;
 
         public int segment_count;
@@ -37,7 +43,9 @@ namespace StarPixel
         public float start_angle;
         public float per_segment_angle;
 
-        public ComponentArmor( Ship arg_ship, float arg_size, ArmorTemplate arg_template): base(arg_ship, arg_size)
+        public Resistance resistance;
+
+        public ComponentArmor( Ship arg_ship, float arg_size, ArmorTemplate arg_template): base(arg_ship, arg_size, arg_template)
         {
             template = arg_template;
 
@@ -54,6 +62,8 @@ namespace StarPixel
             per_segment_angle = MathHelper.TwoPi / segment_count;
             start_angle = (ship.template.armor_seam_on_rear == (segment_count%2 == 0)) ? 0.0f : -per_segment_angle / 2;
 
+            resistance = template.resistance * ARMOR_BASE_RESISTANCE;
+            
         }
         
         public int GetSegment(float incoming_angle)
@@ -68,14 +78,21 @@ namespace StarPixel
 
             if (integrity[segment] > 0)
             {
-                integrity[segment] -= 4;
-            }
-            else
-            {
-                return dmg;
+                float dmg_dealt = resistance.EvaluateDamage(dmg);
+                
+                if (integrity[segment] < dmg_dealt)
+                {
+                    integrity[segment] = 0.0f;
+                    return resistance.RemainingDamage(integrity[segment], dmg);
+                }
+                else
+                {
+                    integrity[segment] -= dmg_dealt;
+                    return null;
+                }
             }
 
-            return null;
+            return dmg;
 
         }
 

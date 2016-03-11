@@ -11,10 +11,11 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ShieldTemplate
+    public class ShieldTemplate : ComponentTemplate
     {
         public string art_resource;
 
+        public Resistance resistance = Resistance.Zero;
 
         public ComponentShield New( Ship ship )
         {
@@ -26,6 +27,8 @@ namespace StarPixel
 
     public class ComponentShield : Component
     {
+        public static Resistance SHIELD_BASE_RESISTANCE = new Resistance(0, -0.15f, 0, 0.7f);
+
         ShieldTemplate template;
 
         public ArtShield art;
@@ -34,13 +37,14 @@ namespace StarPixel
 
         public float regen_rate = 0.05f;
         public bool active = false;
-        public float integrity = 0f;
+        public float integrity = 100f;
         public float max_integrity = 100f;
 
         public float radius;
-        
 
-        public ComponentShield( Ship arg_ship, float arg_size, ShieldTemplate arg_template): base(arg_ship, arg_size)
+        public Resistance resistance;
+
+        public ComponentShield( Ship arg_ship, float arg_size, ShieldTemplate arg_template): base(arg_ship, arg_size, arg_template)
         {
             template = arg_template;
 
@@ -49,15 +53,17 @@ namespace StarPixel
             hitbox = new HitboxCircle(radius);
             art = ArtManager.shields[template.art_resource].New(radius, size);
 
+            resistance = template.resistance * SHIELD_BASE_RESISTANCE;
 
             active = true;
         }
 
         public void AdsorbDamage(Damage dmg, Vector2 arg_pos)
         {
-            integrity -= 1; // quality code
+            float total_dmg = resistance.EvaluateDamage(dmg);
+            integrity -= total_dmg;
 
-            art.Ping(arg_pos);
+            art.Ping(arg_pos, total_dmg);
         }
 
         public override void Update()

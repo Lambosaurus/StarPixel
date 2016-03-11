@@ -20,11 +20,7 @@ namespace StarPixel
 
         public Ship parent;
 
-        public ArtExplosionResource explosion_resource;
-
-        public float explosion_size;
-
-        public float penetration;
+        public Explosion explosion;
 
         public override void Update()
         {
@@ -47,35 +43,28 @@ namespace StarPixel
         {
             if (phys != parent)
             {
+                Vector2 bounce;
+
                 ComponentShield shield = phys.GetActiveShield();
                 if ( shield != null)
                 {
                     if ( shield.hitbox.Contains(pos) )
                     {
-
-                        Vector2 bounce = this.CalcBounceAngle(phys.velocity, shield.hitbox);
-
-
-                        universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, bounce));
-
-                        shield.AdsorbDamage(null, pos);
-
+                        bounce = this.CalcBounceAngle(phys.velocity, shield.hitbox);
+                        explosion.Explode(universe, pos, phys.velocity, bounce);
+                        shield.AdsorbDamage(explosion.dmg, pos);
                         this.Destory();
-
                         return true;
                     }
                 }
                 else if (phys.hitbox.Contains(pos))
                 {
-                    Vector2 bounce = this.CalcBounceAngle(phys.velocity, phys.hitbox);
-                    universe.art_temp.Add(explosion_resource.New(explosion_size, pos, phys.velocity, bounce));
-
-                    phys.Damage(null, pos);
-
+                    bounce = this.CalcBounceAngle(phys.velocity, phys.hitbox);
+                    explosion.Explode(universe, pos, phys.velocity, bounce);
+                    phys.Damage(explosion.dmg, pos);
                     this.Destory();
-
                     return true;
-                }
+                }    
             }
             return false;
         }

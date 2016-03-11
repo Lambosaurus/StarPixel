@@ -8,8 +8,7 @@
 	> Can i use an oval approximation as a better way of allocating damage to armor?
 
 > Have damage handed out to victim ships
-	> Add damage to weapons
-	> Correct damage handling in shield and armor
+	> Add damage flowthrough to components
 
 > Line arc art is a bit speckly. Explore the extention of line segments to combat this
 
@@ -21,11 +20,7 @@
 > Add in shield pop art. See above
 
 > Thrusters
-	> move to same format as weapons and shields
 	> Have sparkles assigned dynamically
 
 > Tidy up the way that ship stats drawing is managed.
-
-
-
 

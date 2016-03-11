@@ -11,48 +11,41 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+    public class ComponentTemplate
+    {
+        public float hp = 100;
+        public float thermal_capacity = 100;
+    }
+
     public class Component
     {
         // do i have component parent classes?
         // I dunno. It gets messy, but i feel like i need them to abstract out component generation
-        public float max_hp = 100;
-        public float hp;
-        public float mass;
+        public float max_hp { get; private set; }
+        public float hp { get; private set; }
+        public float mass { get; private set; }
 
-        public float size;
+        public float size { get; private set; }
 
-        public float max_usage;
-        public float usage;
+        public bool destroyed { get; private set; }
 
-        public bool destroyed;
+        public Ship ship { get; private set; }
 
-        public Ship ship;
+        public ComponentTemplate base_template { get; private set; }
 
-        public Component( Ship arg_ship, float arg_size )
+        public Component( Ship arg_ship, float arg_size, ComponentTemplate arg_base_template)
         {
+            ship = arg_ship;
+
+            base_template = arg_base_template;
             size = arg_size;
 
             destroyed = false;
+
+            max_hp = base_template.hp * size;
             hp = max_hp;
 
-            ship = arg_ship;
         }
-
-        /*
-        public virtual void Damage(float damage)
-        {
-            hp -= damage;
-            
-            if (hp <= 0)
-            {
-                if (!destroyed)
-                {
-                    destroyed = true;
-                    Destroy();
-                }
-            }
-        }
-        */
 
         public virtual void Update()
         {
@@ -67,7 +60,7 @@ namespace StarPixel
     }
 
 
-
+    /*
     enum ReactorType
     {
         URANIUM, THORIUM, PLUTONIUM
@@ -96,6 +89,7 @@ namespace StarPixel
             }
         }
     }
+    */
 
 }
 

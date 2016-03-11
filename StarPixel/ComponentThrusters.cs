@@ -15,14 +15,14 @@ namespace StarPixel
 
     public class ThrusterPort
     {
-        public Vector2 position;
-        public float angle;
+        public Vector2 position { private set; get; }
+        public float angle { private set; get; }
 
-        public float kx;
-        public float ky;
-        public float kt;
+        public float kx { private set; get; }
+        public float ky { private set; get; }
+        public float kt { private set; get; }
 
-        public float size;
+        public float size { private set; get; }
 
         public ThrusterPort(Vector2 arg_pos, float arg_angle, float arg_size, float x_response, float y_response, float t_response)
         {
@@ -46,7 +46,7 @@ namespace StarPixel
 
 
 
-    public class ThrusterTemplate
+    public class ThrusterTemplate : ComponentTemplate
     {
         public float main_thrust;
         public float reverse_thrust;
@@ -59,6 +59,12 @@ namespace StarPixel
         public ThrusterTemplate()
         {
         }
+
+        public Thruster New(Ship ship)
+        {
+            Thruster thruster = new Thruster(ship, ship.template.component_thruster_size, this);
+            return thruster;
+        }
     }
 
 
@@ -66,29 +72,29 @@ namespace StarPixel
     {
         // TODO: Add sparkles
 
-        public float main_thrust;
-        public float reverse_thrust;
-        public float side_thrust;
-        public float torque;
+        public float main_thrust { private set; get; }
+        public float reverse_thrust { private set; get; }
+        public float side_thrust { private set; get; }
+        public float torque { private set; get; }
 
 
         public Vector2 control_thrust_vector = new Vector2(0,0);
         public float control_torque_scalar = 0;
         
 
-        public List<ThrusterPort> particle_ports;
-        public List<ArtVent> particle_vents;
+        public List<ThrusterPort> particle_ports { private set; get; }
+        public List<ArtVent> particle_vents { private set; get; }
 
         ArtVent sparkles;
 
-        ThrusterTemplate template;
+        public ThrusterTemplate template { private set; get; }
 
-        public float efficiency = 1.0f;
+        public float efficiency { private set; get; } = 1.0f;
 
-        public Thruster( string template_name, Ship ship, float arg_size) : base(ship, arg_size)
+        public Thruster(Ship ship, float arg_size, ThrusterTemplate arg_template) : base(ship, arg_size, arg_template)
         {
 
-            template = AssetThrusterTemplates.thruster_templates[template_name];
+            template = arg_template;
             side_thrust = template.side_thrust * size;
             reverse_thrust = template.reverse_thrust * size;
             main_thrust = template.main_thrust * size;
@@ -111,14 +117,6 @@ namespace StarPixel
             }
         }
 
-        public override void CalculateUsage()
-        {
-            // TODO: This calcualtes the total thrust output. Not quite the usage.
-            // perhaps this works if max_usage is equal to the sum of the thrusts and torques.
-            usage = ((control_thrust_vector.X > 0.0f) ? (control_thrust_vector.X * main_thrust) : (control_thrust_vector.X * reverse_thrust)) +
-                (control_thrust_vector.Y * side_thrust) +
-                (control_torque_scalar * torque);
-        }
 
         public override void Update()
         {
