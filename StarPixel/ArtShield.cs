@@ -82,6 +82,8 @@ namespace StarPixel
 
     public class ArtShield
     {
+        const int UPDATES_PER_ANGLEWRAP = 4000;
+
         ArtShieldResource resource;
 
         Vector2 pos;
@@ -99,6 +101,8 @@ namespace StarPixel
         public Color color;
 
         float total_alpha = 0.0f;
+
+        int angle_wrap_counter = 0;
 
         public ArtShield(ArtShieldResource arg_resource, int arg_count, float arg_radius)
         {
@@ -123,12 +127,26 @@ namespace StarPixel
             if (total_alpha < 0.01) { return; }
             
             total_alpha *= particle_decay;
-
+            
             for (int i = 0; i < count; i++)
             {
                 angle[i] += speed[i];
                 alpha[i] *= particle_decay;
             }
+
+
+            // this means after 4000 angle updates, the angles will be wrapped back into a safe range
+            // Otherwise floating point errors will accrue
+            // 4000 updates is a little over a minute. Keep in mind updates only occurr if the shield is visible
+            if (angle_wrap_counter++ > UPDATES_PER_ANGLEWRAP)
+            {
+                angle_wrap_counter = 0;
+                for (int i = 0; i < count; i++)
+                {
+                    angle[i] = Utility.WrapAngle(angle[i]);
+                }
+            }
+
         }
 
         public void Ping( Vector2 arg_pos, float dmg )

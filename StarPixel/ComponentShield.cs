@@ -58,9 +58,9 @@ namespace StarPixel
             active = true;
         }
 
-        public void AdsorbDamage(Damage dmg, Vector2 arg_pos)
+        public void AdsorbExplosion(Explosion exp, Vector2 arg_pos)
         {
-            float total_dmg = resistance.EvaluateDamage(dmg);
+            float total_dmg = resistance.EvaluateDamage(exp.dmg);
             integrity -= total_dmg;
 
             art.Ping(arg_pos, total_dmg);

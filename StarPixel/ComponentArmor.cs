@@ -72,18 +72,19 @@ namespace StarPixel
             return (int)((aoa) / per_segment_angle);
         }
 
-        public Damage AdsorbDamage(Damage dmg, Vector2 arg_pos)
+        public Explosion AdsorbExplosion(Explosion exp, Vector2 arg_pos)
         {
             int segment = this.GetSegment(Utility.Angle(arg_pos - ship.pos));
 
             if (integrity[segment] > 0)
             {
-                float dmg_dealt = resistance.EvaluateDamage(dmg);
+                float dmg_dealt = resistance.EvaluateDamage(exp.dmg);
                 
                 if (integrity[segment] < dmg_dealt)
                 {
                     integrity[segment] = 0.0f;
-                    return resistance.RemainingDamage(integrity[segment], dmg);
+                    Damage remaining = resistance.RemainingDamage(integrity[segment], exp.dmg);
+                    return new Explosion(remaining, exp.radius, exp.art_resource, exp.art_scale);
                 }
                 else
                 {
@@ -92,7 +93,7 @@ namespace StarPixel
                 }
             }
 
-            return dmg;
+            return exp;
 
         }
 

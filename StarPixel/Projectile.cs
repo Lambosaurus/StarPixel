@@ -52,7 +52,7 @@ namespace StarPixel
                     {
                         bounce = this.CalcBounceAngle(phys.velocity, shield.hitbox);
                         explosion.Explode(universe, pos, phys.velocity, bounce);
-                        shield.AdsorbDamage(explosion.dmg, pos);
+                        shield.AdsorbExplosion(explosion, pos);
                         this.Destory();
                         return true;
                     }
@@ -61,7 +61,7 @@ namespace StarPixel
                 {
                     bounce = this.CalcBounceAngle(phys.velocity, phys.hitbox);
                     explosion.Explode(universe, pos, phys.velocity, bounce);
-                    phys.Damage(explosion.dmg, pos);
+                    phys.AdsorbExplosion(explosion, pos);
                     this.Destory();
                     return true;
                 }    

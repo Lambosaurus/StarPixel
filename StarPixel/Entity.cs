@@ -117,7 +117,7 @@ namespace StarPixel
             hitbox.Update(pos, angle);
         }
 
-        public virtual void Damage(Damage dmg, Vector2 position)
+        public virtual void AdsorbExplosion(Explosion exp, Vector2 position)
         {
 
         }

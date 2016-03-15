@@ -139,11 +139,11 @@ namespace StarPixel
             return null;
         }
 
-        public override void Damage(Damage dmg, Vector2 position)
+        public override void AdsorbExplosion(Explosion exp, Vector2 position)
         {
             if (armor != null)
             {
-                Damage remaining = armor.AdsorbDamage(dmg, position);
+                Explosion remaining = armor.AdsorbExplosion(exp, position);
             }
         }
 
