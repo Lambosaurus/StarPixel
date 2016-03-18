@@ -13,14 +13,17 @@ namespace StarPixel
 {
     public class ArtExplosionResource
     {
-        const float natural_log_half = -0.693147180559f; // close enough....
-
-
         public int std_particle_count = 10;
 
         public float std_bounce = 4;
         public float std_scatter = 2;
-        public float std_particle_life = 0.5f;
+        public float std_particle_life = 0.5f; // in seconds
+
+        // if you set use_particle_color to true, you only need to set particle_color
+        public bool use_particle_color = false;
+        public Color particle_color;
+
+        // if use particle_color = false, then you need to set these
         public float std_temp_halflife = 0.2f;
         public float std_temperature = 2000f;
 
@@ -30,6 +33,7 @@ namespace StarPixel
         public float std_particle_stretch_length = 1.0f; // this an additional multiplier that will be applied as the particle decays
         public float std_particle_stretch_width = 1.0f;
 
+        
         string sprite_name;
         public Texture2D sprite;
         public Vector2 sprite_center;
@@ -52,14 +56,7 @@ namespace StarPixel
             scale = Utility.Sqrt(scale);
             int count = (int)(std_particle_count * scale);
 
-            ArtExplosion exp = new ArtExplosion(this, count, cloud_center, cloud_velocity);
-
-            exp.temperature_decay = (float)Math.Exp(natural_log_half / (std_temp_halflife * 60 * scale)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
-            exp.alpha_decay = 1.0f / (std_particle_life * scale * 60);
-
-            exp.radius = std_bounce * (1.0f / exp.alpha_decay);
-
-            exp.alpha_max = 1.5f;
+            ArtExplosion exp = new ArtExplosion(this, scale, count, cloud_center, cloud_velocity);
 
             skew.Normalize();
             skew *= std_bounce;
@@ -79,14 +76,14 @@ namespace StarPixel
                 exp.Add(vel * particle_scale, angle, particle_scale, std_temperature, Utility.Rand(1.0f, 1.5f));
             }
 
-            exp.particle_size_0.Y = (std_particle_width * std_particle_stretch_width) * scale;
-            exp.particle_size_1.Y = (std_particle_width - std_particle_width * (std_particle_stretch_width)) * scale;
-
-            exp.particle_size_0.X = (std_particle_length * std_particle_stretch_length) * scale;
-            exp.particle_size_1.X = (std_particle_length - std_particle_length * (std_particle_stretch_length)) * scale;
-
             return exp;
         }
+    }
+
+
+    public class ArtColorExplosion : ArtTemporary
+    {
+
     }
 
 
@@ -109,6 +106,7 @@ namespace StarPixel
         float[] scale;
         float[] angle;
         float[] alpha;
+
         float[] temperature;
 
         public float alpha_decay;
@@ -116,7 +114,7 @@ namespace StarPixel
 
         public float radius;
 
-        public ArtExplosion( ArtExplosionResource arg_resource, int arg_count, Vector2 arg_center, Vector2 arg_velocity )
+        public ArtExplosion( ArtExplosionResource arg_resource, float size, int arg_count, Vector2 arg_center, Vector2 arg_velocity )
         {
             resource = arg_resource;
 
@@ -124,6 +122,24 @@ namespace StarPixel
 
             cloud_center = arg_center;
             cloud_velocity = arg_velocity;
+
+
+
+            temperature_decay = (float)Math.Exp(Utility.natural_log_half / (resource.std_temp_halflife * 60 * size)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
+            alpha_decay = 1.0f / (resource.std_particle_life * size * 60);
+
+            radius = resource.std_bounce * (1.0f / alpha_decay);
+
+            particle_size_0.Y = (resource.std_particle_width * resource.std_particle_stretch_width) * size;
+            particle_size_1.Y = (resource.std_particle_width - resource.std_particle_width * (resource.std_particle_stretch_width)) * size;
+
+            particle_size_0.X = (resource.std_particle_length * resource.std_particle_stretch_length) * size;
+            particle_size_1.X = (resource.std_particle_length - resource.std_particle_length * (resource.std_particle_stretch_length)) * size;
+
+
+            // TODO. Have this assigned somewhere.
+            alpha_max = 1.5f;
+            
 
             position = new Vector2[count];
             velocity = new Vector2[count];
@@ -133,8 +149,7 @@ namespace StarPixel
             scale = new float[count];
 
             index = 0;
-
-            alpha_max = 0.0f;
+            
         }
         
         public void Add( Vector2 vel, float arg_angle, float arg_scale, float temp, float arg_alpha = 1.0f )
@@ -173,15 +188,7 @@ namespace StarPixel
 
         public override bool InView(Camera camera)
         {
-            // get the position of the most recent particle....
-            Vector2 onscreen = camera.Map( cloud_center );
-
-            float cull_radius = radius * camera.scale;
-
-            return onscreen.X + cull_radius > 0 &&
-                   onscreen.Y + cull_radius > 0 &&
-                   onscreen.X - cull_radius < camera.res.X &&
-                   onscreen.Y - cull_radius < camera.res.Y;
+            return camera.ContainsCircle(cloud_center, radius);
         }
 
         public override void Draw(Camera camera)

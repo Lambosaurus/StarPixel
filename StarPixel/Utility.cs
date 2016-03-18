@@ -19,6 +19,10 @@ namespace StarPixel
 {
     public static class Utility
     {
+        public const float natural_log_half = -0.693147180559f; // close enough....
+
+
+
         // lol, 32KB right here. Ez.
         const int SINE_RESOLUTION = 8192;
         static float[] sin_values = new float[SINE_RESOLUTION+1];

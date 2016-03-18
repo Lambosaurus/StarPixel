@@ -37,19 +37,25 @@
 	> Is LineArt.DrawArcUF ready to be removed?
 
 
-> Explore a global particle framwork
-	- Thermoparticles
-		- For thruster speckles
-		- For firey debris
-	- Solid color particles
-		- Sheild pops
-		> I can just work solid color particles into explosions
 
-> Add in shield pop art. See above
+> Abstract out the current Art particle frameworks, to give them common shit, and stop all this code duplication.
+	Old thoughts on this issue:
+	> Explore a global particle framwork
+		- Thermoparticles
+			- For thruster speckles
+			- For firey debris
+		- Solid color particles
+			- Sheild pops
+			> I can just work solid color particles into explosions
+
+	> Add in shield pop art. See above
+
 
 > Thrusters
 	> Have sparkles assigned dynamically and tidyily
 
+
+> The below would be best solved using a GUI class
 > Tidy up the way that ship stats drawing is managed.
 	Currently the stat drawing is a huge mess.
 	Its unclear whether stuff is drawn wrt to global coords or onscreen coords

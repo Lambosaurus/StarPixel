@@ -69,13 +69,7 @@ namespace StarPixel
 
         public bool InView(Camera camera)
         {
-            Vector2 onscreen = camera.Map(pos);
-            float cull_radius = resource.radius * camera.scale;
-
-            return onscreen.X + cull_radius > 0 &&
-                   onscreen.Y + cull_radius > 0 &&
-                   onscreen.X - cull_radius < camera.res.X &&
-                   onscreen.Y - cull_radius < camera.res.Y;
+            return camera.ContainsCircle(pos, resource.radius);
         }
 
         public void Draw(Camera camera)

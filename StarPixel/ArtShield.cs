@@ -167,16 +167,7 @@ namespace StarPixel
         {
             // shield not visible if alpha very low
             if (total_alpha < 0.01) { return false; }
-
-            // get the position of the most recent particle....
-            Vector2 onscreen = camera.Map( pos );
-
-            float cull_radius = radius * camera.scale;
-
-            return onscreen.X + cull_radius > 0 &&
-                   onscreen.Y + cull_radius > 0 &&
-                   onscreen.X - cull_radius < camera.res.X &&
-                   onscreen.Y - cull_radius < camera.res.Y;
+            return camera.ContainsCircle(pos, radius);
         }
 
         public void Draw(Camera camera)

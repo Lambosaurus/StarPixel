@@ -64,10 +64,26 @@ namespace StarPixel
 
         public bool Contains(Vector2 point)
         {
-            // TODO: make work.
-            return true;
-        }
+            Vector2 onscreen = this.Map(point);
 
+            return onscreen.X > 0 &&
+                   onscreen.Y > 0 &&
+                   onscreen.X < res.X &&
+                   onscreen.Y < res.Y;
+    
+    }
+
+        public bool ContainsCircle(Vector2 arg_center, float arg_radius)
+        {
+            Vector2 onscreen = this.Map(arg_center);
+
+            float onscreen_rad = arg_radius * scale;
+
+            return onscreen.X + onscreen_rad > 0 &&
+                   onscreen.Y + onscreen_rad > 0 &&
+                   onscreen.X - onscreen_rad < res.X &&
+                   onscreen.Y - onscreen_rad < res.Y;
+        }
 
 
         public void Draw(Universe universe, bool draw_all_ship_stats)

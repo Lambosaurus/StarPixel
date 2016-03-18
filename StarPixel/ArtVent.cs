@@ -196,14 +196,7 @@ namespace StarPixel
             if (index_start != index_end)
             {
                 // get the position of the most recent particle....
-                Vector2 onscreen = camera.Map( position[index_start] );
-
-                float cull_radius = radius * camera.scale;
-
-                return onscreen.X + cull_radius > 0 &&
-                       onscreen.Y + cull_radius > 0 &&
-                       onscreen.X - cull_radius < camera.res.X &&
-                       onscreen.Y - cull_radius < camera.res.Y;
+                return camera.ContainsCircle(position[index_start], radius);
             }
             return false;
         }
