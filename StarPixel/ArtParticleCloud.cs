@@ -11,14 +11,14 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public enum ParticleColoring { Solid, Temp }
+    public enum ParticleColoring { Blend, Temp }
 
     public class ArtParticleCloudResource
     {
         public int particle_count = 10;
 
         // if you set use_particle_color to true, you only need to set particle_color
-        public ParticleColoring coloring_method = ParticleColoring.Solid;
+        public ParticleColoring coloring_method = ParticleColoring.Blend;
         public Color particle_color_start;
         public Color particle_color_end;
 
@@ -180,7 +180,7 @@ namespace StarPixel
         {
             if (!InView(camera)) { return; }
 
-            if (resource.coloring_method == ParticleColoring.Solid)
+            if (resource.coloring_method == ParticleColoring.Blend)
             {
                 for (int i = 0; i < count; i++)
                 {

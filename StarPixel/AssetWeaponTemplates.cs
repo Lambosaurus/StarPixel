@@ -34,7 +34,7 @@ namespace StarPixel
             exp_art.particle_life = 0.4f;
 
 
-            exp_art.coloring_method = ParticleColoring.Solid;
+            exp_art.coloring_method = ParticleColoring.Blend;
             exp_art.particle_color_start = Color.White;
             exp_art.particle_color_end = Color.LimeGreen;
             exp_art.temperature = 4500;
