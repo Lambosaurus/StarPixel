@@ -27,12 +27,12 @@ namespace StarPixel
 
 
             ArtShieldResource art = new ArtShieldResource("particle");
-            art.color = Color.SkyBlue;
-            art.particle_density = 16;
-            art.std_particle_size_max = 1.2f;
-            art.std_particle_size_min = 0.5f;
-            art.std_particle_speed = 0.06f;
-            art.std_particle_halflife = 1.0f;
+            art.particle_color_start = Color.SkyBlue;
+            art.particle_count = 16;
+            art.particle_size_max = 1.2f;
+            art.particle_size_min = 0.5f;
+            art.particle_speed = 0.06f;
+            art.particle_life = 1.0f;
             ArtManager.shields["default"] = art;
         }
     }

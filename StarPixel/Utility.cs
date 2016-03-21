@@ -235,6 +235,10 @@ namespace StarPixel
             return (float)Math.Sqrt(value);
         }
 
+        public static float DecayConstant(float half_life)
+        {
+            return (float)Math.Exp(natural_log_half / (half_life));
+        }
 
     }
 }

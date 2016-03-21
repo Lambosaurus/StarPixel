@@ -11,69 +11,28 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ArtShieldResource
+    public class ArtShieldResource : ArtParticleCloudResource
     {
-        const float natural_log_half = -0.693147180559f; // close enough....
+        
+        public float particle_speed; // is this an angular speed? I do not recall.
+                                     // I am considering replaceing angular speeds with a dynamic force based speed
 
-        string sprite_name;
+        // particle_life will behave as a half life
 
-        public Texture2D sprite;
-        public Vector2 sprite_center;
+        public float particle_size_min;
+        public float particle_size_max;
 
-        public float std_particle_size_min;
-        public float std_particle_size_max;
-        public float particle_density;
-        public float std_particle_speed;
-
-        public float std_particle_halflife = 1.0f;
-
-        public Color color;
-
-        public ArtShieldResource(string particle_name)
+        public ArtShieldResource(string particle_name) : base(particle_name)
         {
-            sprite_name = particle_name;
         }
         
-        public void Load(ContentManager content)
-        {
-            sprite = content.Load<Texture2D>(sprite_name);
-
-            Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
-            sprite_center = size / 2;
-        }
 
         public ArtShield New(float radius, float size)
         {
             float rad_sq = Utility.Sqrt(radius);
-            int count = (int)(particle_density * rad_sq);
+            int count = (int)(particle_count * rad_sq);
 
-            ArtShield shield = new ArtShield(this, count, radius);
-
-            shield.color = color;
-
-            shield.particle_decay = (float)Math.Exp(natural_log_half / (std_particle_halflife * 60 * size)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
-
-
-            size = Utility.Sqrt(size);
-
-            for (int i = 0; i < count; i++)
-            {
-                // this picks a radius, which is heavily encouraged to be near max
-                // and will be in the outer 21%
-                float r = Utility.Rand(0.00f, 0.6f);
-                shield.depth[i] = (1 - (r * r * r)) * radius;
-
-                // particle size scalar
-                float mass = Utility.Rand(1.0f);
-                shield.size[i] = size * (std_particle_size_min + mass*std_particle_size_max);
-
-                // note that the speed is an angular value
-                // the speed is randomly generated, but then modified by the mass
-                // this should encourage, but not force, heavy particles to be slow
-                shield.speed[i] = Utility.Rand(-std_particle_speed, std_particle_speed) / (rad_sq*(0.5f + mass));
-
-                shield.angle[i] = Utility.RandAngle();
-            }
+            ArtShield shield = new ArtShield(this, count, size, radius);
             
             return shield;
         }
@@ -104,7 +63,7 @@ namespace StarPixel
 
         int angle_wrap_counter = 0;
 
-        public ArtShield(ArtShieldResource arg_resource, int arg_count, float arg_radius)
+        public ArtShield(ArtShieldResource arg_resource, int arg_count, float arg_size, float arg_radius)
         {
             resource = arg_resource;
 
@@ -117,6 +76,34 @@ namespace StarPixel
             angle = new float[count];
             alpha = new float[count];
             size = new float[count];
+
+            color = resource.particle_color_start;
+
+            float rad_sq = Utility.Sqrt(radius);
+
+
+            particle_decay = Utility.DecayConstant(resource.particle_life * 60 * arg_size);
+
+            arg_size = Utility.Sqrt(arg_size);
+
+            for (int i = 0; i < count; i++)
+            {
+                // this picks a radius, which is heavily encouraged to be near max
+                // and will be in the outer 21%
+                float r = Utility.Rand(0.00f, 0.6f);
+                depth[i] = (1 - (r * r * r)) * radius;
+
+                // particle size scalar
+                float mass = Utility.Rand(1.0f);
+                size[i] = arg_size * (resource.particle_size_min + mass * resource.particle_size_max);
+
+                // note that the speed is an angular value
+                // the speed is randomly generated, but then modified by the mass
+                // this should encourage, but not force, heavy particles to be slow
+                speed[i] = Utility.Rand(-resource.particle_speed, resource.particle_speed) / (rad_sq * (0.5f + mass));
+
+                angle[i] = Utility.RandAngle();
+            }
         }
 
         public void Update(Vector2 arg_pos)
@@ -166,7 +153,7 @@ namespace StarPixel
         public bool InView(Camera camera)
         {
             // shield not visible if alpha very low
-            if (total_alpha < 0.01) { return false; }
+            if (total_alpha < 0.05) { return false; }
             return camera.ContainsCircle(pos, radius);
         }
 
@@ -180,10 +167,11 @@ namespace StarPixel
 
                 Vector2 ppos = camera.Map( pos + Utility.CosSin(angle[i], depth[i]) );
 
-                
-                Color k = color * alpha[i];
-
-                camera.batch.Draw(resource.sprite, ppos, null, k, angle[i], resource.sprite_center, size[i] * new Vector2(0.3f,1.0f) * camera.scale, SpriteEffects.None, 0);
+                if (alpha[i] > 0.05)
+                {
+                    Color k = color * alpha[i];
+                    camera.batch.Draw(resource.sprite, ppos, null, k, angle[i], resource.sprite_center, size[i] * new Vector2(0.3f, 1.0f) * camera.scale, SpriteEffects.None, 0);
+                }
             }
         }
             

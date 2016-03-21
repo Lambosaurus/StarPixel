@@ -58,6 +58,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Art.cs" />
+    <Compile Include="ArtParticleCloud.cs" />
     <Compile Include="ArtExplosion.cs" />
     <Compile Include="ArtShield.cs" />
     <Compile Include="ArtSprite.cs" />
