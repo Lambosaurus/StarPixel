@@ -47,8 +47,8 @@ namespace StarPixel
             vent.temperature = 2000;
             vent.size_start = new Vector2(1.0f, 1.0f);
             vent.size_end = new Vector2(4.0f, 1.0f);
-            vent.particle_life = 0.6f;
-            vent.temp_halflife = 0.33f;
+            vent.particle_life = 0.4f;
+            vent.temp_halflife = 0.25f;
             vent.velocity_scatter = 0.15f;
             vent.velocity_ejection = 1f;
             ArtManager.vents.Add("default_thruster", vent);
@@ -73,8 +73,8 @@ namespace StarPixel
             vent.temperature = 5500;
             vent.size_start = new Vector2(1.0f, 1.0f);
             vent.size_end = new Vector2(4.0f, 1.0f);
-            vent.particle_life = 0.7f;
-            vent.temp_halflife = 0.4f;
+            vent.particle_life = 0.55f;
+            vent.temp_halflife = 0.3f;
             vent.velocity_scatter = 0.2f;
             vent.velocity_ejection = 1f;
             ArtManager.vents.Add("better_thruster", vent);
@@ -96,8 +96,8 @@ namespace StarPixel
             vent.temperature = 1500;
             vent.size_start = new Vector2(1.0f, 1.0f);
             vent.size_end = new Vector2(4.0f, 1.0f);
-            vent.particle_life = 0.6f;
-            vent.temp_halflife = 0.3f;
+            vent.particle_life = 0.45f;
+            vent.temp_halflife = 0.2f;
             vent.velocity_scatter = 0.5f;
             vent.velocity_ejection = 1f;
             ArtManager.vents.Add("worse_thruster", vent);

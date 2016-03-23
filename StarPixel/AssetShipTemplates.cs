@@ -58,7 +58,7 @@ namespace StarPixel
                 new Vector2(18, 3),
             } );
 
-            template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.6f , 1, 0, 0);
+            template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.8f , 1, 0, 0);
             template.AddThrusterPort(new Vector2(12, 4), right ,     0.4f, 0, -1, -1);
             template.AddThrusterPort(new Vector2(-8, 11), right,     0.4f, 0, -1, 1);
             template.AddThrusterPort(new Vector2(12, -4), left,      0.4f, 0, 1, 1);
