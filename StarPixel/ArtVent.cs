@@ -37,7 +37,7 @@ namespace StarPixel
             else
             {
                 // Yea, so i estimate the count based on the theoretical maximum count
-                count = (int)(scale * particle_life * GameConst.framerate * generation_frequency);
+                count = (int)(scale * particle_life * GameConst.framerate * generation_frequency) + 1;
             }
 
 
