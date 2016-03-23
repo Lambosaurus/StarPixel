@@ -23,22 +23,21 @@ namespace StarPixel
 
             ArtExplosionResource exp_art = new ArtExplosionResource("particle");
 
+            
             exp_art.particle_count = 6;
-            exp_art.length = 0.55f;
-            exp_art.stretch_width = 1;
-            exp_art.stretch_length = 5;
-            exp_art.width = 0.35f;
+            exp_art.size_start = new Vector2(2.5f, 0.5f);
+            exp_art.size_end = new Vector2(0.5f, 0.5f);
             exp_art.velocity_bounce = 0.75f;
             exp_art.velocity_scatter = 0.5f;
             exp_art.particle_size_scatter = 1.5f;
-            exp_art.particle_life = 0.4f;
+            exp_art.particle_life = 1.0f;
 
 
-            exp_art.coloring_method = ParticleColoring.Blend;
-            exp_art.particle_color_start = Color.White;
-            exp_art.particle_color_end = Color.LimeGreen;
+            exp_art.coloring_method = ParticleColoring.Temp;
+            //exp_art.particle_color_start = Color.White;
+            //exp_art.particle_color_end = Color.LimeGreen;
             exp_art.temperature = 4500;
-            exp_art.temp_halflife = 0.1f;
+            exp_art.temp_halflife = 0.15f; //0.1f;
 
 
             ArtManager.explosions.Add("boom", exp_art);

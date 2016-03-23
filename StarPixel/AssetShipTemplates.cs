@@ -59,12 +59,12 @@ namespace StarPixel
             } );
 
             template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.6f , 1, 0, 0);
-            template.AddThrusterPort(new Vector2(12, 4), right ,     0.4f, 0, -0.5f, -0.5f);
-            template.AddThrusterPort(new Vector2(-8, 11), right,     0.4f, 0, -0.5f, 0.5f);
-            template.AddThrusterPort(new Vector2(12, -4), left,      0.4f, 0, 0.5f, 0.5f);
-            template.AddThrusterPort(new Vector2(-8, -11), left,     0.4f, 0, 0.5f, -0.5f);
-            template.AddThrusterPort(new Vector2(0, 9), 0.2f,     0.4f, -0.5f, 0, 0);
-            template.AddThrusterPort(new Vector2(0, -9), -0.2f,   0.4f, -0.5f, 0, 0);
+            template.AddThrusterPort(new Vector2(12, 4), right ,     0.4f, 0, -1, -1);
+            template.AddThrusterPort(new Vector2(-8, 11), right,     0.4f, 0, -1, 1);
+            template.AddThrusterPort(new Vector2(12, -4), left,      0.4f, 0, 1, 1);
+            template.AddThrusterPort(new Vector2(-8, -11), left,     0.4f, 0, 1, -1);
+            template.AddThrusterPort(new Vector2(0, 9), 0.2f,     0.4f, -1, 0, 0);
+            template.AddThrusterPort(new Vector2(0, -9), -0.2f,   0.4f, -1, 0, 0);
 
             template.AddWeaponPort(new Vector2(10, 2), 1.0f, 0.0f, 0.05f);
             template.AddWeaponPort(new Vector2(10, -2), 1.0f, 0.0f, 0.05f);

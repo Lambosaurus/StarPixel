@@ -12,67 +12,37 @@ using Microsoft.Xna.Framework.Media;
 namespace StarPixel
 {
 
-    public class ArtVentResource
+    public class ArtVentResource : ArtParticleCloudResource
     {
-        string sprite_name;
+        public float velocity_scatter = 0.1f;
+        public float velocity_ejection = 1.0f;
 
-        public Texture2D sprite;
-        public Vector2 sprite_center;
-
-        const float natural_log_half = -0.693147180559f; // close enough....
-
-        public float std_particle_life = 1.0f;
-        public float std_temp_halflife = 1.0f;
-        public float std_velocity_scatter = 0.1f;
-        public float std_temperature_scatter = 0.0f;
-
-        public float std_ejection_velocity = 1.0f;
-        public float std_ejection_temperature = 1000f;
-
-        public float std_particle_width = 1.0f;
-        public float std_particle_length = 1.0f;
-        public float std_particle_stretch_length = 1.0f;
-        public float std_particle_stretch_width = 1.0f;
-
-        public int std_particle_count;
-
-
-        public ArtVentResource(string spritename)
+        public float generation_frequency = 0.4f; // This should not exceed 1.
+        
+        
+        public ArtVentResource(string particle_name) : base(particle_name)
         {
-            sprite_name = spritename;
-            
+            coloring_method = ParticleColoring.Temp;
+            particle_count = -1;
         }
 
-        public void Load(ContentManager content)
-        {
-            sprite = content.Load<Texture2D>(sprite_name);
-
-            Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
-            sprite_center = size / 2;
-        }
-
+        
         public ArtVent New( float scale )
         {
+            int count;
+            if (particle_count != -1)
+            {
+                count = particle_count;
+            }
+            else
+            {
+                // Yea, so i estimate the count based on the theoretical maximum count
+                count = (int)(scale * particle_life * GameConst.framerate * generation_frequency);
+            }
+
+
             // TODO: fill out properties
-            ArtVent vent = new ArtVent(this, (int)(std_particle_count*scale) );
-
-            vent.temperature_decay = (float)Math.Exp(natural_log_half / (std_temp_halflife * 60 * scale)); // I KNEW THIS SHIT WOULD COME IN HANDY ONE DAY!
-            vent.alpha_decay = 1.0f / (std_particle_life * scale * 60);
-
-            vent.temperature_scatter = std_temperature_scatter;
-            vent.velocity_scatter = std_velocity_scatter * scale;
-
-            vent.particle_size_0.Y = (std_particle_width * std_particle_stretch_width) * scale;
-            vent.particle_size_1.Y = (std_particle_width - std_particle_width * (std_particle_stretch_width)) * scale;
-
-            vent.particle_size_0.X = (std_particle_length * std_particle_stretch_length) * scale;
-            vent.particle_size_1.X = (std_particle_length - std_particle_length *(std_particle_stretch_length)) * scale;
-
-            vent.ejection_temperature = std_ejection_temperature;
-            vent.ejection_velocity = std_ejection_velocity;
-
-            vent.radius = vent.ejection_velocity + (std_particle_life * scale * 60);
-            vent.radius *= 2;
+            ArtVent vent = new ArtVent(this, scale, count );
 
             return vent;
         }
@@ -80,95 +50,84 @@ namespace StarPixel
 
 
 
-    public class ArtVent
+    public class ArtVent : ArtParticleCloud
     {
-        public float alpha_decay;
-        public float temperature_decay;
 
-        public float ejection_velocity;
-        public float ejection_temperature;
-
-        //float position_scatter;
+        public float spawn_temperature;
         public float velocity_scatter;
-        public float temperature_scatter;
+        public float velocity_ejection;
 
-
-        public float radius;
-
-        public Vector2 particle_size_0;
-        public Vector2 particle_size_1;
-
-
-        Vector2[] position;
-        Vector2[] velocity;
-        float[] alpha;
-        float[] temperature;
-        float[] angle;
-
-        int index_max;
+        
         int index_start;
         int index_end;
 
-        ArtVentResource resource;
+        //ArtVentResource resource;
 
-        float generator_counter;
+        float gen_counter;
+        float gen_freq;
 
-        public ArtVent( ArtVentResource arg_resource, int particle_max )
+        public ArtVent( ArtVentResource arg_resource, float arg_size, int arg_count ) : base(arg_resource, arg_size, arg_count, new Vector2(0,0) )
         {
-            generator_counter = 0.0f;
+            gen_counter = 0.0f;
 
-            resource = arg_resource;
+            //resource = arg_resource;
+
+            gen_freq = arg_resource.generation_frequency;
+
+            velocity_scatter = arg_resource.velocity_scatter * arg_size;
+            velocity_ejection = arg_resource.velocity_ejection;
+
+            spawn_temperature = arg_resource.temperature;
             
-            index_max = particle_max;
+            radius = velocity_ejection + (arg_resource.particle_life * arg_size * GameConst.framerate);
+            radius *= 2;
+
             index_end = 0;
             index_start = 0;
-
-            position = new Vector2[particle_max];
-            velocity = new Vector2[particle_max];
-            alpha = new float[particle_max];
-            temperature = new float[particle_max];
-            angle = new float[particle_max];
-
         }
 
         public void Generate(Vector2 pos, Vector2 vel, float p_angle, float rate)
         {
-            if (rate > 0.0f)
+            rate = Utility.Clamp(rate, 0, 1);
+            if (rate > 0.2f)
             {
-                generator_counter += rate;
-                while (generator_counter > 1)
+                gen_counter += gen_freq;
+                if (gen_counter > 1)
                 {
-                    generator_counter--;
-                    Add(pos, vel, p_angle);
+                    gen_counter--;
+                    Add(pos, vel, p_angle, Utility.Sqrt(rate));
                 }
             }
+
         }
 
-        public void Add(Vector2 pos, Vector2 vel, float p_angle)
+        public void Add(Vector2 arg_center, Vector2 vel, float p_angle, float a_scale)
         {
-            position[index_end] = pos;
-            velocity[index_end] = vel + Utility.CosSin(p_angle, ejection_velocity) + Utility.RandVec(velocity_scatter);
+            center = arg_center;
+            position[index_end] = arg_center;
+            velocity[index_end] = vel + (Utility.CosSin(p_angle, velocity_ejection) + Utility.RandVec(velocity_scatter)) * a_scale;
 
-            temperature[index_end] = ejection_temperature + (temperature_scatter * Utility.Rand(-1, 1));
+            temp[index_end] = spawn_temperature;
             alpha[index_end] = 1.0f;
             angle[index_end] = p_angle;
+            scale[index_end] = a_scale; //1.0f;
 
             // get to next write index
             index_end++;
-            if (index_end >= index_max) { index_end = 0; }
+            if (index_end >= count) { index_end = 0; }
 
             if (index_end == index_start)
             {
                 index_start++;
-                if (index_start >= index_max) { index_start = 0; }
+                if (index_start >= count) { index_start = 0; }
             }
         }
 
-        public void Update()
+        public override void Update()
         {
             int i = index_start;
             int c = index_end - index_start;
-            if (c < 0) { c += index_max; }
+            if (c < 0) { c += count; }
 
             while (c > 0)
             {
@@ -176,21 +135,21 @@ namespace StarPixel
                 if (alpha[i] < 0.0f)
                 {
                     index_start = i + 1;
-                    if (index_start >= index_max) { index_start = 0; }
+                    if (index_start >= count) { index_start = 0; }
                 }
                 else
                 {
                     position[i] += velocity[i];
-                    temperature[i] *= temperature_decay;
+                    temp[i] *= temp_decay;
                 }
 
                 c--;
                 i++;
-                if (i >= index_max) { i = 0; }
+                if (i >= count) { i = 0; }
             }
         }
 
-        public bool InView(Camera camera)
+        public override bool InView(Camera camera)
         {
             // if index_start == index_end we have no particles left!
             if (index_start != index_end)
@@ -201,27 +160,23 @@ namespace StarPixel
             return false;
         }
 
-        public void Draw(Camera camera)
+        public override void Draw(Camera camera)
         {
             if (!InView(camera)) { return; }
 
 
             int i = index_start;
             int c = index_end - index_start;
-            if (c < 0) { c += index_max; }
+            if (c < 0) { c += count; }
 
             while (c > 0)
             {
-                Color k = ColorManager.GetThermo(temperature[i]) * (alpha[i]);
-
-                //Vector2 transform = new Vector2( particle_length_0 + (particle_length_1*alpha[i]), particle_length_0 + (particle_length_1 * alpha[i]));
-                Vector2 transform = particle_size_0 + (particle_size_1*alpha[i]);
-
-                camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i], resource.sprite_center, transform * camera.scale, SpriteEffects.None, 0);
+                Color k = ColorManager.GetThermo(temp[i]);
+                this.DrawParticle(camera, i, k);
 
                 c--;
                 i++;
-                if (i >= index_max) { i = 0; }
+                if (i >= count) { i = 0; }
             }
         }
 

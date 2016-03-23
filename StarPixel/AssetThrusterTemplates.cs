@@ -32,28 +32,25 @@ namespace StarPixel
 
 
             ArtVentResource vent = new ArtVentResource("particle");
-            vent.std_ejection_temperature = 2000;
-            vent.std_particle_count = 30;
-            vent.std_particle_length = 1.0f;
-            vent.std_particle_width = 1.0f;
-            vent.std_particle_stretch_length = 4f;
-            vent.std_particle_life = 5f;
-            vent.std_temperature_scatter = 0;
-            vent.std_temp_halflife = 3f;
-            vent.std_velocity_scatter = 0.1f;
-            vent.std_ejection_velocity = 1f;
+            vent.temperature = 2000;
+            vent.size_start = new Vector2(1.0f, 1.0f);
+            vent.size_end = new Vector2(4.0f, 1.0f);
+            vent.particle_life = 5f;
+            vent.temp_halflife = 3f;
+            vent.velocity_scatter = 0.1f;
+            vent.velocity_ejection = 1f;
+            vent.generation_frequency = 0.8f;
+            vent.particle_count = 10;
             ArtManager.vents.Add("default_sparkles", vent);
 
             vent = new ArtVentResource("particle");
-            vent.std_ejection_temperature = 2000;
-            vent.std_particle_count = 50;
-            vent.std_particle_length = 1.0f;
-            vent.std_particle_stretch_length = 4f;
-            vent.std_particle_life = 0.6f;
-            vent.std_particle_width = 0.75f;
-            vent.std_temp_halflife = 0.33f;
-            vent.std_velocity_scatter = 0.15f;
-            vent.std_ejection_velocity = 1f;
+            vent.temperature = 2000;
+            vent.size_start = new Vector2(1.0f, 1.0f);
+            vent.size_end = new Vector2(4.0f, 1.0f);
+            vent.particle_life = 0.6f;
+            vent.temp_halflife = 0.33f;
+            vent.velocity_scatter = 0.15f;
+            vent.velocity_ejection = 1f;
             ArtManager.vents.Add("default_thruster", vent);
 
 
@@ -73,16 +70,13 @@ namespace StarPixel
 
 
             vent = new ArtVentResource("particle");
-            vent.std_ejection_temperature = 5500;
-            vent.std_particle_count = 50;
-            vent.std_particle_stretch_length = 4f;
-            vent.std_particle_stretch_width = 1f;
-            vent.std_particle_life = 0.7f;
-            vent.std_particle_width = 1.0f;
-            vent.std_particle_length = 1.0f;
-            vent.std_temp_halflife = 0.4f;
-            vent.std_velocity_scatter = 0.2f;
-            vent.std_ejection_velocity = 1f;
+            vent.temperature = 5500;
+            vent.size_start = new Vector2(1.0f, 1.0f);
+            vent.size_end = new Vector2(4.0f, 1.0f);
+            vent.particle_life = 0.7f;
+            vent.temp_halflife = 0.4f;
+            vent.velocity_scatter = 0.2f;
+            vent.velocity_ejection = 1f;
             ArtManager.vents.Add("better_thruster", vent);
 
 
@@ -99,16 +93,13 @@ namespace StarPixel
             thruster_templates.Add("worse", template);
 
             vent = new ArtVentResource("particle");
-            vent.std_ejection_temperature = 1500;
-            vent.std_particle_count = 50;
-            vent.std_particle_stretch_length = 4f;
-            vent.std_particle_stretch_width = 1f;
-            vent.std_particle_life = 0.6f;
-            vent.std_particle_width = 1.0f;
-            vent.std_particle_length = 1.0f;
-            vent.std_temp_halflife = 0.3f;
-            vent.std_velocity_scatter = 0.5f;
-            vent.std_ejection_velocity = 1f;
+            vent.temperature = 1500;
+            vent.size_start = new Vector2(1.0f, 1.0f);
+            vent.size_end = new Vector2(4.0f, 1.0f);
+            vent.particle_life = 0.6f;
+            vent.temp_halflife = 0.3f;
+            vent.velocity_scatter = 0.5f;
+            vent.velocity_ejection = 1f;
             ArtManager.vents.Add("worse_thruster", vent);
 
         }

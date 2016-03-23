@@ -17,7 +17,7 @@ namespace StarPixel
 
         float last_value = 0;
 
-        public PID( float arg_p, float arg_i, float arg_d, float update_rate = 60, float maximum_i = 10f )
+        public PID( float arg_p, float arg_i, float arg_d, float update_rate = GameConst.framerate, float maximum_i = 10f )
         {
             p = arg_p;
             i = arg_i / update_rate;

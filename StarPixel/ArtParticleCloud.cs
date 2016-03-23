@@ -29,12 +29,8 @@ namespace StarPixel
         
         public float particle_life = 2.0f; // the time in seconds the particles will live for
 
-        public float width = 1.0f; // this is a multiplier on the sprite dimensions
-        public float length = 1.0f;
-
-        public float stretch_length = 1.0f; // this an additional multiplier that will be applied as the particle decays
-        public float stretch_width = 1.0f;
-        
+        public Vector2 size_start = new Vector2(1.0f, 1.0f);
+        public Vector2 size_end = new Vector2(1.0f, 1.0f);
         
         string sprite_name;
         public Texture2D sprite;
@@ -91,14 +87,12 @@ namespace StarPixel
 
             alpha_max = 1.0f;
 
-            alpha_decay = 1.0f / (resource.particle_life * size * 60);
+            alpha_decay = 1.0f / (resource.particle_life * size * GameConst.framerate);
 
             
-            particle_size_0.Y = (resource.width * resource.stretch_width) * size;
-            particle_size_1.Y = (resource.width - (resource.width * resource.stretch_width)) * size;
+            particle_size_0 = resource.size_end * size;
+            particle_size_1 = (resource.size_start - resource.size_end) * size;
 
-            particle_size_0.X = (resource.length * resource.stretch_length) * size;
-            particle_size_1.X = (resource.length - (resource.length * resource.stretch_length)) * size;
 
 
             velocity = new Vector2[count];
@@ -110,7 +104,7 @@ namespace StarPixel
             if ( resource.coloring_method == ParticleColoring.Temp )
             {
                 temp = new float[count];
-                temp_decay = (float)Math.Exp(Utility.natural_log_half / (resource.temp_halflife * 60 * size));
+                temp_decay = Utility.DecayConstant(resource.temp_halflife * GameConst.framerate * size);
             }
         }
 
@@ -171,7 +165,7 @@ namespace StarPixel
         {
             Color k = color*alpha[i];
             Vector2 transform = (particle_size_0 + (particle_size_1 * alpha[i]));
-            transform.X *= scale[i];
+            transform *= scale[i];
 
             camera.batch.Draw(resource.sprite, camera.Map(position[i]), null, k, angle[i], resource.sprite_center, transform * (camera.scale), SpriteEffects.None, 0);
         }

@@ -17,10 +17,16 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+    public static class GameConst
+    {
+        public const int framerate = 60;
+    }
+
+
     public static class Utility
     {
         public const float natural_log_half = -0.693147180559f; // close enough....
-
+        public const int framerate = 60;
 
 
         // lol, 32KB right here. Ez.

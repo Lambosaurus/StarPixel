@@ -153,7 +153,7 @@ namespace StarPixel
         public IntellegenceRoamer()
         {
             target = Utility.RandVec(target_range);
-            target_ok_distance = 50f;
+            target_ok_distance = 20f;
 
 
             angle_tracker = new PID(10f, 0.5f, 10f);

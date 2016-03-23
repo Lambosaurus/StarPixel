@@ -1,6 +1,5 @@
 ﻿
 
-
 > Standardise up how things are handed to the universe... maybe... eh.
 	Instead of lines like: universe.art_temp.Add(art_resource.New());
 	We should have universe.AddTempArt(art_resource.New());
@@ -38,21 +37,13 @@
 
 
 
-> Abstract out the current Art particle frameworks, to give them common shit, and stop all this code duplication.
-	Old thoughts on this issue:
+> Particles:
 	> Explore a global particle framwork
-		- Thermoparticles
-			- For thruster speckles
-			- For firey debris
-		- Solid color particles
-			- Sheild pops
-			> I can just work solid color particles into explosions
+	> Add in shield pop art
+	> Thruster sparkles
 
-	> Add in shield pop art. See above
+> Thruster sparkle ports too.
 
-
-> Thrusters
-	> Have sparkles assigned dynamically and tidyily
 
 
 > The below would be best solved using a GUI class

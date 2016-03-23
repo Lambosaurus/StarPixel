@@ -82,7 +82,7 @@ namespace StarPixel
             float rad_sq = Utility.Sqrt(radius);
 
 
-            particle_decay = Utility.DecayConstant(resource.particle_life * 60 * arg_size);
+            particle_decay = Utility.DecayConstant(resource.particle_life * GameConst.framerate * arg_size);
 
             arg_size = Utility.Sqrt(arg_size);
 

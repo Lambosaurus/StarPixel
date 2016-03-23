@@ -137,7 +137,6 @@ namespace StarPixel
             foreach (ThrusterPort port in particle_ports)
             {
                 float strength = (port.kx * control_x) + (port.ky * control_y) + (port.kt * control_t) ;
-                strength *= 0.8f;
                 if (strength > 0)
                 {
                     particle_vents[i].Generate(ship.pos + Utility.Rotate(port.position, ship.angle), ship.velocity, port.angle + ship.angle, strength);
