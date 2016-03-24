@@ -83,17 +83,6 @@ namespace StarPixel
             cloud_velocity = arg_velocity;
         }
 
-        public void AddS(Vector2 offset, Vector2 vel, float arg_angle, float arg_scale, float arg_alpha = 1.0f)
-        {
-            position[index] = center + offset;
-            velocity[index] = vel + cloud_velocity;
-            angle[index] = arg_angle;
-            scale[index] = arg_scale;
-            alpha[index] = arg_alpha;
-
-            index++;
-        }
-
         public void Add(Vector2 vel, float arg_angle, float arg_scale, float arg_alpha = 1.0f)
         {
             position[index] = center;

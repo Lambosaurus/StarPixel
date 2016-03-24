@@ -13,19 +13,25 @@ namespace StarPixel
 {
     public class ArtShieldResource : ArtParticleCloudResource
     {
-        
-        public float particle_speed; // is this an angular speed? I do not recall.
+        public float particle_velocity;
+           
+
+        public float shield_particle_speed; // is this an angular speed? I do not recall.
                                      // I am considering replaceing angular speeds with a dynamic force based speed
 
         // particle_life will behave as a half life
 
-        public float particle_size_min;
-        public float particle_size_max;
+        public float shield_particle_size_min;
+        public float shield_particle_size_max;
 
-        public ArtExplosionResource pop_resource;
-
+        public float shield_particle_halflife;
+        
         public ArtShieldResource(string particle_name) : base(particle_name)
         {
+            // these are for the pop effect
+            size_start = new Vector2(0.3f, 1.0f);
+            size_end = new Vector2(1.0f, 0.3f);
+            
         }
         
 
@@ -81,7 +87,7 @@ namespace StarPixel
             float rad_sq = Utility.Sqrt(radius);
 
 
-            particle_decay = Utility.DecayConstant(resource.particle_life * GameConst.framerate * arg_size);
+            particle_decay = Utility.DecayConstant(resource.shield_particle_halflife * GameConst.framerate * arg_size);
 
             arg_size = Utility.Sqrt(arg_size);
 
@@ -94,12 +100,12 @@ namespace StarPixel
 
                 // particle size scalar
                 float mass = Utility.Rand(1.0f);
-                size[i] = arg_size * (resource.particle_size_min + mass * resource.particle_size_max);
+                size[i] = arg_size * (resource.shield_particle_size_min + mass * resource.shield_particle_size_max);
 
                 // note that the speed is an angular value
                 // the speed is randomly generated, but then modified by the mass
                 // this should encourage, but not force, heavy particles to be slow
-                speed[i] = Utility.Rand(-resource.particle_speed, resource.particle_speed) / (rad_sq * (0.5f + mass));
+                speed[i] = Utility.Rand(-resource.shield_particle_speed, resource.shield_particle_speed) / (rad_sq * (0.5f + mass));
 
                 angle[i] = Utility.RandAngle();
             }
@@ -151,14 +157,14 @@ namespace StarPixel
         public ArtTemporary Pop( Vector2 arg_velocity )
         {
             total_alpha = 0.0f;
-            
-            ArtExplosion pop = new ArtExplosion(resource.pop_resource, 1.0f, count, pos, arg_velocity);
-            pop.radius += radius;
+
+            ArtShieldPop pop = new ArtShieldPop(resource, radius, count, pos, arg_velocity);
+
             for (int i = 0; i < count; i++)
             {
                 Vector2 sincos = Utility.CosSin(angle[i]);
-                float vel = Utility.Rand(resource.pop_resource.velocity_scatter);
-                pop.AddS(sincos * depth[i], sincos * vel, angle[i], size[i], Utility.Clamp(alpha[i] + Utility.Rand(0.25f)) );
+                float vel = Utility.Rand(resource.particle_velocity);
+                pop.Add(sincos * depth[i], sincos * vel, angle[i], size[i], Utility.Clamp(alpha[i] + Utility.Rand(0.25f)) );
 
                 alpha[i] = 0;
             }
@@ -194,6 +200,45 @@ namespace StarPixel
             }
         }
             
+    }
+
+
+
+    public class ArtShieldPop : ArtParticleCloud
+    {
+        
+        int index;
+
+        Vector2 cloud_velocity;
+
+
+
+        public ArtShieldPop(ArtShieldResource arg_resource, float shield_radius, int arg_count, Vector2 arg_center, Vector2 arg_velocity) : base(arg_resource, 1.0f, arg_count, arg_center)
+        {
+            radius = arg_resource.particle_velocity * (1.0f / alpha_decay);
+            radius += shield_radius;
+
+            index = 0;
+
+            cloud_velocity = arg_velocity;
+        }
+
+        public void Add(Vector2 offset, Vector2 vel, float arg_angle, float arg_scale, float arg_alpha = 1.0f)
+        {
+            position[index] = center + offset;
+            velocity[index] = vel + cloud_velocity;
+            angle[index] = arg_angle;
+            scale[index] = arg_scale;
+            alpha[index] = arg_alpha;
+
+            index++;
+        }
+        
+        public override void Update()
+        {
+            center += cloud_velocity;
+            base.Update();
+        }
     }
 }
 
