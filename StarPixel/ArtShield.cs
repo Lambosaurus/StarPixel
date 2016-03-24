@@ -55,6 +55,7 @@ namespace StarPixel
 
         Vector2 pos;
         float radius;
+        float scalar;
 
         public float particle_decay;
 
@@ -74,6 +75,7 @@ namespace StarPixel
             resource = arg_resource;
 
             radius = arg_radius;
+            scalar = arg_size;
 
             count = arg_count;
 
@@ -158,7 +160,7 @@ namespace StarPixel
         {
             total_alpha = 0.0f;
 
-            ArtShieldPop pop = new ArtShieldPop(resource, radius, count, pos, arg_velocity);
+            ArtShieldPop pop = new ArtShieldPop(resource, scalar, radius, count, pos, arg_velocity);
 
             for (int i = 0; i < count; i++)
             {
@@ -213,8 +215,9 @@ namespace StarPixel
 
 
 
-        public ArtShieldPop(ArtShieldResource arg_resource, float shield_radius, int arg_count, Vector2 arg_center, Vector2 arg_velocity) : base(arg_resource, 1.0f, arg_count, arg_center)
+        public ArtShieldPop(ArtShieldResource arg_resource, float arg_size, float shield_radius, int arg_count, Vector2 arg_center, Vector2 arg_velocity) : base(arg_resource, 1.0f, arg_count, arg_center)
         {
+            alpha_decay /= arg_size;
             radius = arg_resource.particle_velocity * (1.0f / alpha_decay);
             radius += shield_radius;
 

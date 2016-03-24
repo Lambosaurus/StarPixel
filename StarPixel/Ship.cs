@@ -188,7 +188,7 @@ namespace StarPixel
                         {
                             if (weapon.ReadyToFire())
                             {
-                                weapon.Fire(0.0f);
+                                weapon.Fire( orders.firing_angle );
                             }
                         }
                     }

@@ -22,6 +22,7 @@ namespace StarPixel
         public Vector2 control_thrust = new Vector2(0,0);
         public float control_torque = 0;
 
+        public float firing_angle;
         public bool firing;
     }
 
@@ -45,24 +46,30 @@ namespace StarPixel
 
     public class IntellegenceHuman : Intellegence
     {
+        Vector2 target;
+
         public IntellegenceHuman()
         {
 
+        }
+
+        public void GiveTarget(Vector2 arg_target)
+        {
+            target = arg_target;
         }
 
         public override IntOutputs Process(IntInputs inputs)
         {
 
             KeyboardState key_state = Keyboard.GetState();
+            MouseState mouse_state = Mouse.GetState();
 
-            
             outputs.control_thrust.X = key_state.IsKeyDown(Keys.W) ? 1.0f : ((key_state.IsKeyDown(Keys.S)) ? -1.0f : 0.0f);
-            
             outputs.control_thrust.Y = key_state.IsKeyDown(Keys.D) ? 1.0f : ((key_state.IsKeyDown(Keys.A)) ? -1.0f : 0.0f);
-
             outputs.control_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);
 
-            outputs.firing = key_state.IsKeyDown(Keys.Space);
+            outputs.firing = mouse_state.LeftButton == ButtonState.Pressed;
+            outputs.firing_angle = Utility.Angle(target - inputs.pos) - inputs.angle;
 
             return outputs;
         }

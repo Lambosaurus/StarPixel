@@ -36,7 +36,7 @@ namespace StarPixel
             art.shield_particle_halflife = 1.0f;
 
             art.particle_velocity = 0.5f;
-            art.particle_life = 8f;
+            art.particle_life = 6f;
             //art.size_end = new Vector2(0.5f, 0.5f);
 
             ArtManager.shields["default"] = art;
@@ -56,14 +56,14 @@ namespace StarPixel
             art = new ArtShieldResource("particle");
             art.particle_color_start = Color.White;
             art.particle_color_end = Color.LimeGreen;
-            art.particle_count = 20;
+            art.particle_count = 22;
             art.shield_particle_size_max = 0.8f;
             art.shield_particle_size_min = 0.3f;
             art.shield_particle_speed = 0.1f;
             art.shield_particle_halflife = 0.8f;
 
             art.particle_velocity = 0.7f;
-            art.particle_life = 4f;
+            art.particle_life = 3f;
             //art.size_end = new Vector2(0.5f, 0.5f);
 
             ArtManager.shields["green"] = art;

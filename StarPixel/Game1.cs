@@ -184,18 +184,34 @@ namespace StarPixel
                     camera.pos += delta* camera.upsample_multiplier;
                     
                 }
+                
             }
             mouse_pos = new_pos;
 
+
+            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            {
+                if( selectedEntity != null && selectedEntity is Ship)
+                {
+                    Ship ship = (Ship)selectedEntity;
+                    if(ship.ai is IntellegenceHuman)
+                    {
+                        Vector2 target = camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y) * camera.upsample_multiplier);
+                        ((IntellegenceHuman)ship.ai).GiveTarget(target);
+                    }
+                }
+            }
+
+            /*
             if (mouse_left == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Released)
             {
                 selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X* camera.upsample_multiplier, Mouse.GetState().Y* camera.upsample_multiplier)));
-                
+
             }
             mouse_left = Mouse.GetState().LeftButton;
+            */
 
-
-            time_update_counter += time_accelleration;
+                time_update_counter += time_accelleration;
             while (time_update_counter > 1.0)
             {
                 time_update_counter--;
