@@ -63,7 +63,14 @@ namespace StarPixel
             float total_dmg = resistance.EvaluateDamage(exp.dmg);
             integrity -= total_dmg;
 
-            art.Ping(arg_pos, total_dmg);
+            if (integrity > 0)
+            {
+                art.Ping(arg_pos, total_dmg);
+            }
+            else
+            {
+                ship.universe.art_temp.Add(art.Pop(ship.velocity));
+            }
         }
 
         public override void Update()

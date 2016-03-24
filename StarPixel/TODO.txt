@@ -1,4 +1,6 @@
 ﻿
+> Excend thermo range into the blue
+
 
 > Standardise up how things are handed to the universe... maybe... eh.
 	Instead of lines like: universe.art_temp.Add(art_resource.New());
@@ -40,7 +42,9 @@
 > Particles:
 	> Explore a global particle framwork
 	> Add in shield pop art
+		- Needs cleaning up how the explosions are generated
 	> Thruster sparkles
+
 
 > Thruster sparkle ports too.
 

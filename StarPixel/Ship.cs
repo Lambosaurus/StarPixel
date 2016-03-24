@@ -167,7 +167,7 @@ namespace StarPixel
 
         public override void Update()
         {
-            
+
             if (ai != null)
             {
                 ai_inputs.pos = pos;

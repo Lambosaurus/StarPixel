@@ -22,6 +22,8 @@ namespace StarPixel
         public float particle_size_min;
         public float particle_size_max;
 
+        public ArtExplosionResource pop_resource;
+
         public ArtShieldResource(string particle_name) : base(particle_name)
         {
         }
@@ -57,8 +59,6 @@ namespace StarPixel
         public float[] alpha;
         public float[] size;
 
-        public Color color;
-
         float total_alpha = 0.0f;
 
         int angle_wrap_counter = 0;
@@ -77,8 +77,7 @@ namespace StarPixel
             alpha = new float[count];
             size = new float[count];
 
-            color = resource.particle_color_start;
-
+            
             float rad_sq = Utility.Sqrt(radius);
 
 
@@ -143,10 +142,29 @@ namespace StarPixel
             Vector2 rel = arg_pos - pos;
             for (int i = 0; i < count; i++)
             {
-                float dst = dmg / ( 2 * size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
+                float dst = dmg / ( 1.5f * size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
                 alpha[i] += dst;
                 alpha[i] = Utility.Clamp(alpha[i], 0, 1);
             }
+        }
+
+        public ArtTemporary Pop( Vector2 arg_velocity )
+        {
+            total_alpha = 0.0f;
+            
+            ArtExplosion pop = new ArtExplosion(resource.pop_resource, 1.0f, count, pos, arg_velocity);
+            pop.radius += radius;
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 sincos = Utility.CosSin(angle[i]);
+                float vel = Utility.Rand(resource.pop_resource.velocity_scatter);
+                pop.AddS(sincos * depth[i], sincos * vel, angle[i], size[i], Utility.Clamp(alpha[i] + Utility.Rand(0.25f)) );
+
+                alpha[i] = 0;
+            }
+
+
+            return pop;
         }
         
 
@@ -169,7 +187,8 @@ namespace StarPixel
 
                 if (alpha[i] > 0.05)
                 {
-                    Color k = color * alpha[i];
+                    //Color k = color * alpha[i];
+                    Color k = Color.Lerp(resource.particle_color_end, resource.particle_color_start, alpha[i]) * alpha[i];
                     camera.batch.Draw(resource.sprite, ppos, null, k, angle[i], resource.sprite_center, size[i] * new Vector2(0.3f, 1.0f) * camera.scale, SpriteEffects.None, 0);
                 }
             }

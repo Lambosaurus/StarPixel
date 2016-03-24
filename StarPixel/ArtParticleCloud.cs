@@ -75,7 +75,7 @@ namespace StarPixel
         protected float alpha_decay;
 
         protected Vector2 center;
-        protected float radius; // must be set by derivitive
+        public float radius; // must be set by derivitive
 
         public ArtParticleCloud( ArtParticleCloudResource arg_resource, float size, int arg_count, Vector2 arg_center)
         {

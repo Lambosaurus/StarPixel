@@ -48,7 +48,7 @@ namespace StarPixel
 
             Ship ship0 = CreateNewShip("F2");
             ship0.ai = new IntellegenceRoamer();
-            ship0.MountThruster("default");
+            ship0.MountThruster("worse");
             ship0.MountShield("default");
             ship0.MountArmor("default");
             ship0.Paint(Color.Blue);
@@ -57,7 +57,8 @@ namespace StarPixel
 
             Ship ship1 = CreateNewShip("F2");
             ship1.ai = new IntellegenceRoamer();
-            ship1.MountThruster("worse");
+            ship1.MountThruster("default");
+            ship1.MountShield("green");
             ship1.MountArmor("default");
             ship1.pos = Utility.RandVec(400);
         }

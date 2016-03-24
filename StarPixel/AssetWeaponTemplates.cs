@@ -25,10 +25,10 @@ namespace StarPixel
 
             
             exp_art.particle_count = 6;
-            exp_art.size_start = new Vector2(2.5f, 0.5f);
-            exp_art.size_end = new Vector2(0.5f, 0.5f);
+            exp_art.size_start = new Vector2(2.0f, 0.35f);
+            exp_art.size_end = new Vector2(0.25f, 0.35f);
             exp_art.velocity_bounce = 0.75f;
-            exp_art.velocity_scatter = 0.5f;
+            exp_art.velocity_scatter = 0.75f;
             exp_art.particle_size_scatter = 1.5f;
             exp_art.particle_life = 1.0f;
 

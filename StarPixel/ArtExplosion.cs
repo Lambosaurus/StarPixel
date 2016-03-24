@@ -25,14 +25,14 @@ namespace StarPixel
         {
         }
         
+        
         public ArtExplosion New( float scale, Vector2 cloud_center, Vector2 cloud_velocity, Vector2 skew )
         {
             scale = Utility.Sqrt(scale);
             int count = (int)(particle_count * scale);
 
             ArtExplosion exp = new ArtExplosion(this, scale, count, cloud_center, cloud_velocity);
-
-            skew.Normalize();
+            
             skew *= velocity_bounce;
 
             // TODO: Make this equation make sense one day.
@@ -81,6 +81,17 @@ namespace StarPixel
             index = 0;
 
             cloud_velocity = arg_velocity;
+        }
+
+        public void AddS(Vector2 offset, Vector2 vel, float arg_angle, float arg_scale, float arg_alpha = 1.0f)
+        {
+            position[index] = center + offset;
+            velocity[index] = vel + cloud_velocity;
+            angle[index] = arg_angle;
+            scale[index] = arg_scale;
+            alpha[index] = arg_alpha;
+
+            index++;
         }
 
         public void Add(Vector2 vel, float arg_angle, float arg_scale, float arg_alpha = 1.0f)

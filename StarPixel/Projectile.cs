@@ -80,6 +80,8 @@ namespace StarPixel
             relative_velocity.X *= -1;
             relative_velocity = Utility.Rotate(relative_velocity, normal_angle);
 
+            relative_velocity.Normalize();
+
             return relative_velocity;
         }
     }
