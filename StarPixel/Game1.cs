@@ -30,11 +30,15 @@ namespace StarPixel
 
         int scrollVal = 0;
         Vector2 mouse_pos = new Vector2(0, 0);
-        Texture2D cursor;
-        ButtonState mouse_left = Mouse.GetState().LeftButton;
+
+        Texture2D cursor_fire;
+        Texture2D cursor_select;
+
+        ButtonState mouse_middle = Mouse.GetState().LeftButton;
         Universe universe;
         Entity selectedEntity = null;
 
+        bool firing = true;
 
         double time_accelleration = 1.0;
         double time_update_counter = 0.0;
@@ -99,7 +103,8 @@ namespace StarPixel
             
             ArtManager.Load(Content);
 
-            cursor = Content.Load<Texture2D>("cursor");
+            cursor_fire = Content.Load<Texture2D>("cursor_fire");
+            cursor_select = Content.Load<Texture2D>("cursor_select");
         }
 
         /// UnloadContent will be called once per game and is the place to unload
@@ -189,27 +194,29 @@ namespace StarPixel
             mouse_pos = new_pos;
 
 
-            if (Mouse.GetState().LeftButton == ButtonState.Pressed)
+            // Oh man is this ugly.
+            foreach (Physical phys in universe.physicals)
             {
-                if( selectedEntity != null && selectedEntity is Ship)
+                if (phys is Ship)
                 {
-                    Ship ship = (Ship)selectedEntity;
-                    if(ship.ai is IntellegenceHuman)
+                    Ship ship = (Ship)phys;
+                    if (ship.ai is IntellegenceHuman)
                     {
-                        Vector2 target = camera.InverseMap(new Vector2(Mouse.GetState().X, Mouse.GetState().Y) * camera.upsample_multiplier);
+                        Vector2 target = camera.InverseMap(mouse_pos * camera.upsample_multiplier);
                         ((IntellegenceHuman)ship.ai).GiveTarget(target);
                     }
                 }
             }
 
-            /*
-            if (mouse_left == ButtonState.Pressed && Mouse.GetState().LeftButton == ButtonState.Released)
+
+            
+            if (mouse_middle == ButtonState.Pressed && Mouse.GetState().MiddleButton == ButtonState.Released)
             {
                 selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X* camera.upsample_multiplier, Mouse.GetState().Y* camera.upsample_multiplier)));
 
             }
-            mouse_left = Mouse.GetState().LeftButton;
-            */
+            mouse_middle = Mouse.GetState().MiddleButton;
+            
 
                 time_update_counter += time_accelleration;
             while (time_update_counter > 1.0)
@@ -247,7 +254,7 @@ namespace StarPixel
 
             camera.Blit(spriteBatch, new Vector2(0, 0));
             status_camera.Blit(spriteBatch, camera.onscreen_res - status_camera.onscreen_res);
-            spriteBatch.Draw(cursor, mouse_pos - new Vector2(7,7), Color.White);
+            spriteBatch.Draw(cursor_fire, mouse_pos - new Vector2(7,7), Color.White);
 
             spriteBatch.End();
             
