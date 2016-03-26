@@ -94,7 +94,6 @@ namespace StarPixel
             spriteBatch = new SpriteBatch(GraphicsDevice);
             
             camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y, UPSAMPLE_MULTIPLIER);
-            //camera.DRAW_HITBOXES = true;
 
             status_camera = new StatusCamera(GraphicsDevice, spriteBatch, status_camera_width);
 
@@ -162,7 +161,9 @@ namespace StarPixel
                 }
             }
 
-            show_all_ship_status = new_keys.IsKeyDown(Keys.Tab);
+            bool tabbed = new_keys.IsKeyDown(Keys.Tab);
+            show_all_ship_status = tabbed;
+            camera.DRAW_HITBOXES = tabbed;
 
 
             //if scroll has been used, zoom in/out

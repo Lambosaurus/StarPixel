@@ -157,15 +157,15 @@ namespace StarPixel
 
         float desired_angle;
 
-        public IntellegenceRoamer()
+        public IntellegenceRoamer(float gain = 1.0f)
         {
             target = Utility.RandVec(target_range);
             target_ok_distance = 20f;
 
 
-            angle_tracker = new PID(10f, 0.5f, 10f);
-            x_tracker = new PID(0.3f, 0.3f, 1f);
-            y_tracker = new PID(0.3f, 0.3f, 1f);
+            angle_tracker = new PID(10f * gain, 0.5f * gain, 10f * gain);
+            x_tracker = new PID(0.3f * gain, 0.3f * gain, 1f * gain);
+            y_tracker = new PID(0.3f * gain, 0.3f * gain, 1f * gain);
 
             /*
             angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
