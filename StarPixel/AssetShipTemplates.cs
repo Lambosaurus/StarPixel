@@ -22,6 +22,7 @@ namespace StarPixel
             // naming convention is intended to be 
 
             // Scout
+            // Fighter
             // Gunship
             // Cargo
             // Destroyer
@@ -39,6 +40,10 @@ namespace StarPixel
 
             float arc_minimum = 0.05f;
             float arc_180 = MathHelper.Pi;
+
+
+
+            // -- // F2 START
 
             ShipTemplate template = new ShipTemplate();
             template.base_mass = 50;
@@ -77,6 +82,10 @@ namespace StarPixel
             ArtManager.sprites.Add("F2 heat", new ArtSpriteResource("F2 heat", 0.5f));
             ArtManager.sprites.Add("F2", new ArtSpriteResource("F2", 0.5f));
 
+            // -- // F2 END
+
+
+            // -- // CG1 START
         }
     }
 }
