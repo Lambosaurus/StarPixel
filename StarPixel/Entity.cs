@@ -127,6 +127,12 @@ namespace StarPixel
             velocity += force / mass;
             angular_velocity += torque / inertia;
         }
+        
+        public void Push(Vector2 force, Vector2 eccentricity)
+        {
+            float torque = ((force.X * eccentricity.Y) - (force.Y * eccentricity.X))/10;
+            this.Push(force, torque);
+        }
 
         public virtual ComponentShield GetActiveShield(  )
         {

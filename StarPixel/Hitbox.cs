@@ -12,13 +12,21 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+    // null means no intersection took place.
+    // You retard.
+    public class Intersection
+    {
+        public float surface_normal;
+        public Vector2 position;
+    }
+
+    
     public class Hitbox
     {
-
         public Vector2 pos;
         public float angle;
 
-        //public float radius;
+        public float radius;
         public float radius_sq;
 
         public Hitbox()
@@ -31,40 +39,20 @@ namespace StarPixel
             return Vector2.DistanceSquared(point, pos) > (radius_sq);
         }
 
+        public bool ContainsExclusion(Hitbox hitbox)
+        {
+            float combined_radsq = radius + hitbox.radius;
+            combined_radsq *= combined_radsq;
+            return Vector2.DistanceSquared(pos, hitbox.pos) > (combined_radsq);
+        }
+
         // determines if a point lies within the hitbox.
         // This will NOT deal well with high speed particles.
         // I will proceed to use this for high speed particles untill its a problem.
-        public virtual bool Contains( Vector2 point )
+        public virtual Intersection Intersect( Vector2 point )
         {
-            return false;
+            return null;
         }
-
-        /*
-        public bool ContainsMulti( Vector2 point, Vector2 velocity )
-        {
-            float new_exclusion_radius_sq = velocity.Length() + radius;
-            new_exclusion_radius_sq *= new_exclusion_radius_sq;
-
-            Vector2 step = velocity / 2;
-
-            if (Vector2.DistanceSquared(point, pos) > new_exclusion_radius_sq) { return false; }
-
-            if ( this.Contains(point - step) )
-            {
-                return true;
-            }
-            else if (this.Contains(point))
-            {
-                return true;
-            }
-            else if ( this.Contains(point + step))
-            {
-                return true;
-            }
-
-            return false;
-        }
-        */
 
         public virtual void Update( Vector2 arg_pos, float arg_angle )
         {
@@ -77,32 +65,43 @@ namespace StarPixel
             return null;
         }
 
-        // Warning. Surface normals not guaranteed to have a normal length
+        /*
         public virtual float SurfaceNormal(Vector2 point)
         {
             return 0.0f;
         }
+        */
 
         public virtual void Draw(Camera camera)
         {
 
+        }
+        
+        public virtual Intersection Intersect(Hitbox hitbox)
+        {
+            return null;
         }
     }
 
 
     public class HitboxCircle : Hitbox
     {
-        public float radius;
-
         public HitboxCircle(float arg_radius)
         {
             radius = arg_radius;
             radius_sq = radius * radius;
         }
 
-        public override bool Contains(Vector2 point)
+        public override Intersection Intersect(Vector2 point)
         {
-            return !this.ContainsExclusion(point);
+            if (this.ContainsExclusion(point) ) { return null; }
+
+            // the exclusion test is the same as the collision test
+
+            Intersection sect = new Intersection();
+            sect.surface_normal = Utility.Angle(point - pos);
+            sect.position = point;
+            return sect;
         }
         
         public override Hitbox Copy()
@@ -110,9 +109,39 @@ namespace StarPixel
             return new HitboxCircle(radius);
         }
 
+        /*
         public override float SurfaceNormal( Vector2 point )
         {
             return Utility.Angle(point - pos);
+        }
+        */
+
+
+        public override Intersection Intersect(Hitbox hitbox)
+        {
+            if (this.ContainsExclusion(hitbox)) { return null; }
+            
+            if (hitbox is HitboxCircle)
+            {
+                // if both hitboxes are circles, then the ContainsExclusion test
+                // is the same as the collision test.
+                // So a collision has occurred
+
+                Intersection sect = new Intersection();
+
+                sect.position = ((hitbox.pos * radius) + (pos * hitbox.radius)) / (radius + hitbox.radius);
+                sect.surface_normal = Utility.Angle(pos - hitbox.pos);
+
+                return sect;
+            }
+            
+            if ( hitbox is HitboxPolygon )
+            {
+                // YEA. DO THAT.
+                return null;
+            }
+
+            return null;
         }
     }
 
@@ -136,7 +165,7 @@ namespace StarPixel
                     radius_sq = dist_sq;
                 }
             }
-            //radius = Utility.Sqrt(radius_sq);
+            radius = Utility.Sqrt(radius_sq);
         }
 
         public override Hitbox Copy()
@@ -144,13 +173,13 @@ namespace StarPixel
             return new HitboxPolygon(corners);
         }
 
-        public override bool Contains(Vector2 point)
+        public override Intersection Intersect(Vector2 arg_point)
         {
             // exclusion test because im not an animal
-            if (this.ContainsExclusion(point)) { return false; }
+            if (this.ContainsExclusion(arg_point)) { return null; }
 
             // first shift the point into the reference frame of the hitbox
-            point = Utility.Rotate(point - pos, -angle);
+            Vector2 point = Utility.Rotate(arg_point - pos, -angle);
 
 
 
@@ -168,11 +197,17 @@ namespace StarPixel
                   )
                     c = !c;
             }
+            
+            if (!c) { return null; }
 
-            return c;
+            Intersection sect = new Intersection();
+            sect.position = arg_point;
+            sect.surface_normal = this.SurfaceNormal(arg_point);
+            return sect;
         }
+        
 
-        public override float SurfaceNormal(Vector2 point)
+        public float SurfaceNormal(Vector2 point)
         {
             // first shift the point into the reference frame of the hitbox
             point = Utility.Rotate(point - pos, -angle);
@@ -206,9 +241,8 @@ namespace StarPixel
 
             // return the normal, and compensate for the hitbox rotation
             return segment_angle + angle - MathHelper.PiOver2;
-            
         }
-
+        
         public override void Draw(Camera camera)
         {
             Vector2 p1 = Utility.Rotate( corners[0], angle) + pos;

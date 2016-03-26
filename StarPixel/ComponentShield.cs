@@ -17,10 +17,13 @@ namespace StarPixel
 
         public Resistance resistance = Resistance.Zero;
 
+        public float integrity = 120.0f;
+        public float regen = 3f;
+
         public ComponentShield New( Ship ship )
         {
             ComponentShield shield = new ComponentShield(ship, ship.template.component_shield_size, this);
-
+            
             return shield;
         }
     }
@@ -35,10 +38,10 @@ namespace StarPixel
 
         public Hitbox hitbox;
 
-        public float regen_rate = 0.05f;
+        public float regen_rate;
         public bool active = false;
-        public float integrity = 100f;
-        public float max_integrity = 100f;
+        public float integrity;
+        public float max_integrity;
 
         public float radius;
 
@@ -55,6 +58,9 @@ namespace StarPixel
 
             resistance = template.resistance * SHIELD_BASE_RESISTANCE;
 
+            max_integrity = (arg_template.integrity * arg_size * Utility.Sqrt(arg_size));
+            regen_rate = (arg_template.regen / GameConst.framerate) * arg_size;
+            integrity = max_integrity;
             active = true;
         }
 

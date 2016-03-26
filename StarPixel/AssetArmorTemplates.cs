@@ -21,7 +21,7 @@ namespace StarPixel
         {
             ArmorTemplate template = new ArmorTemplate();
 
-            template.std_segment_integrity = 60f;
+            template.segment_integrity = 60f;
 
             armor_templates.Add("default",template);
         }

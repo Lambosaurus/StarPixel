@@ -16,7 +16,8 @@ namespace StarPixel
         public float electro_block = 0.2f;
 
 
-        public float std_segment_integrity;
+        public float segment_integrity = 60f;
+
 
         public Resistance resistance = Resistance.Zero;
 
@@ -51,7 +52,7 @@ namespace StarPixel
 
             segment_count = ship.template.armor_segment_count;
 
-            max_integrity = template.std_segment_integrity * size;
+            max_integrity = template.segment_integrity * size;
             integrity = new float[segment_count];
 
             for (int i = 0; i < segment_count; i++)

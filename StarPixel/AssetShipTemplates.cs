@@ -84,6 +84,7 @@ namespace StarPixel
 
             // -- // F2 END
 
+
             // -- // CG1 START
 
             template = new ShipTemplate();
@@ -129,14 +130,14 @@ namespace StarPixel
             } );
 
             template.AddThrusterPort(new Vector2(-46, 0), reverse,  1.1f , 1, 0, 0);
-            template.AddThrusterPort(new Vector2(36, 22), right,     0.4f, 0, -1, -1);
-            template.AddThrusterPort(new Vector2(30, 22), right,     0.4f, 0, -1, -1);
-            template.AddThrusterPort(new Vector2(-26, 24), right,     0.6f, 0, -1, 1);
-            template.AddThrusterPort(new Vector2(36, -22), left,      0.4f, 0, 1, 1);
-            template.AddThrusterPort(new Vector2(30, -22), left,     0.4f, 0, 1, 1);
-            template.AddThrusterPort(new Vector2(-26, -24), left,    0.6f, 0, 1, -1);
-            template.AddThrusterPort(new Vector2(-12, 24), forward,     0.6f, -1, 0, 0);
-            template.AddThrusterPort(new Vector2(-12, -24), forward,   0.6f, -1, 0, 0);
+            template.AddThrusterPort(new Vector2(36, 22), right,     0.5f, 0, -1, -1);
+            template.AddThrusterPort(new Vector2(30, 22), right,     0.5f, 0, -1, -1);
+            template.AddThrusterPort(new Vector2(-26, 24), right,     0.7f, 0, -1, 1);
+            template.AddThrusterPort(new Vector2(36, -22), left,      0.5f, 0, 1, 1);
+            template.AddThrusterPort(new Vector2(30, -22), left,     0.5f, 0, 1, 1);
+            template.AddThrusterPort(new Vector2(-26, -24), left,    0.7f, 0, 1, -1);
+            template.AddThrusterPort(new Vector2(-12, 24), forward,     0.7f, -1, 0, 0);
+            template.AddThrusterPort(new Vector2(-12, -24), forward,   0.7f, -1, 0, 0);
             
             ship_templates["CG1"] = template;
 

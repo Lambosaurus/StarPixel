@@ -22,6 +22,7 @@ namespace StarPixel
             ShieldTemplate template = new ShieldTemplate();
 
             template.art_resource = "default";
+            template.integrity = 120;
 
             shield_templates["default"] = template;
             
@@ -49,6 +50,7 @@ namespace StarPixel
             template = new ShieldTemplate();
 
             template.art_resource = "green";
+            template.integrity = 100f;
 
             shield_templates["green"] = template;
 

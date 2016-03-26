@@ -48,37 +48,39 @@ namespace StarPixel
                 ComponentShield shield = phys.GetActiveShield();
                 if ( shield != null)
                 {
-                    if ( shield.hitbox.Contains(pos) )
+                    Intersection sect = shield.hitbox.Intersect(pos);
+                    if ( sect != null )
                     {
-                        bounce = this.CalcBounceAngle(phys.velocity, shield.hitbox);
+                        bounce = this.CalcBounceAngle(phys.velocity, sect.surface_normal);
                         explosion.Explode(universe, pos, phys.velocity, bounce);
                         shield.AdsorbExplosion(explosion, pos);
                         this.Destory();
                         return true;
                     }
                 }
-                else if (phys.hitbox.Contains(pos))
+                else
                 {
-                    bounce = this.CalcBounceAngle(phys.velocity, phys.hitbox);
-                    explosion.Explode(universe, pos, phys.velocity, bounce);
-                    phys.AdsorbExplosion(explosion, pos);
-                    this.Destory();
-                    return true;
+                    Intersection sect = phys.hitbox.Intersect(pos);
+                    if (sect != null)
+                    {
+                        bounce = this.CalcBounceAngle(phys.velocity, sect.surface_normal);
+                        explosion.Explode(universe, pos, phys.velocity, bounce);
+                        phys.AdsorbExplosion(explosion, pos);
+                        this.Destory();
+                        return true;
+                    }
                 }    
             }
             return false;
         }
 
-        Vector2 CalcBounceAngle( Vector2 surface_velocity, Hitbox surface_hitbox )
+        Vector2 CalcBounceAngle( Vector2 surface_velocity, float surface_normal )
         {
             Vector2 relative_velocity = velocity - surface_velocity;
-
-            float normal_angle = surface_hitbox.SurfaceNormal(pos - relative_velocity);            
-
-
-            relative_velocity = Utility.Rotate(relative_velocity, -normal_angle);
+            
+            relative_velocity = Utility.Rotate(relative_velocity, -surface_normal);
             relative_velocity.X *= -1;
-            relative_velocity = Utility.Rotate(relative_velocity, normal_angle);
+            relative_velocity = Utility.Rotate(relative_velocity, surface_normal);
 
             relative_velocity.Normalize();
 
