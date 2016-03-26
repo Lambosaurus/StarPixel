@@ -11,19 +11,6 @@
 	is a bit nasty. AssetWeaponTemplates.Get(template_name).New(); is a bit nicer.
 
 
-> add eliptical hitbox
-	The reason id do this is for shields This would require a more advanced particle allocation.
-	The particle fields would have to change as the hitbox rotated, which atm it does not need to
-	Maybe dont worry about it untill circular shields become problematic.
-
-
-> Can i use an eliptical approximation as a better way of allocating damage to armor?
-	Currently armor uses a circular approximation to assign armor plates to the incoming angle
-	This will lead to a poor distribtuion of armor on a long thin ship
-	The other option is looking at a method based off the hitbox length, but that might be both
-		- hard to implement
-		- hard to test
-
 
 > Damage handling
 	Not implemented:
@@ -39,25 +26,18 @@
 
 
 
-> Particles:
-	> Explore a global particle framwork
-	> Add in shield pop art
-		- Needs cleaning up how the explosions are generated
-	> Thruster sparkles
-
-
-> Thruster sparkle ports too.
+> Thrusters need sparkle ports.
 
 
 
-> The below would be best solved using a GUI class
-> Tidy up the way that ship stats drawing is managed.
-	Currently the stat drawing is a huge mess.
-	Its unclear whether stuff is drawn wrt to global coords or onscreen coords
-	The code is split between StatusCamera and Camera
-	> There is (was?) a kind of logic behind it:
-		The Camera can draw status bars anywhere, but the StatusCamera will have the code
-		for a full readout
+> The below would be best solved by nuking whats there and just writing a GUI class. Yeh.
+	> Tidy up the way that ship stats drawing is managed.
+		Currently the stat drawing is a huge mess.
+		Its unclear whether stuff is drawn wrt to global coords or onscreen coords
+		The code is split between StatusCamera and Camera
+		> There is (was?) a kind of logic behind it:
+			The Camera can draw status bars anywhere, but the StatusCamera will have the code
+			for a full readout
 
 
 > The creation of all Components through ComponentTemplate models:

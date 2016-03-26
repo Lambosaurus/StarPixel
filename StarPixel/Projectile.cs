@@ -51,7 +51,9 @@ namespace StarPixel
                     Intersection sect = shield.hitbox.Intersect(pos);
                     if ( sect != null )
                     {
-                        bounce = this.CalcBounceAngle(phys.velocity, sect.surface_normal);
+                        bounce = Utility.Bounce(velocity - phys.velocity, sect.surface_normal);
+                        bounce.Normalize();
+
                         explosion.Explode(universe, pos, phys.velocity, bounce);
                         shield.AdsorbExplosion(explosion, pos);
                         this.Destory();
@@ -63,7 +65,9 @@ namespace StarPixel
                     Intersection sect = phys.hitbox.Intersect(pos);
                     if (sect != null)
                     {
-                        bounce = this.CalcBounceAngle(phys.velocity, sect.surface_normal);
+                        bounce = Utility.Bounce(velocity - phys.velocity, sect.surface_normal);
+                        bounce.Normalize();
+
                         explosion.Explode(universe, pos, phys.velocity, bounce);
                         phys.AdsorbExplosion(explosion, pos);
                         this.Destory();
@@ -74,18 +78,6 @@ namespace StarPixel
             return false;
         }
 
-        Vector2 CalcBounceAngle( Vector2 surface_velocity, float surface_normal )
-        {
-            Vector2 relative_velocity = velocity - surface_velocity;
-            
-            relative_velocity = Utility.Rotate(relative_velocity, -surface_normal);
-            relative_velocity.X *= -1;
-            relative_velocity = Utility.Rotate(relative_velocity, surface_normal);
-
-            relative_velocity.Normalize();
-
-            return relative_velocity;
-        }
     }
 
 }

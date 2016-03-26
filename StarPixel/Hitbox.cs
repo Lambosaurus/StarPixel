@@ -34,22 +34,28 @@ namespace StarPixel
         }
 
         // this is a very cheap way of excluding more complex tests
-        public bool ContainsExclusion(Vector2 point)
+        public bool WithinRadius(Vector2 point)
         {
-            return Vector2.DistanceSquared(point, pos) > (radius_sq);
+            return Vector2.DistanceSquared(point, pos) < (radius_sq);
         }
 
-        public bool ContainsExclusion(Hitbox hitbox)
+        // as above
+        public bool WithinRadius(Hitbox hitbox)
         {
             float combined_radsq = radius + hitbox.radius;
             combined_radsq *= combined_radsq;
-            return Vector2.DistanceSquared(pos, hitbox.pos) > (combined_radsq);
+            return Vector2.DistanceSquared(pos, hitbox.pos) < (combined_radsq);
         }
 
         // determines if a point lies within the hitbox.
         // This will NOT deal well with high speed particles.
         // I will proceed to use this for high speed particles untill its a problem.
         public virtual Intersection Intersect( Vector2 point )
+        {
+            return null;
+        }
+
+        public virtual Intersection Intersect(Hitbox hitbox)
         {
             return null;
         }
@@ -65,21 +71,10 @@ namespace StarPixel
             return null;
         }
 
-        /*
-        public virtual float SurfaceNormal(Vector2 point)
-        {
-            return 0.0f;
-        }
-        */
 
         public virtual void Draw(Camera camera)
         {
 
-        }
-        
-        public virtual Intersection Intersect(Hitbox hitbox)
-        {
-            return null;
         }
     }
 
@@ -94,7 +89,7 @@ namespace StarPixel
 
         public override Intersection Intersect(Vector2 point)
         {
-            if (this.ContainsExclusion(point) ) { return null; }
+            if (!this.WithinRadius(point) ) { return null; }
 
             // the exclusion test is the same as the collision test
 
@@ -109,17 +104,10 @@ namespace StarPixel
             return new HitboxCircle(radius);
         }
 
-        /*
-        public override float SurfaceNormal( Vector2 point )
-        {
-            return Utility.Angle(point - pos);
-        }
-        */
-
 
         public override Intersection Intersect(Hitbox hitbox)
         {
-            if (this.ContainsExclusion(hitbox)) { return null; }
+            if (!this.WithinRadius(hitbox)) { return null; }
             
             if (hitbox is HitboxCircle)
             {
@@ -138,7 +126,7 @@ namespace StarPixel
             if ( hitbox is HitboxPolygon )
             {
                 // YEA. DO THAT.
-                return null;
+                return ((HitboxPolygon)hitbox).IntersectCircle(this);
             }
 
             return null;
@@ -176,15 +164,13 @@ namespace StarPixel
         public override Intersection Intersect(Vector2 arg_point)
         {
             // exclusion test because im not an animal
-            if (this.ContainsExclusion(arg_point)) { return null; }
+            if (!this.WithinRadius(arg_point)) { return null; }
 
             // first shift the point into the reference frame of the hitbox
             Vector2 point = Utility.Rotate(arg_point - pos, -angle);
 
-
-
+            
             // https://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
-            // http://cristgaming.com/pirate
             // this is some efficient shit man, look at this.
 
             int i, j, nvert = count;
@@ -207,6 +193,7 @@ namespace StarPixel
         }
         
 
+        // Not totally stoaked with this implementation
         public float SurfaceNormal(Vector2 point)
         {
             // first shift the point into the reference frame of the hitbox
@@ -242,7 +229,85 @@ namespace StarPixel
             // return the normal, and compensate for the hitbox rotation
             return segment_angle + angle - MathHelper.PiOver2;
         }
+
         
+        public Intersection IntersectCircle(HitboxCircle hitbox)
+        {
+            // first shift the circle origin into the reference frame of the hitbox
+            Vector2 point = Utility.Rotate(hitbox.pos - pos, -angle);
+
+
+            for (int i = 0; i < count; i++)
+            {
+                // for each point we test if it falls into the circle
+                if (  Vector2.DistanceSquared(point, corners[i]) < hitbox.radius_sq )
+                {
+                    // If one point falls in, we run with it.
+                    Intersection sect = new Intersection();
+
+                    // we take the corner, and shift it into global coordinate frame
+                    sect.position = pos + Utility.Rotate(corners[i], angle);
+
+                    // the surface normal is calculated like it is for a circle
+                    sect.surface_normal = Utility.Angle(pos - hitbox.pos);
+                    return sect;
+                }
+            }
+
+            return null;
+        }
+
+        // Returns the intersection of two HitboxPolygons
+        public Intersection IntersectPolygon(HitboxPolygon hitbox)
+        {
+            // checks each point in the hitbox 
+            for (int i = 0; i < count; i++)
+            {
+                // shift the point into global frame
+                Vector2 point = pos + Utility.Rotate(corners[i], angle);
+
+                // we then see to if any of the points lie inside this polygon
+                Intersection sect = hitbox.Intersect(point);
+                if (sect != null) { return sect; }
+            }
+
+            // repeat the above, but testing the points in the other polygon
+            for (int i = 0; i < hitbox.count; i++)
+            {
+                Vector2 point = hitbox.pos + Utility.Rotate(hitbox.corners[i], hitbox.angle);
+
+                Intersection sect = this.Intersect(point);
+                if (sect != null)
+                {
+                    // the surface normal should be reversed, because it was calculated from the other hitbox
+                    sect.surface_normal += MathHelper.TwoPi;
+                    return sect;
+                }
+            }
+
+            return null; // no intersection found
+        }
+
+
+        public override Intersection Intersect(Hitbox hitbox)
+        {
+            if (!this.WithinRadius(hitbox)) { return null; }
+
+            if (hitbox is HitboxCircle)
+            {
+                return this.IntersectCircle((HitboxCircle)hitbox);
+            }
+
+            if (hitbox is HitboxPolygon)
+            {
+                return this.IntersectPolygon((HitboxPolygon)hitbox);
+            }
+
+            return null;
+        }
+
+
+        // draws the red outlines of the hitbox onto screen. Kinda usefull.
         public override void Draw(Camera camera)
         {
             Vector2 p1 = Utility.Rotate( corners[0], angle) + pos;

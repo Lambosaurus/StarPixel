@@ -85,7 +85,7 @@ namespace StarPixel
                 phys.Update();
 
             }
-
+            
             foreach (Projectile proj in projectiles)
             {
                 proj.Update();
@@ -99,6 +99,21 @@ namespace StarPixel
                     
                 }
             }
+
+            
+            // check each physical for collisions
+            for (int i = 0; i < physicals.Count; i++)
+            {
+                // dont check physicals that have already check you.
+                for (int k = i+1; k < physicals.Count; k++)
+                {
+                    if (physicals[i].HitCheck(physicals[k]))
+                    {
+                        break;
+                    }
+                }
+            }
+
 
             foreach ( ArtTemporary temp in art_temp )
             {

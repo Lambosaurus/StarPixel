@@ -246,5 +246,17 @@ namespace StarPixel
             return (float)Math.Exp(natural_log_half / (half_life));
         }
 
+
+        // Note that for moving objects, this velocity should usually be a relative velocity
+        // bounces a velocity vector of a surface normal.
+        // note, the surface normal may not be backwards
+        public static Vector2 Bounce(Vector2 velocity, float surface_normal, float elasticity = 1.0f)
+        {
+            velocity = Utility.Rotate(velocity, -surface_normal);
+            velocity.X *= -elasticity;
+            velocity = Utility.Rotate(velocity, surface_normal);
+            return velocity;
+        }
+
     }
 }

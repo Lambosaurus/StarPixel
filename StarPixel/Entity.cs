@@ -56,9 +56,7 @@ namespace StarPixel
                 Clicked(this, EventArgs.Empty);
             }
             
-
         }
-
 
         public virtual void Update()
         {
@@ -138,6 +136,24 @@ namespace StarPixel
         {
             return null;
         }
+
+        public bool HitCheck( Physical phys )
+        {
+            Intersection sect = hitbox.Intersect(phys.hitbox);
+            if (sect == null) { return false; }
+
+
+            Vector2 bounce = Utility.Bounce(velocity - phys.velocity, sect.surface_normal, 0.5f);
+
+            this.pos += bounce*2;
+            this.velocity += bounce/2;
+            phys.velocity -= bounce/2;
+            phys.pos -= bounce*2;
+           
+
+            return true;
+        }
+
     }
 
 
