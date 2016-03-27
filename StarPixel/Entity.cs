@@ -153,9 +153,9 @@ namespace StarPixel
             Vector2 v2 = phys.velocity + Utility.Rotate((sect.position - phys.pos) * phys.angular_velocity, MathHelper.PiOver2);
 
 
-            Vector2 relative_impact_velocity = v1 - v2;
+            Vector2 relative_impact_velocity = (v1 - v2) + (Utility.CosSin(sect.surface_normal)*0.2f) ;
             Vector2 surface_aligned = Utility.Rotate(relative_impact_velocity, -sect.surface_normal);
-            surface_aligned.X *= -2.0f; // bouncyness
+            surface_aligned.X *= -1.0f; // bouncyness
             surface_aligned.Y *= -0.25f; // friction
             Vector2 bounce = Utility.Rotate(surface_aligned, sect.surface_normal);
 
