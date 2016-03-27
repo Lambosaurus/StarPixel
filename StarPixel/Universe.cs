@@ -25,9 +25,9 @@ namespace StarPixel
 
         public Universe()
         {
-            for (int i = 0; i < 4000; i++)
+            for (int i = 0; i < 16000; i++)
             {
-                stars.Add(  new Vector2(Utility.Rand(-2000,2000), Utility.Rand(-2000,2000)) );
+                stars.Add(  new Vector2(Utility.Rand(-4000,4000), Utility.Rand(-4000,4000)) );
             }
 
         }
@@ -183,11 +183,14 @@ namespace StarPixel
             Texture2D sprite = ArtManager.vents["default_sparkles"].sprite;
             Vector2 sprite_center = ArtManager.vents["default_sparkles"].sprite_center;
 
-            Vector2 transform = new Vector2( 1 + camera.velocity.Length(),1 )*camera.scale / 4f;
+            Vector2 transform = new Vector2( 1 + camera.velocity.Length(),(1/(Utility.Sqrt(1+camera.velocity.Length()))) )*camera.scale * 0.5f;
 
             foreach (Vector2 star in stars)
             {
-                camera.batch.Draw(sprite, camera.Map(star), null, Color.White, Utility.Angle(camera.velocity), sprite_center, transform, SpriteEffects.None, 0);
+                if (camera.Contains(star))
+                {
+                    camera.batch.Draw(sprite, camera.Map(star), null, Color.White * 0.3f, Utility.Angle(camera.velocity), sprite_center, transform, SpriteEffects.None, 0);
+                }
             }
         
 
