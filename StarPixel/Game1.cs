@@ -75,7 +75,7 @@ namespace StarPixel
 
             if (universe.physicals.Count != 0)
             {
-                //selectedEntity = universe.physicals[0];
+                selectedEntity = universe.physicals[0];
             }
 
         }
@@ -183,11 +183,11 @@ namespace StarPixel
             if (Mouse.GetState().RightButton == ButtonState.Pressed)
             {
                 
-                if (new_pos != mouse_pos)
+                if (selectedEntity == null ) // &&  new_pos != mouse_pos)
                 {
                     Vector2 delta = (mouse_pos - new_pos) / camera.scale;
 
-                    camera.pos += delta* camera.upsample_multiplier;
+                    camera.MoveTo(camera.pos + (delta * camera.upsample_multiplier));
                     
                 }
                 
@@ -228,7 +228,7 @@ namespace StarPixel
 
             if (selectedEntity != null)
             {
-                camera.pos = selectedEntity.pos;
+                camera.MoveTo(selectedEntity.pos);
             }
 
             old_keys = new_keys;

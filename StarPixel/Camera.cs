@@ -19,6 +19,8 @@ namespace StarPixel
         public Vector2 pos;
         public float scale;
 
+        public Vector2 velocity;
+
         public RenderTarget2D surface;
 
         public SpriteBatch batch;
@@ -83,6 +85,12 @@ namespace StarPixel
                    onscreen.Y + onscreen_rad > 0 &&
                    onscreen.X - onscreen_rad < res.X &&
                    onscreen.Y - onscreen_rad < res.Y;
+        }
+
+        public void MoveTo(Vector2 new_pos)
+        {
+            velocity = new_pos - pos;
+            pos = new_pos;
         }
 
 

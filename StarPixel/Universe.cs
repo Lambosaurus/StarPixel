@@ -20,8 +20,15 @@ namespace StarPixel
 
         public List<ArtTemporary> art_temp = new List<ArtTemporary>();
 
+
+        public List<Vector2> stars = new List<Vector2>();
+
         public Universe()
         {
+            for (int i = 0; i < 4000; i++)
+            {
+                stars.Add(  new Vector2(Utility.Rand(-2000,2000), Utility.Rand(-2000,2000)) );
+            }
 
         }
 
@@ -173,6 +180,18 @@ namespace StarPixel
 
         public void Draw( Camera camera)
         {
+            Texture2D sprite = ArtManager.vents["default_sparkles"].sprite;
+            Vector2 sprite_center = ArtManager.vents["default_sparkles"].sprite_center;
+
+            Vector2 transform = new Vector2( 1 + camera.velocity.Length(),1 )*camera.scale / 4f;
+
+            foreach (Vector2 star in stars)
+            {
+                camera.batch.Draw(sprite, camera.Map(star), null, Color.White, Utility.Angle(camera.velocity), sprite_center, transform, SpriteEffects.None, 0);
+            }
+        
+
+
             foreach (Physical phys in physicals)
             {
                 phys.Draw(camera);
