@@ -128,7 +128,7 @@ namespace StarPixel
         
         public void Push(Vector2 force, Vector2 eccentricity)
         {
-            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y))/10;
+            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y))/40;
             this.Push(force, torque);
         }
 
@@ -155,7 +155,7 @@ namespace StarPixel
 
             Vector2 relative_impact_velocity = (v1 - v2) + (Utility.CosSin(sect.surface_normal)*0.2f) ;
             Vector2 surface_aligned = Utility.Rotate(relative_impact_velocity, -sect.surface_normal);
-            surface_aligned.X *= -1.2f; // bouncyness
+            surface_aligned.X *= -1.0f; // bouncyness
             surface_aligned.Y *= -0.25f; // friction
             Vector2 bounce = Utility.Rotate(surface_aligned, sect.surface_normal);
 
