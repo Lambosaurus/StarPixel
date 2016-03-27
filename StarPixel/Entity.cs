@@ -139,6 +139,9 @@ namespace StarPixel
 
         public bool HitCheck( Physical phys )
         {
+            // GET BOUNCE AXIS OF COLLISION, AND ONLY TRANSFER THAT.
+
+
             Intersection sect = hitbox.Intersect(phys.hitbox);
             if (sect == null) { return false; }
 
@@ -146,6 +149,18 @@ namespace StarPixel
             sect.surface_normal = circular_normal;
 
             
+            Vector2 v1 = velocity + Utility.Rotate((sect.position - pos) * angular_velocity, MathHelper.PiOver2);
+            Vector2 v2 = phys.velocity + Utility.Rotate((sect.position - phys.pos) * phys.angular_velocity, MathHelper.PiOver2);
+
+
+            Vector2 relative_impact_velocity = v1 - v2;
+            Vector2 surface_aligned = Utility.Rotate(relative_impact_velocity, -sect.surface_normal);
+            surface_aligned.X *= -2.0f; // bouncyness
+            surface_aligned.Y *= -0.25f; // friction
+            Vector2 bounce = Utility.Rotate(surface_aligned, sect.surface_normal);
+
+
+
             /*
             if ( Utility.AngleDelta(sect.surface_normal, circular_normal) > MathHelper.PiOver2 )
             {
@@ -153,7 +168,8 @@ namespace StarPixel
                 //sect.surface_normal -= MathHelper.Pi;
             }
             */
-            
+
+            /*
             Vector2 v1 = velocity + Utility.Rotate((sect.position - pos)*angular_velocity, MathHelper.PiOver2);
             Vector2 v2 = phys.velocity + Utility.Rotate((sect.position - phys.pos) * phys.angular_velocity, MathHelper.PiOver2);
 
@@ -161,20 +177,19 @@ namespace StarPixel
             Vector2 bounce = Utility.Bounce(v1 - v2, sect.surface_normal);
 
 
-            this.pos += bounce*1.5f *(phys.mass /(mass + phys.mass)) ;
-            phys.pos -= bounce*1.5f * (mass / (mass + phys.mass));
+            */
 
 
-            Vector2 b2 = ((bounce*1.5f) / ((phys.mass / mass) + 1));
+            
+            this.pos += bounce * 2f * (phys.mass / (mass + phys.mass));
+            phys.pos -= bounce * 2f * (mass / (mass + phys.mass));
+
+            Vector2 b2 = ((bounce) / ((phys.mass / mass) + 1));
             Vector2 b1 =  b2 / (phys.mass / mass);
-
 
             this.Push(b2*mass, sect.position - pos);
             phys.Push(-b1*phys.mass, sect.position - phys.pos);
-
-            //this.velocity += bounce / 4;
-            //phys.velocity -= bounce / 4;
-
+            
 
             return true;
         }
