@@ -128,7 +128,7 @@ namespace StarPixel
         
         public void Push(Vector2 force, Vector2 eccentricity)
         {
-            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y))/40;
+            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y)) * GameConst.forcerad_to_torque;
             this.Push(force, torque);
         }
 
@@ -137,11 +137,8 @@ namespace StarPixel
             return null;
         }
 
-        public bool HitCheck( Physical phys, bool repeat = true )
+        public bool HitCheck( Physical phys)
         {
-            // GET BOUNCE AXIS OF COLLISION, AND ONLY TRANSFER THAT.
-
-
             Intersection sect = hitbox.Intersect(phys.hitbox);
             if (sect == null) { return false; }
 
@@ -159,28 +156,7 @@ namespace StarPixel
             surface_aligned.Y *= -0.25f; // friction
             Vector2 bounce = Utility.Rotate(surface_aligned, sect.surface_normal);
 
-
-
-            /*
-            if ( Utility.AngleDelta(sect.surface_normal, circular_normal) > MathHelper.PiOver2 )
-            {
-                sect.surface_normal = circular_normal;
-                //sect.surface_normal -= MathHelper.Pi;
-            }
-            */
-
-            /*
-            Vector2 v1 = velocity + Utility.Rotate((sect.position - pos)*angular_velocity, MathHelper.PiOver2);
-            Vector2 v2 = phys.velocity + Utility.Rotate((sect.position - phys.pos) * phys.angular_velocity, MathHelper.PiOver2);
-
-            
-            Vector2 bounce = Utility.Bounce(v1 - v2, sect.surface_normal);
-
-
-            */
-
-
-            
+   
             this.pos += bounce * 2f * (phys.mass / (mass + phys.mass));
             phys.pos -= bounce * 2f * (mass / (mass + phys.mass));
 
@@ -191,7 +167,7 @@ namespace StarPixel
             this.Push(force, sect.position - pos);
             phys.Push(- force, sect.position - phys.pos);
 
-
+            /*
             if (repeat) {
                 phys.hitbox.Update(phys.pos, phys.angle);
                 hitbox.Update(pos, angle);
@@ -206,6 +182,7 @@ namespace StarPixel
 
                 //phys.HitCheck(this, false);
             }
+            */
 
 
             return true;

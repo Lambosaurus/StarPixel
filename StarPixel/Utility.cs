@@ -20,7 +20,11 @@ namespace StarPixel
     public static class GameConst
     {
         public const int framerate = 60;
-        
+
+        public const float forcerad_to_torque = 1.0f / 40;
+
+
+
         public static float C( int c )
         {
             float size = 1.0f;
