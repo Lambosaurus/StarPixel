@@ -128,7 +128,7 @@ namespace StarPixel
         
         public void Push(Vector2 force, Vector2 eccentricity)
         {
-            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y))/50;
+            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y))/10;
             this.Push(force, torque);
         }
 
@@ -137,7 +137,7 @@ namespace StarPixel
             return null;
         }
 
-        public bool HitCheck( Physical phys )
+        public bool HitCheck( Physical phys, bool repeat = true )
         {
             // GET BOUNCE AXIS OF COLLISION, AND ONLY TRANSFER THAT.
 
@@ -155,7 +155,7 @@ namespace StarPixel
 
             Vector2 relative_impact_velocity = (v1 - v2) + (Utility.CosSin(sect.surface_normal)*0.2f) ;
             Vector2 surface_aligned = Utility.Rotate(relative_impact_velocity, -sect.surface_normal);
-            surface_aligned.X *= -1.0f; // bouncyness
+            surface_aligned.X *= -1.2f; // bouncyness
             surface_aligned.Y *= -0.25f; // friction
             Vector2 bounce = Utility.Rotate(surface_aligned, sect.surface_normal);
 
@@ -184,12 +184,29 @@ namespace StarPixel
             this.pos += bounce * 2f * (phys.mass / (mass + phys.mass));
             phys.pos -= bounce * 2f * (mass / (mass + phys.mass));
 
-            Vector2 b2 = ((bounce) / ((phys.mass / mass) + 1));
-            Vector2 b1 =  b2 / (phys.mass / mass);
-
-            this.Push(b2*mass, sect.position - pos);
-            phys.Push(-b1*phys.mass, sect.position - phys.pos);
             
+            Vector2 force = ((bounce) / ( (1/mass) + (1/phys.mass) ));
+            
+
+            this.Push(force, sect.position - pos);
+            phys.Push(- force, sect.position - phys.pos);
+
+
+            if (repeat) {
+                phys.hitbox.Update(phys.pos, phys.angle);
+                hitbox.Update(pos, angle);
+                
+                while ( hitbox.Intersect(phys.hitbox) != null )
+                {
+                    this.pos += bounce * 2f * (phys.mass / (mass + phys.mass));
+                    phys.pos -= bounce * 2f * (mass / (mass + phys.mass));
+                    phys.hitbox.Update(phys.pos, phys.angle);
+                    hitbox.Update(pos, angle);
+                }
+
+                //phys.HitCheck(this, false);
+            }
+
 
             return true;
         }

@@ -75,7 +75,7 @@ namespace StarPixel
 
             if (universe.physicals.Count != 0)
             {
-                selectedEntity = universe.physicals[0];
+                //selectedEntity = universe.physicals[0];
             }
 
         }

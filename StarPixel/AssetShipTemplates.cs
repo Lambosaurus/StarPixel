@@ -93,12 +93,12 @@ namespace StarPixel
             template.hull_art_resource = "CG1";
             //template.heat_art_resource = "CG1 heat";
             template.paint_art_resource = "CG1 paint";
-            template.component_thruster_size = 2.25f;
+            template.component_thruster_size = GameConst.C(3);
 
             template.shield_radius = 60f;
-            template.component_shield_size = 2.25f;
+            template.component_shield_size = GameConst.C(3);
 
-            template.component_armor_size = 2.25f;
+            template.component_armor_size = GameConst.C(3);
             template.armor_segment_count = 5;
 
             template.hitbox = new HitboxPolygon( new Vector2[] {

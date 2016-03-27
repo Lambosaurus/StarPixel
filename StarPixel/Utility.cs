@@ -20,6 +20,17 @@ namespace StarPixel
     public static class GameConst
     {
         public const int framerate = 60;
+        
+        public static float C( int c )
+        {
+            float size = 1.0f;
+            while ( c-- > 1 )
+            {
+                size *= 1.5f;
+            }
+            return size;
+        }
+
     }
 
 
