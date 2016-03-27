@@ -280,7 +280,7 @@ namespace StarPixel
                 if (sect != null)
                 {
                     // the surface normal should be reversed, because it was calculated from the other hitbox
-                    sect.surface_normal += MathHelper.TwoPi;
+                    sect.surface_normal += MathHelper.Pi;
                     return sect;
                 }
             }

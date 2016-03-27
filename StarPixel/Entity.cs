@@ -128,7 +128,7 @@ namespace StarPixel
         
         public void Push(Vector2 force, Vector2 eccentricity)
         {
-            float torque = ((force.X * eccentricity.Y) - (force.Y * eccentricity.X))/10;
+            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y))/50;
             this.Push(force, torque);
         }
 
@@ -142,14 +142,39 @@ namespace StarPixel
             Intersection sect = hitbox.Intersect(phys.hitbox);
             if (sect == null) { return false; }
 
+            float circular_normal = Utility.Angle(phys.pos - pos);
+            sect.surface_normal = circular_normal;
 
-            Vector2 bounce = Utility.Bounce(velocity - phys.velocity, sect.surface_normal, 0.5f);
+            
+            /*
+            if ( Utility.AngleDelta(sect.surface_normal, circular_normal) > MathHelper.PiOver2 )
+            {
+                sect.surface_normal = circular_normal;
+                //sect.surface_normal -= MathHelper.Pi;
+            }
+            */
+            
+            Vector2 v1 = velocity + Utility.Rotate((sect.position - pos)*angular_velocity, MathHelper.PiOver2);
+            Vector2 v2 = phys.velocity + Utility.Rotate((sect.position - phys.pos) * phys.angular_velocity, MathHelper.PiOver2);
 
-            this.pos += bounce*2;
-            this.velocity += bounce/2;
-            phys.velocity -= bounce/2;
-            phys.pos -= bounce*2;
-           
+            
+            Vector2 bounce = Utility.Bounce(v1 - v2, sect.surface_normal);
+
+
+            this.pos += bounce*1.5f *(phys.mass /(mass + phys.mass)) ;
+            phys.pos -= bounce*1.5f * (mass / (mass + phys.mass));
+
+
+            Vector2 b2 = ((bounce*1.5f) / ((phys.mass / mass) + 1));
+            Vector2 b1 =  b2 / (phys.mass / mass);
+
+
+            this.Push(b2*mass, sect.position - pos);
+            phys.Push(-b1*phys.mass, sect.position - phys.pos);
+
+            //this.velocity += bounce / 4;
+            //phys.velocity -= bounce / 4;
+
 
             return true;
         }
