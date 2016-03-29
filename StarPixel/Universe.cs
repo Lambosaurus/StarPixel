@@ -21,21 +21,6 @@ namespace StarPixel
         public List<ArtTemporary> art_temp = new List<ArtTemporary>();
 
 
-        public Vector2[] stars = new Vector2[16000];
-        public float[] star_depth = new float[16000];
-        public float[] star_size = new float[16000];
-
-        public Universe()
-        {
-            for (int i = 0; i < 16000; i++)
-            {
-                star_depth[i] = Utility.Rand(1, 2.5f);
-                star_depth[i] *= Utility.Sqrt(star_depth[i]) - 1;
-                star_size[i] = Utility.Rand(0.5f,1.5f);
-                stars[i] = new Vector2(Utility.Rand(-4000,4000), Utility.Rand(-4000,4000));
-            }
-
-        }
 
         // creates a new ship from given template name, and adds it into the universe.
         public Ship CreateNewShip( string template_name )
@@ -185,21 +170,7 @@ namespace StarPixel
 
         public void Draw( Camera camera)
         {
-            Texture2D sprite = ArtManager.vents["default_sparkles"].sprite;
-            Vector2 sprite_center = ArtManager.vents["default_sparkles"].sprite_center;
-
-            Vector2 transform = new Vector2( 1 + camera.velocity.Length(),(1/(Utility.Sqrt(1+camera.velocity.Length()))) )*camera.scale * 0.5f;
-
-            for (int i = 0; i < stars.Length; i++)
-            {
-                Vector2 spos = stars[i] + (camera.pos / (1 + star_depth[i]));
-                if (camera.Contains(spos))
-                {
-                    camera.batch.Draw(sprite, camera.Map(spos) , null, Color.White*0.6f*(1-((star_depth[i]+1f)/3f)), Utility.Angle(camera.velocity), sprite_center, transform*star_size[i], SpriteEffects.None, 0);
-                }
-            }
-        
-
+           
 
             foreach (Physical phys in physicals)
             {

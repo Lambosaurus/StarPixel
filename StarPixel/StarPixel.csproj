@@ -76,6 +76,7 @@
     <Compile Include="Entity.cs" />
     <Compile Include="Hitbox.cs" />
     <Compile Include="Intellegence.cs" />
+    <Compile Include="Physical.cs" />
     <Compile Include="Pid.cs" />
     <Compile Include="Projectile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
