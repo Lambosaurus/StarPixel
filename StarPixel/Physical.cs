@@ -13,7 +13,7 @@ namespace StarPixel
 {
     public class Physical : Entity
     {
-        public static Damage collision_dmg_per_force = new Damage(1.0f);
+        //public static Damage collision_dmg_per_force = new Damage(1.0f);
 
         public float mass;
         public float inertia;
@@ -107,18 +107,22 @@ namespace StarPixel
             this.Push(force, sect.position - pos);
             phys.Push(-force, sect.position - phys.pos);
 
+
+
             // generate an explosion as the result of the collision.
             // the radius is ish 1/4 of the larger hulls's radius. Maybe look into whether that is smart.
-            float explosion_radius = Utility.Sqrt(this.hitbox.radius_sq + phys.hitbox.radius_sq) / 4;
-            Explosion collision_explosion = new Explosion(collision_dmg_per_force * force.Length(), explosion_radius, null);
+            float explosion_radius = 20;
+            Explosion exp = new Explosion(new Damage(120), explosion_radius, ArtManager.explosions["phys_collision"]);
+            exp *= (force.Length()/100f);
 
             // apply the damage to the phys.
-            this.AdsorbExplosion(collision_explosion, sect.position);
-            phys.AdsorbExplosion(collision_explosion, sect.position);
+            this.AdsorbExplosion(exp, sect.position);
+            phys.AdsorbExplosion(exp, sect.position);
 
             // Inform the universe of the explosion.
             // I need to create art for this to work.
-            //collision_explosion.Explode(universe, sect.position, (velocity + phys.velocity) / 2, Vector2.Zero);
+            exp.Explode(universe, sect.position, (velocity + phys.velocity) / 2,  Utility.CosSin(sect.surface_normal + MathHelper.PiOver2) );
+            exp.Explode(universe, sect.position, (velocity + phys.velocity) / 2, Utility.CosSin(sect.surface_normal - MathHelper.PiOver2));
 
             return true; // a collision was indeed serviced.
         }

@@ -19,7 +19,20 @@ namespace StarPixel
 
         public static void GenerateAssets()
         {
-            
+            ArtExplosionResource collision_art = new ArtExplosionResource("particle");
+            collision_art.coloring_method = ParticleColoring.Temp;
+            collision_art.particle_count = 8;
+            collision_art.particle_life = 2f;
+            collision_art.size_start = new Vector2(4f, 0.8f);
+            collision_art.size_end = new Vector2(0.5f, 0.5f);
+            collision_art.temperature = 3000;
+            collision_art.temp_halflife = 0.5f;
+            collision_art.velocity_bounce = 1.4f;
+            collision_art.velocity_scatter = 0.8f;
+            collision_art.particle_size_scatter = 1.4f;
+            ArtManager.explosions["phys_collision"] = collision_art;
+
+
 
             ArtExplosionResource exp_art = new ArtExplosionResource("particle");
 
