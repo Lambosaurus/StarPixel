@@ -18,6 +18,7 @@ namespace StarPixel
         public Resistance resistance = Resistance.Zero;
 
         public float integrity = 120.0f;
+        public float reform_integrity = 0.3f; // this is a percentage of maximum
         public float regen = 3f;
 
         public ComponentShield New( Ship ship )
@@ -39,8 +40,9 @@ namespace StarPixel
         public Hitbox hitbox;
 
         public float regen_rate;
-        public bool active = false;
+        public bool active;
         public float integrity;
+        public float reform_integrity;
         public float max_integrity;
 
         public float radius;
@@ -61,6 +63,7 @@ namespace StarPixel
             max_integrity = (arg_template.integrity * arg_size * Utility.Sqrt(arg_size));
             regen_rate = (arg_template.regen / GameConst.framerate) * arg_size;
             integrity = max_integrity;
+            reform_integrity = max_integrity * template.reform_integrity;
             active = true;
         }
 
@@ -80,19 +83,30 @@ namespace StarPixel
 
         public void Pop()
         {
+            active = false;
             ship.universe.art_temp.Add(art.Pop(ship.velocity));
+        }
+
+        public void Reform()
+        {
+            active = true;
+            art.Reform();
         }
 
         public override void Update()
         {
             hitbox.Update(ship.pos, ship.angle);
-
-            art.Update(ship.pos);
             
             base.Update();
 
-            if (active) { integrity += regen_rate; }
-            if ( integrity < 0 ) { active = false; }
+            integrity += regen_rate;
+
+            if (!active && integrity > reform_integrity)
+            {
+                this.Reform();
+            }
+
+            art.Update(ship.pos);
 
             integrity = Utility.Clamp(integrity, 0.0f, max_integrity);
         }

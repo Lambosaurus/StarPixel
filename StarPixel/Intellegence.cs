@@ -11,35 +11,16 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class IntInputs
-    {
-        public Vector2 pos;
-        public float angle;
-    }
-
-    public class IntOutputs
-    {
-        public Vector2 control_thrust = new Vector2(0,0);
-        public float control_torque = 0;
-
-        public float firing_angle;
-        public bool firing;
-    }
-
-
 
     public class Intellegence
     {
-        protected IntOutputs outputs = new IntOutputs(); // we keep a copy of this, because its faster
-
         public Intellegence()
         {
 
         }
 
-        public virtual IntOutputs Process( IntInputs inputs )
+        public virtual void Process( ShipInterlink link )
         {
-            return null;
         }
     }
 
@@ -58,20 +39,23 @@ namespace StarPixel
             target = arg_target;
         }
 
-        public override IntOutputs Process(IntInputs inputs)
+        public override void Process(ShipInterlink link)
         {
 
             KeyboardState key_state = Keyboard.GetState();
             MouseState mouse_state = Mouse.GetState();
 
-            outputs.control_thrust.X = key_state.IsKeyDown(Keys.W) ? 1.0f : ((key_state.IsKeyDown(Keys.S)) ? -1.0f : 0.0f);
-            outputs.control_thrust.Y = key_state.IsKeyDown(Keys.D) ? 1.0f : ((key_state.IsKeyDown(Keys.A)) ? -1.0f : 0.0f);
-            outputs.control_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);
+            if (link.thrusters != null)
+            {
+                link.thrusters.output_thrust.X = key_state.IsKeyDown(Keys.W) ? 1.0f : ((key_state.IsKeyDown(Keys.S)) ? -1.0f : 0.0f);
+                link.thrusters.output_thrust.Y = key_state.IsKeyDown(Keys.D) ? 1.0f : ((key_state.IsKeyDown(Keys.A)) ? -1.0f : 0.0f);
+                link.thrusters.output_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);
+            }
 
+            /*
             outputs.firing = mouse_state.LeftButton == ButtonState.Pressed;
             outputs.firing_angle = Utility.Angle(target - inputs.pos) - inputs.angle;
-
-            return outputs;
+            */
         }
     }
 
@@ -96,49 +80,64 @@ namespace StarPixel
             x_tracker = new PID(0.3f, 0.3f, 1f);
             y_tracker = new PID(0.3f, 0.3f, 1f);
             
-            /*
-            angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
-            x_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f);
-            y_tracker = new PID(0.1f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f, 0.2f * Utility.random.Next(5, 15) / 10f);
-            */
         }
 
-        public override IntOutputs Process(IntInputs inputs)
+        public override void Process(ShipInterlink link)
         {
 
             if (!target.destroyed)
             {
 
+                Vector2 target_pos = target.pos + (Utility.CosSin(target.angle + MathHelper.Pi)*target.hitbox.radius*3);
+
+
                 Vector2 mov;
-                mov.X = x_tracker.Update(target.pos.X - inputs.pos.X);
-                mov.Y = y_tracker.Update(target.pos.Y - inputs.pos.Y);
+                mov.X = x_tracker.Update(target_pos.X - link.pos.X);
+                mov.Y = y_tracker.Update(target_pos.Y - link.pos.Y);
 
 
+                /*
                 if (mov.LengthSquared() > (0.5))
                 {
                     // Ya, this version is way cooler.
 
                     desired_angle = Utility.Angle(mov);
                 }
+                */
 
-                float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, inputs.angle));
+                desired_angle = Utility.Angle( (target.pos + ( (target.velocity - link.velocity) * (link.pos - link.pos).Length()/6f)) - link.pos);
+
+                /*
+                if ( Utility.AngleDelta(desired_angle, link.angle) < MathHelper.PiOver2 )
+                {
+
+                    outputs.firing = true;
+                    outputs.firing_angle = desired_angle - inputs.angle;
+                }
+                else { outputs.firing = false; }
+                */
 
 
-                mov = Utility.Rotate(mov, -inputs.angle);
+                float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, link.angle));
 
-                outputs.control_thrust.X = Utility.Clamp(mov.X);
-                outputs.control_thrust.Y = Utility.Clamp(mov.Y);
-                outputs.control_torque = Utility.Clamp(a_mov);
+
+                mov = Utility.Rotate(mov, -link.angle);
+
+                if (link.thrusters != null)
+                {
+                    link.thrusters.output_thrust.X = Utility.Clamp(mov.X);
+                    link.thrusters.output_thrust.Y = Utility.Clamp(mov.Y);
+                    link.thrusters.output_torque = Utility.Clamp(a_mov);
+                }
 
             }
             else
             {
-                outputs.control_thrust.X = 0.0f;
-                outputs.control_thrust.Y = 0.0f;
-                outputs.control_torque = 0.0f;
+                link.thrusters.output_thrust.X = 0.0f;
+                link.thrusters.output_thrust.Y = 0.0f;
+                link.thrusters.output_torque = 0.0f;
             }
-
-            return outputs;
+            
         }
     }
 
@@ -174,18 +173,18 @@ namespace StarPixel
             */
         }
 
-        public override IntOutputs Process(IntInputs inputs)
+        public override void Process(ShipInterlink link)
         {
 
-            if ((target - inputs.pos).Length() < target_ok_distance)
+            if ((target - link.pos).Length() < target_ok_distance)
             {
                 target = Utility.RandVec(target_range);
             }
             
 
             Vector2 mov;
-            mov.X = x_tracker.Update(target.X - inputs.pos.X);
-            mov.Y = y_tracker.Update(target.Y - inputs.pos.Y);
+            mov.X = x_tracker.Update(target.X - link.pos.X);
+            mov.Y = y_tracker.Update(target.Y - link.pos.Y);
             
 
             if (mov.LengthSquared() > (0.5))
@@ -195,17 +194,17 @@ namespace StarPixel
                 desired_angle = Utility.Angle(mov);
             }
 
-            float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, inputs.angle));
+            float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, link.angle));
 
 
-            mov = Utility.Rotate(mov, -inputs.angle);
+            mov = Utility.Rotate(mov, -link.angle);
 
-            outputs.control_thrust.X = Utility.Clamp(mov.X);
-            outputs.control_thrust.Y = Utility.Clamp(mov.Y);
-            outputs.control_torque = Utility.Clamp(a_mov);
-            
-
-            return outputs;
+            if (link.thrusters != null)
+            {
+                link.thrusters.output_thrust.X = Utility.Clamp(mov.X);
+                link.thrusters.output_thrust.Y = Utility.Clamp(mov.Y);
+                link.thrusters.output_torque = Utility.Clamp(a_mov);
+            }
         }
     }
 }

@@ -44,12 +44,14 @@ namespace StarPixel
 
 
             Ship ship0 = CreateNewShip("F2");
-            ship0.ai = new IntellegenceRoamer();
-            ship0.MountThruster("worse");
+            ship0.ai = new IntellegenceHunter(playership);
+            ship0.MountThruster("default");
             ship0.MountShield("default");
             ship0.MountArmor("default");
             ship0.Paint(Color.Blue);
             ship0.pos = Utility.RandVec(400);
+            ship0.MountWeapon("shooter", 0);
+            //ship0.MountWeapon("shooter", 1);
 
 
             Ship ship1 = CreateNewShip("F2");

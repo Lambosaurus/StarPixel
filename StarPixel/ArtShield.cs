@@ -25,6 +25,8 @@ namespace StarPixel
         public float shield_particle_size_max;
 
         public float shield_particle_halflife;
+
+        public float reform_particle_rate;
         
         public ArtShieldResource(string particle_name) : base(particle_name)
         {
@@ -69,6 +71,10 @@ namespace StarPixel
         float total_alpha = 0.0f;
 
         int angle_wrap_counter = 0;
+        
+        int reform_index;
+        float reform_counter;
+        float reform_rate;
 
         public ArtShield(ArtShieldResource arg_resource, int arg_count, float arg_size, float arg_radius)
         {
@@ -85,6 +91,7 @@ namespace StarPixel
             alpha = new float[count];
             size = new float[count];
 
+            reform_rate = (arg_resource.reform_particle_rate / arg_size) / GameConst.framerate;
             
             float rad_sq = Utility.Sqrt(radius);
 
@@ -116,6 +123,20 @@ namespace StarPixel
         public void Update(Vector2 arg_pos)
         {
             pos = arg_pos;
+
+
+            if (reform_index > 0)
+            {
+                reform_counter += reform_rate;
+
+                while ((reform_index > 0) && (reform_counter > 0))
+                {
+                    reform_counter--;
+                    alpha[--reform_index] = 1;
+                    total_alpha = 1f;
+                }
+            }
+
 
             // why bother doing particles if particles not visible?
             if (total_alpha < 0.01) { return; }
@@ -158,6 +179,7 @@ namespace StarPixel
 
         public ArtTemporary Pop( Vector2 arg_velocity )
         {
+            reform_index = 0;
             total_alpha = 0.0f;
 
             ArtShieldPop pop = new ArtShieldPop(resource, scalar, radius, count, pos, arg_velocity);
@@ -175,6 +197,12 @@ namespace StarPixel
             return pop;
         }
         
+
+        public void Reform()
+        {
+            reform_index = count;
+        }
+
 
         public bool InView(Camera camera)
         {

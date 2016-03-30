@@ -12,6 +12,36 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+    public class ShipInterlink
+    {
+        public float hitbox_radius { get { return ship.hitbox.radius; } }
+        public float mass { get { return ship.mass; } }
+        public float intertia { get { return ship.inertia; } }
+
+
+        public Vector2 pos { get { return ship.pos; } }
+        public float angle { get { return ship.angle; } }
+        public Vector2 velocity { get { return ship.velocity; } }
+
+
+        public ThrusterInterlink thrusters { get; private set; }
+
+        private Ship ship;
+        
+        public ShipInterlink( Ship arg_ship )
+        {
+            ship = arg_ship;
+        }
+
+        public void UpdateLinks()
+        {
+            thrusters = (ship.thrusters == null) ? null : ship.thrusters.interlink;
+        }
+    }
+
+
+
+
 
     public class ShipTemplate
     {
@@ -74,16 +104,19 @@ namespace StarPixel
         public ArtSprite hull_sprite;
         public ArtSprite paint_sprite = null;
         
-        public Thruster thrusters = null;
+        public ComponentThruster thrusters = null;
 
         public ComponentShield shield = null;
         public ComponentArmor armor = null;
         
         public Intellegence ai;
-        public IntInputs ai_inputs = new IntInputs();
-
 
         public ComponentWeapon[] weapons;
+
+
+
+        public ShipInterlink interlink { get; private set; }
+
 
         public Ship(ShipTemplate arg_template, Universe arg_universe ) : base(arg_universe)
         {
@@ -97,6 +130,9 @@ namespace StarPixel
             hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
            
             weapons = new ComponentWeapon[template.weapon_ports.Count];
+
+
+            interlink = new ShipInterlink(this);
         }
 
         public void MountWeapon( string template_name, int port_number )
@@ -112,18 +148,21 @@ namespace StarPixel
                 {
                     weapons[port_number] = AssetWeaponTemplates.weapon_templates[template_name].New(this, template.weapon_ports[port_number]);
                 }
-
             }
+
+            interlink.UpdateLinks();
         }
 
         public void MountShield(string template_name)
         {
             shield = AssetShieldTemplates.shield_templates[template_name].New(this);
+            interlink.UpdateLinks();
         }
 
         public void MountArmor(string template_name)
         {
             armor = AssetArmorTemplates.armor_templates[template_name].New(this);
+            interlink.UpdateLinks();
         }
 
 
@@ -150,6 +189,7 @@ namespace StarPixel
         public void MountThruster(string template_name)
         {
             thrusters = AssetThrusterTemplates.thruster_templates[template_name].New(this);
+            interlink.UpdateLinks();
         }
 
         public void Paint( Color color )
@@ -170,30 +210,7 @@ namespace StarPixel
 
             if (ai != null)
             {
-                ai_inputs.pos = pos;
-                ai_inputs.angle = angle;
-                IntOutputs orders = ai.Process(ai_inputs);
-
-                if (thrusters != null)
-                {
-                    thrusters.control_thrust_vector = orders.control_thrust;
-                    thrusters.control_torque_scalar = orders.control_torque;
-                }
-
-                if( orders.firing )
-                {
-                    foreach (ComponentWeapon weapon in weapons)
-                    {
-                        if (weapon != null)
-                        {
-                            if (weapon.ReadyToFire())
-                            {
-                                weapon.Fire( orders.firing_angle );
-                            }
-                        }
-                    }
-                }
-                
+                ai.Process(interlink);                
             }
 
 

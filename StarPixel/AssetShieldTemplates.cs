@@ -35,6 +35,7 @@ namespace StarPixel
             art.shield_particle_size_min = 0.5f;
             art.shield_particle_speed = 0.06f;
             art.shield_particle_halflife = 1.0f;
+            art.reform_particle_rate = 70;
 
             art.particle_velocity = 0.5f;
             art.particle_life = 6f;
@@ -63,6 +64,7 @@ namespace StarPixel
             art.shield_particle_size_min = 0.3f;
             art.shield_particle_speed = 0.1f;
             art.shield_particle_halflife = 0.8f;
+            art.reform_particle_rate = 60f;
 
             art.particle_velocity = 0.7f;
             art.particle_life = 3f;
