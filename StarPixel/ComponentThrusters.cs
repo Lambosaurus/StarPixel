@@ -30,9 +30,9 @@ namespace StarPixel
         // we have a private ptr to the component, which should be safe
         private ComponentThruster component;
 
-        public ThrusterFacade( ComponentThruster component ) : base (component)
+        public ThrusterFacade( ComponentThruster arg_component ) : base (arg_component)
         {
-
+            component = arg_component;
         }
     }
 

@@ -134,7 +134,6 @@ namespace StarPixel
 
         public void DrawTargetBars(Ship ship, Vector2 shippos, float angle = -MathHelper.PiOver2, bool tile = false)
         {
-            Color shield_bar_color = Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f);
             float shield_bar_width = 4;
             float bar_pad = 4;
             float armor_bar_sep = 0.04f;
@@ -144,6 +143,12 @@ namespace StarPixel
 
             if (ship.shield != null)
             {
+                Color shield_bar_color = Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f);
+                if (!ship.shield.active)
+                {
+                    shield_bar_color = Color.Lerp(shield_bar_color, Color.Black, 0.6f);
+                }
+
                 ArtLine.DrawArcU(this, cen, -MathHelper.PiOver2,
                     MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity,
                     r + (1.5f* shield_bar_width * upsample_multiplier) + (1 * bar_pad * upsample_multiplier),
