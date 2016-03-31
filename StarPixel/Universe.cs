@@ -15,12 +15,14 @@ namespace StarPixel
     public class Universe
     {
         public List<Physical> physicals = new List<Physical>();
+        int physcount = 0;
 
         public List<Projectile> projectiles = new List<Projectile>();
+        int projcount = 0;
 
         public List<ArtTemporary> art_temp = new List<ArtTemporary>();
-
-
+        int tempcount = 0;
+       
 
         // creates a new ship from given template name, and adds it into the universe.
         public Ship CreateNewShip( string template_name )
@@ -49,7 +51,7 @@ namespace StarPixel
             ship0.MountShield("default");
             ship0.MountArmor("default");
             ship0.Paint(Color.Blue);
-            ship0.pos = Utility.RandVec(400);
+            ship0.pos = Utility.CosSin( Utility.RandAngle(),  Utility.Rand(200,300)  );
             ship0.MountWeapon("shooter", 0);
             //ship0.MountWeapon("shooter", 1);
 
@@ -59,17 +61,16 @@ namespace StarPixel
             ship1.MountThruster("default");
             ship1.MountShield("green");
             ship1.MountArmor("default");
-            ship1.pos = Utility.RandVec(400);
+            ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(400, 500));
 
-            
             Ship ship2 = CreateNewShip("CG1");
             ship2.ai = new IntellegenceRoamer(0.2f);
             ship2.MountThruster("default");
             ship2.MountShield("default");
             ship2.MountArmor("default");
             ship2.Paint(Color.Yellow);
-            ship2.pos = Utility.RandVec(800);
-            
+            ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(600, 700));
+
         }
 
         public void End()
@@ -78,48 +79,63 @@ namespace StarPixel
 
         public void Update()
         {
-
-            foreach (Physical phys in physicals)
+            // we use physcount, not the actual physicals.count, so we dont update newly added objects
+            for( int i = 0; i < physcount; i++ )
             {
-                phys.Update();
-
+                physicals[i].Update();
             }
-            
-            foreach (Projectile proj in projectiles)
-            {
-                proj.Update();
 
-                foreach (Physical phys in physicals)
+            for (int i = 0; i < projcount; i++)
+            {
+                projectiles[i].Update();
+
+                // check projectile against all targets.
+                for (int k = 0; k < physcount; k++)
                 {
-                    if ( proj.HitCheck(this, phys) )
+                    if (projectiles[i].HitCheck(this, physicals[k]))
                     {
-                        break;
+                        break; // hit already found. We done here.
                     }
-                    
                 }
             }
 
-            
             // check each physical for collisions
-            for (int i = 0; i < physicals.Count; i++)
+            for (int i = 0; i < physcount; i++)
             {
                 // dont check physicals that have already check you.
-                for (int k = i+1; k < physicals.Count; k++)
+                for (int k = i + 1; k < physcount; k++)
                 {
-                    if (physicals[i].HitCheck(physicals[k]))
-                    {
-                        break;
-                    }
+                    physicals[i].HitCheck(physicals[k]);
                 }
             }
-
-
-            foreach ( ArtTemporary temp in art_temp )
+            
+            for (int i = 0; i < tempcount; i++)
             {
-                temp.Update();
+                art_temp[i].Update();
             }
 
+            this.WelcomeNewEntities();
+            this.MaintainEntityLists();   
+        }
 
+
+        void WelcomeNewEntities()
+        {
+            for ( int i = physcount; i < physicals.Count; i++)
+            {
+                physicals[i].NewObjectUpdate();
+            }
+            
+            for (int i = projcount; i < projectiles.Count; i++)
+            {
+                projectiles[i].NewObjectUpdate();
+            }
+        }
+
+        // maintains the lists of entities
+        // culling entities that are ready to die, and updating counts
+        void MaintainEntityLists()
+        {
             // remove physicals that are good to be removed.
             // this is done separately for a good reason. probably.
             for (int i = physicals.Count - 1; i >= 0; i--)
@@ -129,6 +145,8 @@ namespace StarPixel
                     physicals.RemoveAt(i);
                 }
             }
+            physcount = physicals.Count;
+
 
             for (int i = projectiles.Count - 1; i >= 0; i--)
             {
@@ -137,6 +155,8 @@ namespace StarPixel
                     projectiles.RemoveAt(i);
                 }
             }
+            projcount = projectiles.Count;
+
 
             for (int i = art_temp.Count - 1; i >= 0; i--)
             {
@@ -145,6 +165,8 @@ namespace StarPixel
                     art_temp.RemoveAt(i);
                 }
             }
+            tempcount = art_temp.Count;
+
         }
 
         public Entity OnClick(Vector2 pos)

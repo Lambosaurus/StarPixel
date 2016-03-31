@@ -12,30 +12,59 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ShipInterlink
+    public class ShipFacade
     {
+        // getters for ship parameters
         public float hitbox_radius { get { return ship.hitbox.radius; } }
         public float mass { get { return ship.mass; } }
         public float intertia { get { return ship.inertia; } }
-
-
+        
+        // getters for ship variables
         public Vector2 pos { get { return ship.pos; } }
         public float angle { get { return ship.angle; } }
         public Vector2 velocity { get { return ship.velocity; } }
 
+        
+        // getters for other modules
+        public WeaponFacade Weapon(int index) { return weapons[index]; }
+        public ThrusterFacade thrusters { get; private set; }
+        public int weapon_count { get { return weapons.Length; } }
 
-        public ThrusterInterlink thrusters { get; private set; }
+        // is true if on UpdateHardware, where any components could have been changed
+        // set this to false once you have read it
+        public bool hardware_updated;
 
+
+        // private data
+        private WeaponFacade[] weapons;
         private Ship ship;
         
-        public ShipInterlink( Ship arg_ship )
+        public ShipFacade( Ship arg_ship )
         {
+            hardware_updated = false;
             ship = arg_ship;
-        }
 
-        public void UpdateLinks()
+            weapons = new WeaponFacade[ship.template.weapon_ports.Count];
+            for (int i = 0; i < ship.weapons.Count(); i++)
+            {
+                weapons[i] = new WeaponFacade(ship.template.weapon_ports[i], null);
+            }
+        }
+        
+        public void UpdateHardware( )
         {
-            thrusters = (ship.thrusters == null) ? null : ship.thrusters.interlink;
+            thrusters = (ship.thrusters == null) ? null : ship.thrusters.facade;
+            
+            for( int i = 0; i < ship.weapons.Count(); i++ )
+            {
+                if (ship.weapons[i] != null) { weapons[i] = ship.weapons[i].facade; }  // get the current weapon facade
+                else if ( weapons[i].weapon_present )
+                {
+                    // current facade is full, but slot it empty, clear it.
+                    weapons[i] = new WeaponFacade(ship.template.weapon_ports[i], null);
+                }
+            }
+            hardware_updated = true;
         }
     }
 
@@ -115,7 +144,7 @@ namespace StarPixel
 
 
 
-        public ShipInterlink interlink { get; private set; }
+        public ShipFacade facade { get; private set; }
 
 
         public Ship(ShipTemplate arg_template, Universe arg_universe ) : base(arg_universe)
@@ -132,7 +161,7 @@ namespace StarPixel
             weapons = new ComponentWeapon[template.weapon_ports.Count];
 
 
-            interlink = new ShipInterlink(this);
+            facade = new ShipFacade(this);
         }
 
         public void MountWeapon( string template_name, int port_number )
@@ -150,19 +179,19 @@ namespace StarPixel
                 }
             }
 
-            interlink.UpdateLinks();
+            facade.UpdateHardware();
         }
 
         public void MountShield(string template_name)
         {
             shield = AssetShieldTemplates.shield_templates[template_name].New(this);
-            interlink.UpdateLinks();
+            facade.UpdateHardware();
         }
 
         public void MountArmor(string template_name)
         {
             armor = AssetArmorTemplates.armor_templates[template_name].New(this);
-            interlink.UpdateLinks();
+            facade.UpdateHardware();
         }
 
 
@@ -189,7 +218,7 @@ namespace StarPixel
         public void MountThruster(string template_name)
         {
             thrusters = AssetThrusterTemplates.thruster_templates[template_name].New(this);
-            interlink.UpdateLinks();
+            facade.UpdateHardware();
         }
 
         public void Paint( Color color )
@@ -207,10 +236,12 @@ namespace StarPixel
 
         public override void Update()
         {
+            base.Update();
+
 
             if (ai != null)
             {
-                ai.Process(interlink);                
+                ai.Process(facade);                
             }
 
 
@@ -225,11 +256,9 @@ namespace StarPixel
                 if (weapon != null) { weapon.Update(); }
             }
 
-
-            base.Update();
-
             hull_sprite.Update(pos, angle);
             if ( paint_sprite != null ) { paint_sprite.Update(pos, angle); }
+            
         }
 
 

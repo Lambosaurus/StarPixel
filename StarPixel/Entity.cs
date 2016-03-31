@@ -22,6 +22,8 @@ namespace StarPixel
         public float angle;
         private bool selected = false;
 
+        bool newly_spawned;
+
         private void SelectMe(object sender, EventArgs eventArgs)
         {
             selected = !selected;
@@ -47,6 +49,8 @@ namespace StarPixel
 
             Clicked += SelectMe;
             destroyed = false;
+
+            newly_spawned = true;
         }
 
         public void OnClick()
@@ -58,6 +62,12 @@ namespace StarPixel
             
         }
 
+        public void NewObjectUpdate()
+        {
+            pos -= velocity;
+            this.Update();
+        }
+        
         public virtual void Update()
         {
             pos += velocity;

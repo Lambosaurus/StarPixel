@@ -17,7 +17,6 @@ namespace StarPixel
            
 
         public float shield_particle_speed; // is this an angular speed? I do not recall.
-                                     // I am considering replaceing angular speeds with a dynamic force based speed
 
         // particle_life will behave as a half life
 

@@ -19,7 +19,7 @@ namespace StarPixel
 
         }
 
-        public virtual void Process( ShipInterlink link )
+        public virtual void Process( ShipFacade link )
         {
         }
     }
@@ -39,7 +39,7 @@ namespace StarPixel
             target = arg_target;
         }
 
-        public override void Process(ShipInterlink link)
+        public override void Process(ShipFacade link)
         {
 
             KeyboardState key_state = Keyboard.GetState();
@@ -52,10 +52,20 @@ namespace StarPixel
                 link.thrusters.output_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);
             }
 
-            /*
-            outputs.firing = mouse_state.LeftButton == ButtonState.Pressed;
-            outputs.firing_angle = Utility.Angle(target - inputs.pos) - inputs.angle;
-            */
+            
+            bool firing = mouse_state.LeftButton == ButtonState.Pressed;
+            float desired_angle = Utility.Angle(target - link.pos);
+            
+
+            for (int i = 0; i < link.weapon_count; i++)
+            {
+                WeaponFacade weapon = link.Weapon(i);
+                if (weapon.weapon_present)
+                {
+                    weapon.fire = firing;
+                    weapon.target_angle = desired_angle - link.angle;
+                }
+            }
         }
     }
 
@@ -82,7 +92,7 @@ namespace StarPixel
             
         }
 
-        public override void Process(ShipInterlink link)
+        public override void Process(ShipFacade link)
         {
 
             if (!target.destroyed)
@@ -104,18 +114,27 @@ namespace StarPixel
                     desired_angle = Utility.Angle(mov);
                 }
                 */
-
-                desired_angle = Utility.Angle( (target.pos + ( (target.velocity - link.velocity) * (link.pos - link.pos).Length()/6f)) - link.pos);
-
-                /*
-                if ( Utility.AngleDelta(desired_angle, link.angle) < MathHelper.PiOver2 )
+                
+                
+                for (int i = 0; i < link.weapon_count; i++)
                 {
+                    WeaponFacade weapon = link.Weapon(i);
+                    if (weapon.weapon_present)
+                    {
 
-                    outputs.firing = true;
-                    outputs.firing_angle = desired_angle - inputs.angle;
+                        Vector2 intercept = target.pos + ((target.velocity - link.velocity) * (target.pos - link.pos).Length() / weapon.projectile_velocity);
+                        desired_angle = Utility.Angle(intercept - link.pos);
+                        float range = (intercept - link.pos).Length();
+
+
+                        if ( range < (weapon.projectile_life*weapon.projectile_velocity)/2f &&  Utility.AngleDelta(desired_angle, link.angle) < MathHelper.PiOver2)
+                        {
+                            weapon.fire = true;
+                            weapon.target_angle = desired_angle - link.angle;
+                        }
+                    }
                 }
-                else { outputs.firing = false; }
-                */
+                
 
 
                 float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, link.angle));
@@ -173,7 +192,7 @@ namespace StarPixel
             */
         }
 
-        public override void Process(ShipInterlink link)
+        public override void Process(ShipFacade link)
         {
 
             if ((target - link.pos).Length() < target_ok_distance)

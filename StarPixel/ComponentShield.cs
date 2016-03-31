@@ -18,7 +18,7 @@ namespace StarPixel
         public Resistance resistance = Resistance.Zero;
 
         public float integrity = 120.0f;
-        public float reform_integrity = 0.3f; // this is a percentage of maximum
+        public float reform_integrity = 0.5f; // this is a percentage of maximum
         public float regen = 3f;
 
         public ComponentShield New( Ship ship )

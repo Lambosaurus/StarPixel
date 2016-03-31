@@ -12,31 +12,36 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-
-    public class WeaponPort
+    public class WeaponFacade : ComponentFacade
     {
-        public Vector2 position;
+        // standard variables of the weapon hardpoint
+        public float hardpoint_size { get { return port.size; } }
+        public Vector2 hardpoint_position { get { return port.position; } }
+        public float hardpoint_arc_min { get { return port.angle_min; } }
+        public float hardpoint_arc_max { get { return port.angle_max; } }
+        public bool weapon_present { get { return component != null; } }
 
-        public float angle_min;
-        public float angle_max;
+        // weapon related fields
+        // dont read these unless you check that the weapon is present
+        public float projectile_velocity { get { return component.projectile_velocity; } }
+        public Damage projectile_damage { get { return component.explosion.dmg; } }
+        public float projectile_life { get { return component.projectile_frame_life; } }
+        public float projectile_scatter { get { return component.projectile_scatter; } }
+        public float weapon_period { get { return component.cooldown; } }
+        public bool ready_to_fire { get { return component.ReadyToFire(); } }
         
-        public float size;
+        // writable variables, which the AI can mess with
+        public bool fire = false;
+        public float target_angle = 0.0f;
         
-        public WeaponPort(Vector2 arg_pos, float arg_size, float arc_center, float arc_width)
-        {
-            position = arg_pos;
-            size = arg_size;
+        // we have a private ptr to the component, which should be safe
+        private ComponentWeapon component;
+        private WeaponPort port;
 
-            angle_min = arc_center - (arc_width / 2);
-            angle_max = arc_center + (arc_width / 2);
-        }
-
-        public WeaponPort( WeaponPort example )
+        public WeaponFacade( WeaponPort arg_port, ComponentWeapon arg_component ) : base(arg_component)
         {
-            size = example.size;
-            position = example.position;
-            angle_min = example.angle_min;
-            angle_max = example.angle_max;
+            component = arg_component;
+            port = arg_port;
         }
     }
 
@@ -98,6 +103,7 @@ namespace StarPixel
         
         public Explosion explosion { get; private set; }
 
+        public WeaponFacade facade { get; private set; }
 
         public ComponentWeapon(Ship arg_ship, WeaponPort arg_port, float arg_size, WeaponTemplate arg_template) : base(arg_ship, arg_size, arg_template)
         {
@@ -105,6 +111,8 @@ namespace StarPixel
             template = arg_template;
 
             explosion = template.explosion * size;
+
+            facade = new WeaponFacade(port, this);
         }
 
         public bool ReadyToFire()
@@ -116,6 +124,8 @@ namespace StarPixel
         {
             if (this.ReadyToFire())
             {
+                facade.fire = false;
+
                 if ( Utility.AngleWithin(angle, port.angle_min, port.angle_max) )
                 {
                     this.SpawnProjectile(angle);
@@ -133,6 +143,13 @@ namespace StarPixel
             }
 
             base.Update();
+            
+
+            if (facade.fire)
+            {
+                this.Fire(facade.target_angle);
+            }
+
         }
 
         public virtual void SpawnProjectile(float angle )
@@ -156,7 +173,35 @@ namespace StarPixel
             ship.universe.projectiles.Add(projectile);
         }
     }
-    
+
+    public class WeaponPort
+    {
+        public Vector2 position;
+
+        public float angle_min;
+        public float angle_max;
+
+        public float size;
+
+        public WeaponPort(Vector2 arg_pos, float arg_size, float arc_center, float arc_width)
+        {
+            position = arg_pos;
+            size = arg_size;
+
+            angle_min = arc_center - (arc_width / 2);
+            angle_max = arc_center + (arc_width / 2);
+        }
+
+        public WeaponPort(WeaponPort example)
+        {
+            size = example.size;
+            position = example.position;
+            angle_min = example.angle_min;
+            angle_max = example.angle_max;
+        }
+    }
+
+
 }
 
 

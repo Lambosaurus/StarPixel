@@ -14,7 +14,7 @@ namespace StarPixel
 {
     // This is the object that is exposed to the AI
      
-    public class ThrusterInterlink : ComponentFacade
+    public class ThrusterFacade : ComponentFacade
     {
         // standard components variables that can be read through the interface
         public float main_thrust { get { return component.main_thrust; } }
@@ -30,7 +30,7 @@ namespace StarPixel
         // we have a private ptr to the component, which should be safe
         private ComponentThruster component;
 
-        public ThrusterInterlink( ComponentThruster component ) : base (component)
+        public ThrusterFacade( ComponentThruster component ) : base (component)
         {
 
         }
@@ -76,7 +76,7 @@ namespace StarPixel
         ArtVent sparkles;
 
         public ThrusterTemplate template { private set; get; }
-        public ThrusterInterlink interlink { private set; get; }
+        public ThrusterFacade facade { private set; get; }
 
         public ComponentThruster(Ship ship, float arg_size, ThrusterTemplate arg_template) : base(ship, arg_size, arg_template)
         {
@@ -87,7 +87,7 @@ namespace StarPixel
             main_thrust = template.main_thrust * size;
             torque = template.torque * size;
 
-            interlink = new ThrusterInterlink(this);
+            facade = new ThrusterFacade(this);
 
             // this needs to be dynamic
             sparkles = ArtManager.GetVentResource(template.sparkle_effects).New(0.5f);
@@ -110,9 +110,9 @@ namespace StarPixel
         public override void Update()
         {
             // we get the amount of thrust requested, ensuring its in a reasonable size
-            float control_x = Utility.Clamp(interlink.output_thrust.X);
-            float control_y = Utility.Clamp(interlink.output_thrust.Y);
-            float control_t = Utility.Clamp(interlink.output_torque);
+            float control_x = Utility.Clamp(facade.output_thrust.X);
+            float control_y = Utility.Clamp(facade.output_thrust.Y);
+            float control_t = Utility.Clamp(facade.output_torque);
 
 
             // we get the output values from the 
@@ -125,25 +125,27 @@ namespace StarPixel
             int i = 0;
             foreach (ThrusterPort port in particle_ports)
             {
+                particle_vents[i].Update();
+
                 float strength = (port.kx * control_x) + (port.ky * control_y) + (port.kt * control_t) ;
                 if (strength > 0)
                 {
                     particle_vents[i].Generate(ship.pos + Utility.Rotate(port.position, ship.angle), ship.velocity, port.angle + ship.angle, strength);
                 }
-                particle_vents[i].Update();
-
+                
                 i++;
             }
 
 
+
+            sparkles.Update();
             // This is a bad way of generating sparkles
             // TODO: Fix this.
             if (control_x > 0 && Utility.Rand(1.0f) > 0.94f / control_x)
             {
                 sparkles.Generate(ship.pos + Utility.Rotate(particle_ports[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, 1);
             }
-            sparkles.Update();
-
+            
             // out thrust vector we have calculated needs to be rotated by the ships angle.
             ship.Push(Utility.Rotate(new Vector2(output_thrust_x, output_thrust_y), ship.angle), output_torque);
         }
