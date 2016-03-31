@@ -12,8 +12,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-
-    // everything art needs to draw itself 
+    
     public class Camera
     {
         public Vector2 pos;
@@ -132,6 +131,10 @@ namespace StarPixel
         }
 
 
+        // ------------------------------------------------------------------------------------------- //
+        //                      THIS CODE IS TOTAL SHIT. I NEED A GUI CLASS ASAP.                      //
+        // ------------------------------------------------------------------------------------------- //
+
         public void DrawTargetBars(Ship ship, Vector2 shippos, float angle = -MathHelper.PiOver2, bool tile = false)
         {
             float shield_bar_width = 4;
@@ -179,6 +182,10 @@ namespace StarPixel
         }
     }
 
+
+    // ------------------------------------------------------------------------------------------- //
+    //                                   I MEAN, COME ON                                           //
+    // ------------------------------------------------------------------------------------------- //
 
     public class StatusCamera : Camera
     {
