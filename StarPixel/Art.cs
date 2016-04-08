@@ -4,10 +4,8 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
 
 
 namespace StarPixel
@@ -130,7 +128,7 @@ namespace StarPixel
 
 
 
-        const int ARC_COUNT = 80;
+        const int ARC_COUNT = 40;
 
         public static void DrawArcUF( Camera camera, Vector2 center, float angle_start, float arc_length, float radius, Color color, float width )
         {

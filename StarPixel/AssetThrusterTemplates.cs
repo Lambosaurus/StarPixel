@@ -40,7 +40,7 @@ namespace StarPixel
             vent.velocity_scatter = 0.1f;
             vent.velocity_ejection = 1f;
             vent.generation_frequency = 0.8f;
-            vent.particle_count = 10;
+            vent.particle_count = 20;
             ArtManager.vents.Add("default_sparkles", vent);
 
             vent = new ArtVentResource("particle");

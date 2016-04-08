@@ -4,10 +4,9 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
-using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Microsoft.Xna.Framework.Media;
+
 
 namespace StarPixel
 {
@@ -15,18 +14,13 @@ namespace StarPixel
     /// This is the main type for your game
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        int UPSAMPLE_MULTIPLIER = 2; // may be 1 or 2. x3 will violate the 4096x4096 texture limit
-
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         // meh. Its a semi comfortable res for developing in.
         int window_res_x = 1200;
         int window_res_y = 800;
-
-        Camera camera;
-        StatusCamera status_camera;
-        int status_camera_width = 100;
+        UI ui;
 
         int scrollVal = 0;
         Vector2 mouse_pos = new Vector2(0, 0);
@@ -38,7 +32,7 @@ namespace StarPixel
         Universe universe;
         Entity selectedEntity = null;
 
-        bool firing = true;
+        bool first_frame = true;
 
         double time_accelleration = 1.0;
         double time_update_counter = 0.0;
@@ -50,8 +44,6 @@ namespace StarPixel
 
         public Game1()
         {
-            UPSAMPLE_MULTIPLIER = 2; // ALRIGHTY, LETS DO THIS.
-
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = window_res_y;
             graphics.PreferredBackBufferWidth = window_res_x;
@@ -71,11 +63,17 @@ namespace StarPixel
 
             universe = new Universe();
 
+            ui = new UI(GraphicsDevice, spriteBatch, window_res_x, window_res_y);
+            ui.FocusUniverse(universe);
+
             universe.Start();
 
             if (universe.physicals.Count != 0)
             {
-                selectedEntity = universe.physicals[0];
+                if ((Ship)universe.physicals[0] is Ship)
+                {
+                    ui.FocusShip((Ship)universe.physicals[0]);
+                }
             }
 
         }
@@ -93,11 +91,8 @@ namespace StarPixel
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
             
-            camera = new Camera(GraphicsDevice, spriteBatch, window_res_x, window_res_y, UPSAMPLE_MULTIPLIER);
 
-            status_camera = new StatusCamera(GraphicsDevice, spriteBatch, status_camera_width);
-
-
+            
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
             
             ArtManager.Load(Content);
@@ -126,6 +121,7 @@ namespace StarPixel
                 this.Exit();
             }
 
+            ui.Update();
 
             KeyboardState new_keys = Keyboard.GetState();
             
@@ -163,9 +159,9 @@ namespace StarPixel
 
             bool tabbed = new_keys.IsKeyDown(Keys.Tab);
             show_all_ship_status = tabbed;
-            camera.DRAW_HITBOXES = tabbed;
+            //camera.DRAW_HITBOXES = tabbed;
 
-
+            /*
             //if scroll has been used, zoom in/out
             if (Mouse.GetState().ScrollWheelValue > scrollVal)
             {
@@ -209,56 +205,46 @@ namespace StarPixel
                 }
             }
 
-
             
-            if (mouse_middle == ButtonState.Pressed && Mouse.GetState().MiddleButton == ButtonState.Released)
+            // Fix for Joels machine.
+            // For some reason this may trigger on the first frame
+            if( !first_frame && mouse_middle == ButtonState.Pressed && Mouse.GetState().MiddleButton == ButtonState.Released)
             {
                 selectedEntity = universe.OnClick(camera.InverseMap(new Vector2(Mouse.GetState().X* camera.upsample_multiplier, Mouse.GetState().Y* camera.upsample_multiplier)));
 
             }
             mouse_middle = Mouse.GetState().MiddleButton;
+            */
             
-
-                time_update_counter += time_accelleration;
+            // this could be a little neater.
+            time_update_counter += time_accelleration;
             while (time_update_counter > 1.0)
             {
                 time_update_counter--;
                 universe.Update();
             }
 
+            /*
             if (selectedEntity != null)
             {
                 camera.MoveTo(selectedEntity.pos);
             }
+            */
 
             old_keys = new_keys;
             base.Update(gameTime);
+
+            first_frame = false;
         }
 
-
+        
         /// This is called when the game should draw itself.
         protected override void Draw(GameTime gameTime)
         {
-            camera.Draw(universe, show_all_ship_status);
+            ui.Draw();
 
-            if (selectedEntity is Ship)
-            {
-                status_camera.DrawTarget((Ship)selectedEntity);
-            }
+            //spriteBatch.Draw(cursor_fire, mouse_pos - new Vector2(7,7), Color.White);
 
-
-            GraphicsDevice.SetRenderTarget(null); // draw to windows now
-            //GraphicsDevice.Clear(Color.CornflowerBlue); // so we can see what we forgot TODO: remove this.
-
-            // now we write the cameras result to the screen
-            spriteBatch.Begin();
-
-            camera.Blit(spriteBatch, new Vector2(0, 0));
-            status_camera.Blit(spriteBatch, camera.onscreen_res - status_camera.onscreen_res);
-            spriteBatch.Draw(cursor_fire, mouse_pos - new Vector2(7,7), Color.White);
-
-            spriteBatch.End();
-            
             base.Draw(gameTime);
         }
     }
