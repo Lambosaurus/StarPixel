@@ -212,6 +212,14 @@ namespace StarPixel
             return value;
         }
 
+        public static bool PointInWindow( Vector2 point, Vector2 limits)
+        {
+            return point.X >= 0 &&
+                   point.Y >= 0 &&
+                   point.X < limits.X &&
+                   point.Y < limits.Y;
+        }
+
         // Checks whether two points are within a windows distance of each other
         public static bool Window(Vector2 p1, Vector2 p2, Vector2 window)
         {

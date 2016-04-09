@@ -22,25 +22,12 @@ namespace StarPixel
         int window_res_y = 800;
         UI ui;
 
-        int scrollVal = 0;
-        Vector2 mouse_pos = new Vector2(0, 0);
-
-        Texture2D cursor_fire;
-        Texture2D cursor_select;
-
-        ButtonState mouse_middle = Mouse.GetState().LeftButton;
         Universe universe;
-        Entity selectedEntity = null;
-
-        bool first_frame = true;
 
         double time_accelleration = 1.0;
         double time_update_counter = 0.0;
         bool paused = false;
 
-        bool show_all_ship_status = false;
-
-        KeyboardState old_keys;
 
         public Game1()
         {
@@ -58,16 +45,16 @@ namespace StarPixel
         protected override void Initialize()
         {
             base.Initialize();
-
-            old_keys = Keyboard.GetState();
-
+            
             universe = new Universe();
 
             ui = new UI(GraphicsDevice, spriteBatch, window_res_x, window_res_y);
+            ui.Start();
             ui.FocusUniverse(universe);
 
             universe.Start();
 
+            /*
             if (universe.physicals.Count != 0)
             {
                 if ((Ship)universe.physicals[0] is Ship)
@@ -75,6 +62,7 @@ namespace StarPixel
                     ui.FocusShip((Ship)universe.physicals[0]);
                 }
             }
+            */
 
         }
 
@@ -96,9 +84,7 @@ namespace StarPixel
             ColorManager.Load(Content); // it may be important to do this before artmanager.Load, in case I make art assets which need colors
             
             ArtManager.Load(Content);
-
-            cursor_fire = Content.Load<Texture2D>("cursor_fire");
-            cursor_select = Content.Load<Texture2D>("cursor_select");
+            UI.Load(Content);
         }
 
         /// UnloadContent will be called once per game and is the place to unload
@@ -123,6 +109,7 @@ namespace StarPixel
 
             ui.Update();
 
+            /*
             KeyboardState new_keys = Keyboard.GetState();
             
             if ( new_keys.IsKeyDown(Keys.P) && !old_keys.IsKeyDown(Keys.P) )
@@ -157,39 +144,6 @@ namespace StarPixel
                 }
             }
 
-            bool tabbed = new_keys.IsKeyDown(Keys.Tab);
-            show_all_ship_status = tabbed;
-            //camera.DRAW_HITBOXES = tabbed;
-
-            /*
-            //if scroll has been used, zoom in/out
-            if (Mouse.GetState().ScrollWheelValue > scrollVal)
-            {
-                camera.scale *= 1.1f;
-            }
-            else if(Mouse.GetState().ScrollWheelValue < scrollVal)
-            {
-                camera.scale /= 1.1f;
-            }
-            scrollVal = Mouse.GetState().ScrollWheelValue;
-
-            Vector2 new_pos = new Vector2(Mouse.GetState().X, Mouse.GetState().Y);
-
-            //if right button is pressed, move camera
-            if (Mouse.GetState().RightButton == ButtonState.Pressed)
-            {
-                
-                if (selectedEntity == null ) // &&  new_pos != mouse_pos)
-                {
-                    Vector2 delta = (mouse_pos - new_pos) / camera.scale;
-
-                    camera.MoveTo(camera.pos + (delta * camera.upsample_multiplier));
-                    
-                }
-                
-            }
-            mouse_pos = new_pos;
-
 
             // Oh man is this ugly.
             foreach (Physical phys in universe.physicals)
@@ -223,18 +177,8 @@ namespace StarPixel
                 time_update_counter--;
                 universe.Update();
             }
-
-            /*
-            if (selectedEntity != null)
-            {
-                camera.MoveTo(selectedEntity.pos);
-            }
-            */
-
-            old_keys = new_keys;
+            
             base.Update(gameTime);
-
-            first_frame = false;
         }
 
         

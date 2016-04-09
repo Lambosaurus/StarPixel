@@ -14,12 +14,13 @@ namespace StarPixel
     public class Widget
     {
         public Vector2 pos;
+        public Vector2 size;
         
         public Widget()
         {
         }
 
-        public virtual void Update()
+        public virtual void Update(InputState current, InputState old, bool mouse_focus)
         {
 
         }
@@ -50,13 +51,32 @@ namespace StarPixel
         public WidgetCamera(Camera arg_camera)
         {
             camera = arg_camera;
+            size = camera.res / camera.upsample_multiplier;
         }
-
-        public override void Update()
+        
+        public override void Update( InputState current, InputState old, bool mouse_focus )
         {
             if (focus_entity != null)
             {
-                camera.pos = focus_entity.pos;
+                camera.MoveTo(focus_entity.pos);
+            }
+
+            if (mouse_focus)
+            {
+                if (focus_entity == null && current.mb.RightButton == ButtonState.Pressed)
+                {
+                    Vector2 mouse_delta = current.pos - old.pos;
+                    camera.MoveTo(camera.pos - (mouse_delta * camera.upsample_multiplier / camera.scale));
+                }
+
+                if (current.mb.ScrollWheelValue > old.mb.ScrollWheelValue)
+                {
+                    camera.scale *= 1.1f;
+                }
+                else if (current.mb.ScrollWheelValue < old.mb.ScrollWheelValue)
+                {
+                    camera.scale /= 1.1f;
+                }
             }
         }
 

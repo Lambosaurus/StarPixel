@@ -12,13 +12,30 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
+    public class InputState
+    {
+        public Vector2 pos { get; private set; }
+        public KeyboardState kb { get; private set; }
+        public MouseState mb { get; private set; }
+
+        public InputState()
+        {
+            mb = Mouse.GetState();
+            kb = Keyboard.GetState();
+            pos = new Vector2(mb.X, mb.Y);
+        }
+    }
+    
     public class UI
     {
-        List<Widget> widgets;
+        List<Widget> widgets; // ordered by depth: First object is deepest
 
         GraphicsDevice device;
         SpriteBatch batch;
 
+
+        public InputState current_inputs;
+        public InputState old_inputs;
 
         WidgetCamera camera_widget;
 
@@ -38,6 +55,11 @@ namespace StarPixel
             widgets.Add(camera_widget);
         }
 
+        public void Start()
+        {
+            old_inputs = new InputState();
+        }
+
         public void FocusUniverse(Universe arg_universe)
         {
             focus_universe = arg_universe;
@@ -52,10 +74,27 @@ namespace StarPixel
 
         public void Update()
         {
+            current_inputs = new InputState();
+
+            bool mouse_focus_given = false;
+
             foreach (Widget widget in widgets)
             {
-                widget.Update();
+                bool give_focus = false;
+                if ( !mouse_focus_given &&  Utility.PointInWindow(current_inputs.pos - widget.pos, widget.size) )
+                {
+                    give_focus = true;
+                    mouse_focus_given = true;
+                }
+                widget.Update(current_inputs, old_inputs, give_focus);
             }
+
+
+            camera_widget.draw_stat_rings = (current_inputs.kb.IsKeyDown(Keys.Tab));
+            
+
+
+            old_inputs = current_inputs;
         }
 
         public void Draw()
@@ -73,8 +112,24 @@ namespace StarPixel
                 widget.Draw(batch);
             }
 
+            batch.Draw(cursor_target, current_inputs.pos - cursor_center, Color.Red);
+
             batch.End();
 
+        }
+
+
+
+
+        // this is static because the loading is done before initilisation.
+        static Texture2D cursor_target;
+        static Texture2D cursor_select;
+        static Vector2 cursor_center = new Vector2(7, 7);
+
+        public static void Load(ContentManager content)
+        {
+            cursor_target = content.Load<Texture2D>("cursor_target");
+            cursor_select = content.Load<Texture2D>("cursor_select");
         }
     }
 }

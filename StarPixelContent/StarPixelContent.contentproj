@@ -107,8 +107,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="cursor_fire.png">
-      <Name>cursor_fire</Name>
+    <Compile Include="cursor_target.png">
+      <Name>cursor_target</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
