@@ -70,7 +70,9 @@ namespace StarPixel
         public int GetSegment(float incoming_angle)
         {
             float aoa = Utility.WrapAngle(incoming_angle - start_angle - ship.angle);
-            return (int)((aoa) / per_segment_angle);
+            int segment = (int)((aoa) / per_segment_angle);
+            if (segment >= segment_count) { return 0; } // you'd think this would never happen, but WrapAngle can return +2pi due to rounding errors.
+            return segment;
         }
 
         public Explosion AdsorbExplosion(Explosion exp, Vector2 arg_pos)

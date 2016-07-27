@@ -35,13 +35,13 @@ namespace StarPixel
 
         public void Start()
         {
-            Ship playership = CreateNewShip("F2");
+            Ship playership = CreateNewShip("CG1");
             playership.ai = new IntellegenceHuman();
             playership.MountThruster("better");
             playership.Paint(Color.Red);
             playership.MountShield("default");
-            playership.MountWeapon("shooter", 0);
-            playership.MountWeapon("shooter", 1);
+            //playership.MountWeapon("shooter", 0);
+            //playership.MountWeapon("shooter", 1);
             playership.MountArmor("default");
 
 
@@ -55,22 +55,28 @@ namespace StarPixel
             ship0.MountWeapon("shooter", 0);
             //ship0.MountWeapon("shooter", 1);
 
+            for (int i = 0; i < 100; i++)
+            {
+                Ship ship1 = CreateNewShip("F2");
+                ship1.ai = new IntellegenceRoamer();
+                ship1.MountThruster( Utility.RandBool() ? "default" : "better" );
+                ship1.MountShield("green");
+                ship1.MountArmor("default");
+                ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
 
-            Ship ship1 = CreateNewShip("F2");
-            ship1.ai = new IntellegenceRoamer();
-            ship1.MountThruster("default");
-            ship1.MountShield("green");
-            ship1.MountArmor("default");
-            ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(400, 500));
+                ship1.Paint(new Color(Utility.Rand(1.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
+            }
 
-            Ship ship2 = CreateNewShip("CG1");
-            ship2.ai = new IntellegenceRoamer(0.2f);
-            ship2.MountThruster("default");
-            ship2.MountShield("default");
-            ship2.MountArmor("default");
-            ship2.Paint(Color.Yellow);
-            ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(600, 700));
-
+            for (int i = 0; i < 25; i++)
+            {
+                Ship ship2 = CreateNewShip("CG1");
+                ship2.ai = new IntellegenceRoamer(0.2f);
+                ship2.MountThruster("default");
+                ship2.MountShield("default");
+                ship2.MountArmor("default");
+                ship2.Paint( new Color(Utility.Rand(1.0f), Utility.Rand(1.0f), Utility.Rand(1.0f) ));
+                ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(3000, 4000));
+            }
         }
 
         public void End()
