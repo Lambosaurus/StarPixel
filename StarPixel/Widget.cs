@@ -16,13 +16,13 @@ namespace StarPixel
         public Vector2 pos;
         public Vector2 size;
         
-        public Widget()
+        public Widget(Vector2 arg_size)
         {
+            size = arg_size;
         }
 
-        public virtual void Update(InputState current, InputState old, bool mouse_focus)
+        public virtual void Update(InputState inputs, bool mouse_focus)
         {
-
         }
         
 
@@ -48,13 +48,15 @@ namespace StarPixel
         public Entity focus_entity;
         public bool draw_stat_rings;
 
-        public WidgetCamera(Camera arg_camera)
+        UI ui;
+
+        public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample_multiplier)
         {
+            ui = arg_ui;
             camera = arg_camera;
-            size = camera.res / camera.upsample_multiplier;
         }
         
-        public override void Update( InputState current, InputState old, bool mouse_focus )
+        public override void Update(InputState inputs, bool mouse_focus )
         {
             if (focus_entity != null)
             {
@@ -63,19 +65,24 @@ namespace StarPixel
 
             if (mouse_focus)
             {
-                if (focus_entity == null && current.mb.RightButton == ButtonState.Pressed)
+                if (focus_entity == null && inputs.mb.RightButton == ButtonState.Pressed)
                 {
-                    Vector2 mouse_delta = current.pos - old.pos;
+                    Vector2 mouse_delta = inputs.pos - inputs.old_pos;
                     camera.MoveTo(camera.pos - (mouse_delta * camera.upsample_multiplier / camera.scale));
                 }
 
-                if (current.mb.ScrollWheelValue > old.mb.ScrollWheelValue)
+                if (inputs.mb.ScrollWheelValue > inputs.old_mb.ScrollWheelValue)
                 {
                     camera.scale *= 1.1f;
                 }
-                else if (current.mb.ScrollWheelValue < old.mb.ScrollWheelValue)
+                else if (inputs.mb.ScrollWheelValue < inputs.old_mb.ScrollWheelValue)
                 {
                     camera.scale /= 1.1f;
+                }
+
+                if (universe != null)
+                {
+                    ui.MouseCallBack(universe, camera.InverseMouseMap(inputs.pos) );
                 }
             }
         }
@@ -92,8 +99,49 @@ namespace StarPixel
     }
 
 
-    public class WidgetShipStatus
+    public class WidgetShipStatus : Widget
     {
+        RenderTarget2D surface;
+        SpriteBatch batch;
+        GraphicsDevice device;
+
+        Color background_color;
+
+        Ship focus_ship;
+        bool ship_change;
+
+        public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height) : base(new Vector2(width, height))
+        {
+            surface = new RenderTarget2D(arg_device, width, height);
+            batch = arg_batch;
+            device = arg_device;
+
+            background_color = new Color(32,32,32);
+        }
+
+        public void FocusShip(Ship ship)
+        {
+            focus_ship = ship;   
+        }
+
+        public override void PreDraw()
+        {
+            device.SetRenderTarget(surface);
+            device.Clear(background_color);
+
+            batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+
+            if (focus_ship != null)
+            {
+            }
+
+            batch.End();
+        }
+
+        public override void Draw(SpriteBatch arg_batch)
+        {
+            arg_batch.Draw(surface, pos, Color.White);
+        }
 
     }
 

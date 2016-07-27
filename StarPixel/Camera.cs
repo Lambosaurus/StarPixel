@@ -55,9 +55,9 @@ namespace StarPixel
         }
 
         // maps a on camera point into the global coordinate frame
-        public Vector2 InverseMap(Vector2 point)
+        public Vector2 InverseMouseMap(Vector2 point)
         {
-            return ((point - midpoint) / scale) + pos;
+            return (((point * upsample_multiplier) - midpoint) / scale) + pos;
 
         }
 
@@ -112,7 +112,7 @@ namespace StarPixel
                             
                             if (ContainsCircle(sh.pos, sh.hitbox.radius))
                             {
-                                StatusBarDrawer.DrawTargetBars(this, sh, Map(sh.pos));
+                                StatusBarDrawer.DrawTargetBars(this, sh, Map(sh.pos), sh.angle, 3 * upsample_multiplier);
                             }
                         }
                     }

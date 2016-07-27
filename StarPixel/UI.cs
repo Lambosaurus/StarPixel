@@ -17,12 +17,35 @@ namespace StarPixel
         public Vector2 pos { get; private set; }
         public KeyboardState kb { get; private set; }
         public MouseState mb { get; private set; }
+        public Vector2 old_pos { get; private set; }
+        public KeyboardState old_kb { get; private set; }
+        public MouseState old_mb { get; private set; }
+
 
         public InputState()
+        {
+            this.GetNewInputs();
+        }
+
+        void GetNewInputs()
         {
             mb = Mouse.GetState();
             kb = Keyboard.GetState();
             pos = new Vector2(mb.X, mb.Y);
+        }
+
+        public void Update()
+        {
+            old_kb = kb;
+            old_mb = mb;
+            old_pos = pos;
+
+            GetNewInputs();
+        }
+
+        public bool KeyDownEvent( Keys key )
+        {
+            return kb.IsKeyDown(key) && !old_kb.IsKeyDown(key);
         }
     }
     
@@ -33,15 +56,19 @@ namespace StarPixel
         GraphicsDevice device;
         SpriteBatch batch;
 
-
-        public InputState current_inputs;
-        public InputState old_inputs;
-
+        public InputState inputs { get; private set; }
+        
         WidgetCamera camera_widget;
-
-
+        WidgetShipStatus status_widget;
+        
         Universe focus_universe;
         Ship focus_ship;
+        IntellegenceHuman focus_ai;
+
+        bool mode_control;
+
+        Color cursor_color_control = Color.Red;
+        Color cursor_color_observer = Color.Yellow;
 
         public UI( GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height )
         {
@@ -50,14 +77,21 @@ namespace StarPixel
             batch = arg_batch;
             device = arg_device;
 
-            camera_widget = new WidgetCamera( new Camera(arg_device, arg_batch, width, height) );
-
+            camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, 2) );
+            status_widget = new WidgetShipStatus(arg_device, arg_batch, 100, 100);
+            status_widget.pos.Y = height - status_widget.size.Y;
+            
             widgets.Add(camera_widget);
+            widgets.Add(status_widget);
+
+            mode_control = false;
+
+            inputs = new InputState();
         }
 
         public void Start()
         {
-            old_inputs = new InputState();
+            inputs.Update();
         }
 
         public void FocusUniverse(Universe arg_universe)
@@ -72,29 +106,64 @@ namespace StarPixel
             camera_widget.focus_entity = arg_ship;
         }
 
+        public void GiveHumanAIHandle(IntellegenceHuman arg_ai)
+        {
+            focus_ai = arg_ai;
+        }
+
+
+        public void GiveInputsToAi( )
+        {
+            if (focus_ai != null)
+            {
+                focus_ai.thrust.X = (inputs.kb.IsKeyDown(Keys.W) ? 1.0f : 0f) - (inputs.kb.IsKeyDown(Keys.S) ? 1.0f : 0f);
+                focus_ai.thrust.Y = (inputs.kb.IsKeyDown(Keys.D) ? 1.0f : 0f) - (inputs.kb.IsKeyDown(Keys.A) ? 1.0f : 0f);
+                focus_ai.torque = (inputs.kb.IsKeyDown(Keys.E) ? 1.0f : 0f) - (inputs.kb.IsKeyDown(Keys.Q) ? 1.0f : 0f);
+            }
+        }
+
+        public void MouseCallBack( Universe universe, Vector2 position )
+        {
+            if (mode_control)
+            {
+                if (universe == focus_universe)
+                {
+                    focus_ai.weapon_target = position;
+                }
+
+                focus_ai.firing = (inputs.mb.LeftButton == ButtonState.Pressed);
+            }
+        }
+
         public void Update()
         {
-            current_inputs = new InputState();
+            inputs.Update();
+            
+            if ( inputs.KeyDownEvent(Keys.OemTilde))
+            {
+                mode_control = !mode_control;
+            }
 
+            
             bool mouse_focus_given = false;
 
             foreach (Widget widget in widgets)
             {
                 bool give_focus = false;
-                if ( !mouse_focus_given &&  Utility.PointInWindow(current_inputs.pos - widget.pos, widget.size) )
+                if ( !mouse_focus_given &&  Utility.PointInWindow(inputs.pos - widget.pos, widget.size) )
                 {
                     give_focus = true;
                     mouse_focus_given = true;
                 }
-                widget.Update(current_inputs, old_inputs, give_focus);
+                widget.Update(inputs, give_focus);
             }
 
+            if (mode_control)
+            {
+                GiveInputsToAi();
+            }
 
-            camera_widget.draw_stat_rings = (current_inputs.kb.IsKeyDown(Keys.Tab));
-            
-
-
-            old_inputs = current_inputs;
+            camera_widget.draw_stat_rings = (inputs.kb.IsKeyDown(Keys.Tab));
         }
 
         public void Draw()
@@ -112,7 +181,7 @@ namespace StarPixel
                 widget.Draw(batch);
             }
 
-            batch.Draw(cursor_target, current_inputs.pos - cursor_center, Color.Red);
+            batch.Draw(cursor_target, inputs.pos - cursor_center, (mode_control) ? cursor_color_control : cursor_color_observer );
 
             batch.End();
 

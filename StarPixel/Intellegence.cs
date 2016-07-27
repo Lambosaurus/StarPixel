@@ -11,7 +11,6 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-
     public class Intellegence
     {
         public Intellegence()
@@ -27,34 +26,28 @@ namespace StarPixel
 
     public class IntellegenceHuman : Intellegence
     {
-        Vector2 target;
+        public bool firing;
+        public Vector2 weapon_target;
+
+        public Vector2 thrust;
+        public float torque;
 
         public IntellegenceHuman()
         {
 
         }
-
-        public void GiveTarget(Vector2 arg_target)
-        {
-            target = arg_target;
-        }
-
+        
         public override void Process(ShipFacade link)
         {
 
-            KeyboardState key_state = Keyboard.GetState();
-            MouseState mouse_state = Mouse.GetState();
-
             if (link.thrusters != null)
             {
-                link.thrusters.output_thrust.X = key_state.IsKeyDown(Keys.W) ? 1.0f : ((key_state.IsKeyDown(Keys.S)) ? -1.0f : 0.0f);
-                link.thrusters.output_thrust.Y = key_state.IsKeyDown(Keys.D) ? 1.0f : ((key_state.IsKeyDown(Keys.A)) ? -1.0f : 0.0f);
-                link.thrusters.output_torque = key_state.IsKeyDown(Keys.E) ? 1.0f : ((key_state.IsKeyDown(Keys.Q)) ? -1.0f : 0.0f);
+                link.thrusters.output_thrust = thrust;
+                link.thrusters.output_torque = torque;
             }
 
             
-            bool firing = mouse_state.LeftButton == ButtonState.Pressed;
-            float desired_angle = Utility.Angle(target - link.pos);
+            float desired_angle = Utility.Angle(weapon_target - link.pos);
             
 
             for (int i = 0; i < link.weapon_count; i++)
