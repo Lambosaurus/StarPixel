@@ -27,7 +27,7 @@ namespace StarPixel
         
 
         // a chance to do sprite batch stuff before the draw
-        public virtual void PreDraw()
+        public virtual void Render()
         {
 
         }
@@ -87,7 +87,7 @@ namespace StarPixel
             }
         }
 
-        public override void PreDraw()
+        public override void Render()
         {
             camera.Draw(universe, draw_stat_rings);
         }
@@ -124,7 +124,7 @@ namespace StarPixel
             focus_ship = ship;   
         }
 
-        public override void PreDraw()
+        public override void Render()
         {
             device.SetRenderTarget(surface);
             device.Clear(background_color);

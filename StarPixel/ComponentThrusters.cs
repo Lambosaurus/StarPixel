@@ -85,7 +85,7 @@ namespace StarPixel
             side_thrust = template.side_thrust * size;
             reverse_thrust = template.reverse_thrust * size;
             main_thrust = template.main_thrust * size;
-            torque = template.torque * size;
+            torque = template.torque * ship.template.mass_avg_radius * size; //template.torque * size;
 
             facade = new ThrusterFacade(this);
 

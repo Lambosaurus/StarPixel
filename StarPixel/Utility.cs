@@ -21,7 +21,7 @@ namespace StarPixel
     {
         public const int framerate = 60;
 
-        public const float forcerad_to_torque = 1.0f / 40;
+        //public const float forcerad_to_torque = 1.0f / 40;
 
 
 

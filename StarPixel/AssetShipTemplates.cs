@@ -47,7 +47,9 @@ namespace StarPixel
 
             ShipTemplate template = new ShipTemplate();
             template.base_mass = 50;
-            template.base_intertia = 600;
+            //template.base_intertia = 600;
+            template.mass_avg_radius = 12; // length approx 18*2, so reccommended mass-radius is length/4
+            template.thruster_avg_radius = 12;
             template.hull_art_resource = "F2";
             template.heat_art_resource = "F2 heat";
             template.paint_art_resource = "F2 paint";
@@ -89,7 +91,9 @@ namespace StarPixel
 
             template = new ShipTemplate();
             template.base_mass = 500;
-            template.base_intertia = 6000;
+            //template.base_intertia = 30000;
+            template.mass_avg_radius = 32; // length approx (48+46), so reccommended mass-radius is length/3
+            template.thruster_avg_radius = 32;
             template.hull_art_resource = "CG1";
             //template.heat_art_resource = "CG1 heat";
             template.paint_art_resource = "CG1 paint";

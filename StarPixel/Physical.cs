@@ -58,7 +58,7 @@ namespace StarPixel
 
         public void Push(Vector2 force, Vector2 eccentricity)
         {
-            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y)) * GameConst.forcerad_to_torque;
+            float torque = ((force.Y * eccentricity.X) - (force.X * eccentricity.Y)); // GameConst.forcerad_to_torque;
             this.Push(force, torque);
         }
 

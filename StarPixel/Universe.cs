@@ -35,13 +35,13 @@ namespace StarPixel
 
         public void Start()
         {
-            Ship playership = CreateNewShip("CG1");
+            Ship playership = CreateNewShip("F2");
             playership.ai = new IntellegenceHuman();
             playership.MountThruster("better");
             playership.Paint(Color.Red);
             playership.MountShield("default");
-            //playership.MountWeapon("shooter", 0);
-            //playership.MountWeapon("shooter", 1);
+            playership.MountWeapon("shooter", 0);
+            playership.MountWeapon("shooter", 1);
             playership.MountArmor("default");
 
 
@@ -59,7 +59,7 @@ namespace StarPixel
             {
                 Ship ship1 = CreateNewShip("F2");
                 ship1.ai = new IntellegenceRoamer();
-                ship1.MountThruster( Utility.RandBool() ? "default" : "better" );
+                ship1.MountThruster( Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better") );
                 ship1.MountShield("green");
                 ship1.MountArmor("default");
                 ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
@@ -71,7 +71,7 @@ namespace StarPixel
             {
                 Ship ship2 = CreateNewShip("CG1");
                 ship2.ai = new IntellegenceRoamer(0.2f);
-                ship2.MountThruster("default");
+                ship2.MountThruster(Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better"));
                 ship2.MountShield("default");
                 ship2.MountArmor("default");
                 ship2.Paint( new Color(Utility.Rand(1.0f), Utility.Rand(1.0f), Utility.Rand(1.0f) ));

@@ -60,7 +60,7 @@ namespace StarPixel
         
         int index_start;
         int index_end;
-
+        
         //ArtVentResource resource;
 
         float gen_counter;
@@ -79,7 +79,7 @@ namespace StarPixel
 
             spawn_temperature = arg_resource.temperature;
             
-            radius = velocity_ejection + (arg_resource.particle_life * arg_size * GameConst.framerate);
+            radius = velocity_ejection * (arg_resource.particle_life * arg_size * GameConst.framerate);
             radius *= 2;
 
             index_end = 0;
@@ -154,8 +154,9 @@ namespace StarPixel
             // if index_start == index_end we have no particles left!
             if (index_start != index_end)
             {
+                int index_recent = index_end == 0 ? count - 1 : index_end - 1;
                 // get the position of the most recent particle....
-                return camera.ContainsCircle(position[index_start], radius);
+                return camera.ContainsCircle(position[index_recent], radius);
             }
             return false;
         }

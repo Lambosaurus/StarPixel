@@ -85,8 +85,9 @@ namespace StarPixel
         public Hitbox hitbox;
 
         public float base_mass;
-        public float base_intertia;
-
+        
+        public float thruster_avg_radius; // for calculating the thruster torque. Reccommended to be the ship length / 4
+        public float mass_avg_radius; // for calculating the inertia. Reccommended to be the ship length / 4
 
         // thruster data
         public float component_thruster_size = 1.0f;
@@ -103,7 +104,7 @@ namespace StarPixel
         public float component_armor_size = 1.0f;
         public int armor_segment_count = 3;
         public bool armor_seam_on_rear = false;
-
+        
 
         public Ship New(Universe universe)
         {
@@ -154,7 +155,7 @@ namespace StarPixel
             hitbox = template.hitbox.Copy();
 
             mass = template.base_mass;
-            inertia = template.base_intertia;
+            inertia = template.base_mass * template.mass_avg_radius * template.mass_avg_radius;
 
             hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
            
@@ -272,6 +273,7 @@ namespace StarPixel
 
             if (shield != null) { shield.Draw(camera); }
         }
+
     }
 }
 

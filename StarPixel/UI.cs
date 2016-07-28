@@ -138,7 +138,8 @@ namespace StarPixel
         public void Update()
         {
             inputs.Update();
-            
+            GiveInputsToAi();
+
             if ( inputs.KeyDownEvent(Keys.OemTilde))
             {
                 mode_control = !mode_control;
@@ -170,7 +171,7 @@ namespace StarPixel
         {
             foreach (Widget widget in widgets)
             {
-                widget.PreDraw();
+                widget.Render();
             }
 
             device.SetRenderTarget(null);
