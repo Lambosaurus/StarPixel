@@ -17,27 +17,6 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public static class GameConst
-    {
-        public const int framerate = 60;
-
-        //public const float forcerad_to_torque = 1.0f / 40;
-
-
-
-        public static float C( int c )
-        {
-            float size = 1.0f;
-            while ( c-- > 1 )
-            {
-                size *= 1.5f;
-            }
-            return size;
-        }
-
-    }
-
-
     public static class Utility
     {
         public const float natural_log_half = -0.693147180559f; // close enough....
@@ -113,6 +92,17 @@ namespace StarPixel
 
         }
 
+        // standard rotation by pi/2
+        public static Vector2 RotatePos(Vector2 point)
+        {
+            return new Vector2(-point.Y, point.X);
+        }
+        // standard rotation by -pi/2
+        public static Vector2 RotateNeg(Vector2 point)
+        {
+            return new Vector2(point.Y, -point.X);
+        }
+
 
         // returns a vector at a given angle.
         // length can be specified for speed.
@@ -162,7 +152,7 @@ namespace StarPixel
 
             return (value <= max);
         }
-
+        
         
         // returns a vector of length scale with a random angle
         // Nice for generating a circular distribution
@@ -271,7 +261,7 @@ namespace StarPixel
 
 
         // Note that for moving objects, this velocity should usually be a relative velocity
-        // bounces a velocity vector of a surface normal.
+        // bounces a velocity vector off of a surface normal.
         // note, the surface normal may not be backwards
         public static Vector2 Bounce(Vector2 velocity, float surface_normal)
         {
@@ -281,5 +271,10 @@ namespace StarPixel
             return velocity;
         }
 
+
+        public static float Cross( Vector2 one, Vector2 two )
+        {
+            return ((one.X * two.Y) - (one.Y * two.X));
+        }
     }
 }

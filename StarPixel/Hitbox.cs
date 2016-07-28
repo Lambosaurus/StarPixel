@@ -18,6 +18,7 @@ namespace StarPixel
     {
         public float surface_normal;
         public Vector2 position;
+        public float overlap;
     }
 
     
@@ -55,7 +56,7 @@ namespace StarPixel
             return null;
         }
 
-        public virtual Intersection Intersect(Hitbox hitbox)
+        public virtual Intersection Intersect( Hitbox hitbox )
         {
             return null;
         }
@@ -119,6 +120,7 @@ namespace StarPixel
 
                 sect.position = ((hitbox.pos * radius) + (pos * hitbox.radius)) / (radius + hitbox.radius);
                 sect.surface_normal = Utility.Angle(pos - hitbox.pos);
+                sect.overlap = (radius - (sect.position - pos).Length())*2;
 
                 return sect;
             }
@@ -137,6 +139,10 @@ namespace StarPixel
     public class HitboxPolygon : Hitbox
     {
         public Vector2[] corners;
+
+        public float[] segment_normals;
+        public float[] corner_normals;
+
         public int count;
 
         public HitboxPolygon(Vector2[] arg_corners)
@@ -145,8 +151,16 @@ namespace StarPixel
             corners = arg_corners;
             count = arg_corners.Count();
 
+            segment_normals = new float[count];
+            corner_normals = new float[count];
+
             for (int i = 0; i < count; i++)
             {
+                Vector2 segment_p1 = corners[i];
+                Vector2 segment_p2 = (i == count - 1) ? corners[0] : corners[i + 1];
+                float segment_angle = Utility.Angle(segment_p2 - segment_p1);
+                segment_normals[i] = Utility.WrapAngle(segment_angle - MathHelper.PiOver2);
+
                 float dist_sq = corners[i].LengthSquared();
                 if (dist_sq > radius_sq)
                 {
@@ -154,6 +168,14 @@ namespace StarPixel
                 }
             }
             radius = Utility.Sqrt(radius_sq);
+
+            // this must be after the previous loop, as the first corner needs the last segment normal
+            for (int i = 0; i < count; i++)
+            {
+                float prev_segment = (i == 0) ? segment_normals[count - 1] : segment_normals[i - 1];
+                float c_normal = ((segment_normals[i] - prev_segment) / 2.0f) + prev_segment;
+                corner_normals[i] = Utility.WrapAngle(c_normal);
+            }
         }
 
         public override Hitbox Copy()
@@ -186,16 +208,15 @@ namespace StarPixel
             
             if (!c) { return null; }
 
-            Intersection sect = new Intersection();
-            sect.position = arg_point;
-            sect.surface_normal = this.SurfaceNormal(arg_point);
-            return sect;
+            return this.CalculateIntersection(arg_point);
         }
         
-
         // Not totally stoaked with this implementation
-        public float SurfaceNormal(Vector2 point)
+        public Intersection CalculateIntersection(Vector2 point)
         {
+            Intersection sect = new Intersection();
+            sect.position = point;
+
             // first shift the point into the reference frame of the hitbox
             point = Utility.Rotate(point - pos, -angle);
 
@@ -220,14 +241,11 @@ namespace StarPixel
                     best_segment = i;
                 }
             }
-
-            // now get the angle of the segment
-            Vector2 segment_p1 = corners[best_segment];
-            Vector2 segment_p2 = (best_segment == count - 1) ? corners[0] : corners[best_segment + 1];
-            float segment_angle = Utility.Angle(segment_p2 - segment_p1);
-
+            
             // return the normal, and compensate for the hitbox rotation
-            return segment_angle + angle - MathHelper.PiOver2;
+            sect.surface_normal = Utility.WrapAngle(segment_normals[best_segment] + angle);
+            sect.overlap = min_dist;
+            return sect;
         }
 
         
@@ -250,6 +268,10 @@ namespace StarPixel
 
                     // the surface normal is calculated like it is for a circle
                     sect.surface_normal = Utility.Angle(pos - hitbox.pos);
+
+                    // Like a circle, again
+                    sect.overlap = (hitbox.radius - (sect.position - hitbox.pos).Length()) * 2;
+
                     return sect;
                 }
             }
@@ -260,6 +282,8 @@ namespace StarPixel
         // Returns the intersection of two HitboxPolygons
         public Intersection IntersectPolygon(HitboxPolygon hitbox)
         {
+            Intersection best_sect = null;
+
             // checks each point in the hitbox 
             for (int i = 0; i < count; i++)
             {
@@ -268,7 +292,21 @@ namespace StarPixel
 
                 // we then see to if any of the points lie inside this polygon
                 Intersection sect = hitbox.Intersect(point);
-                if (sect != null) { return sect; }
+
+                if (sect != null)
+                {
+                    // the intersection with the biggest overlap is the most important to service
+                    if (best_sect == null || sect.overlap > best_sect.overlap)
+                    {
+                        // we average the surface normal and the corner normal
+                        // To provide a better approximation of the impact normal
+                        float corner_normal = corner_normals[i] + angle;
+                        sect.surface_normal += Utility.AngleDelta(corner_normal + MathHelper.Pi, sect.surface_normal) / 2.0f;
+                        sect.surface_normal = Utility.WrapAngle(sect.surface_normal);
+
+                        best_sect = sect;
+                    }
+                }
             }
 
             // repeat the above, but testing the points in the other polygon
@@ -279,13 +317,21 @@ namespace StarPixel
                 Intersection sect = this.Intersect(point);
                 if (sect != null)
                 {
-                    // the surface normal should be reversed, because it was calculated from the other hitbox
-                    sect.surface_normal += MathHelper.Pi;
-                    return sect;
+                    if (best_sect == null || sect.overlap > best_sect.overlap)
+                    {
+                        // we average the surface normal and the corner normal
+                        // Note here that PI is added differently than above.
+                        // This is because the sect.surface normal is calculated wrt to hitbox, not this
+                        float corner_normal = hitbox.corner_normals[i] + hitbox.angle;
+                        sect.surface_normal += Utility.AngleDelta(corner_normal + MathHelper.Pi, sect.surface_normal) / 2.0f;
+                        sect.surface_normal = Utility.WrapAngle(sect.surface_normal - MathHelper.Pi);
+
+                        best_sect = sect;
+                    }
                 }
             }
 
-            return null; // no intersection found
+            return best_sect;
         }
 
 
