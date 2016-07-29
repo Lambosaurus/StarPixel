@@ -109,7 +109,7 @@ namespace StarPixel
             position[index_end] = arg_center;
             velocity[index_end] = vel + (Utility.CosSin(p_angle, velocity_ejection) + Utility.RandVec(velocity_scatter)) * a_scale;
 
-            temp[index_end] = Utility.Rand(spawn_temperature_min, spawn_temperature_min);
+            temp[index_end] = Utility.Rand(spawn_temperature_min, spawn_temperature_max);
             alpha[index_end] = 1.0f;
             angle[index_end] = p_angle;
             scale[index_end] = a_scale; //1.0f;
