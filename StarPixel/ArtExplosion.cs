@@ -21,6 +21,7 @@ namespace StarPixel
         public float particle_size_scatter = 2.0f; // this a maximum multiplier that may be rolled. (multiplier applied ontop of existing std sizes) 
         
         
+        
         public ArtExplosionResource(string particle_name) : base (particle_name)
         {
         }
@@ -38,6 +39,10 @@ namespace StarPixel
             // TODO: Make this equation make sense one day.
             float scatter_min = 1.0f / particle_size_scatter;
 
+            float temp_min = temperature - (temperature_scatter);
+            float temp_max = temperature + (temperature_scatter);
+            float temp = Utility.Rand(temperature - temperature_scatter, temperature + temperature_scatter);
+
             // this might look a bit nasty.
             for (int i = 0; i < count; i++ )
             {
@@ -48,10 +53,11 @@ namespace StarPixel
                 float angle = Utility.Angle(vel);
                 float particle_scale = 1.0f / Utility.Rand(scatter_min, particle_size_scatter);
                 float alpha = Utility.Rand(minimum_spawn_alpha, 1.0f);
+                
 
                 if (coloring_method == ParticleColoring.Temp)
                 {
-                    exp.AddTemp(vel * particle_scale, angle, particle_scale, temperature, alpha);
+                    exp.AddTemp(vel * particle_scale, angle, particle_scale, temp, alpha);
                 }
                 else
                 {

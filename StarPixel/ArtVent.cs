@@ -53,7 +53,8 @@ namespace StarPixel
     public class ArtVent : ArtParticleCloud
     {
 
-        public float spawn_temperature;
+        public float spawn_temperature_min;
+        public float spawn_temperature_max;
         public float velocity_scatter;
         public float velocity_ejection;
 
@@ -77,8 +78,9 @@ namespace StarPixel
             velocity_scatter = arg_resource.velocity_scatter * arg_size;
             velocity_ejection = arg_resource.velocity_ejection;
 
-            spawn_temperature = arg_resource.temperature;
-            
+            spawn_temperature_min = arg_resource.temperature - arg_resource.temperature_scatter;
+            spawn_temperature_max = arg_resource.temperature + arg_resource.temperature_scatter;
+
             radius = velocity_ejection * (arg_resource.particle_life * arg_size * GameConst.framerate);
             radius *= 2;
 
@@ -107,7 +109,7 @@ namespace StarPixel
             position[index_end] = arg_center;
             velocity[index_end] = vel + (Utility.CosSin(p_angle, velocity_ejection) + Utility.RandVec(velocity_scatter)) * a_scale;
 
-            temp[index_end] = spawn_temperature;
+            temp[index_end] = Utility.Rand(spawn_temperature_min, spawn_temperature_min);
             alpha[index_end] = 1.0f;
             angle[index_end] = p_angle;
             scale[index_end] = a_scale; //1.0f;

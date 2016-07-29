@@ -95,10 +95,13 @@ namespace StarPixel
             surface_aligned.Y *= -GameConst.collision_friction; // friction
             Vector2 bounce = Utility.Rotate(surface_aligned, sect.surface_normal);
 
+            float this_mass_ratio = mass / (mass + phys.mass);
+            float phys_mass_ratio = phys.mass / (mass + phys.mass);
+
             // modify the physicals positions, to remove them from the collision.
             // this may cause problems if it pushes a ship into a second collsion. Whatevs.
-            this.pos += bounce * 1.5f * (phys.mass / (mass + phys.mass));
-            phys.pos -= bounce * 1.5f * (mass / (mass + phys.mass));
+            this.pos += bounce * 1.5f * phys_mass_ratio;
+            phys.pos -= bounce * 1.5f * this_mass_ratio;
             
         
             // calculate the generated foce between each ship required to produce the bounce velocity
@@ -134,10 +137,12 @@ namespace StarPixel
             this.AdsorbExplosion(exp, sect.position);
             phys.AdsorbExplosion(exp, sect.position);
 
+            Vector2 explosion_velocity = phys_mass_ratio * phys.velocity + this_mass_ratio * this.velocity;
+
             // Inform the universe of the explosion.
             // I need to create art for this to work.
-            exp.Explode(universe, sect.position, (velocity + phys.velocity) / 2, Utility.CosSin(sect.surface_normal + MathHelper.PiOver2));
-            exp.Explode(universe, sect.position, (velocity + phys.velocity) / 2, Utility.CosSin(sect.surface_normal - MathHelper.PiOver2));
+            exp.Explode(universe, sect.position, explosion_velocity, Utility.CosSin(sect.surface_normal + MathHelper.PiOver2));
+            exp.Explode(universe, sect.position, explosion_velocity, Utility.CosSin(sect.surface_normal - MathHelper.PiOver2));
 
             return true; // a collision was indeed serviced.
         }

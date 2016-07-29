@@ -25,6 +25,7 @@ namespace StarPixel
         // if use particle_color = false, then you need to set these
         public float temp_halflife = 0.2f;
         public float temperature = 2000f;
+        public float temperature_scatter = 200f;
 
         
         public float particle_life = 2.0f; // the time in seconds the particles will live for

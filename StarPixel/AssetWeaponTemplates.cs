@@ -25,7 +25,8 @@ namespace StarPixel
             collision_art.particle_life = 2f;
             collision_art.size_start = new Vector2(4f, 0.8f);
             collision_art.size_end = new Vector2(0.5f, 0.5f);
-            collision_art.temperature = 3000;
+            collision_art.temperature = 3000f;
+            collision_art.temperature_scatter = 1500f;
             collision_art.temp_halflife = 0.5f;
             collision_art.velocity_bounce = 1.4f;
             collision_art.velocity_scatter = 0.8f;
@@ -44,12 +45,11 @@ namespace StarPixel
             exp_art.velocity_scatter = 0.75f;
             exp_art.particle_size_scatter = 1.5f;
             exp_art.particle_life = 1.0f;
-
-
             exp_art.coloring_method = ParticleColoring.Temp;
             //exp_art.particle_color_start = Color.White;
             //exp_art.particle_color_end = Color.LimeGreen;
             exp_art.temperature = 4500;
+            exp_art.temperature_scatter = 1000;
             exp_art.temp_halflife = 0.15f; //0.1f;
 
 
