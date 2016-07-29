@@ -50,6 +50,8 @@ namespace StarPixel
 
         UI ui;
 
+        public List<UIMarker> markers = null;
+
         public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample_multiplier)
         {
             ui = arg_ui;
@@ -87,9 +89,10 @@ namespace StarPixel
             }
         }
 
-        public override void Render()
+        public override void Render(  )
         {
-            camera.Draw(universe, draw_stat_rings);
+            camera.Draw(universe, markers);
+            
         }
         
         public override void Draw(SpriteBatch arg_batch)

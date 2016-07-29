@@ -91,7 +91,7 @@ namespace StarPixel
         }
 
 
-        public void Draw(Universe universe, bool draw_all_ship_stats)
+        public void Draw(Universe universe, List<UIMarker> markers = null ) // bool draw_all_ship_stats)
         {
             device.SetRenderTarget(surface);
             device.Clear(Color.Black);
@@ -102,6 +102,7 @@ namespace StarPixel
 
                 universe.Draw(this);
 
+                /*
                 if (draw_all_ship_stats)
                 {
                     foreach (Physical phys in universe.physicals)
@@ -115,6 +116,15 @@ namespace StarPixel
                                 StatusBarDrawer.DrawTargetBars(this, sh, Map(sh.pos), sh.angle, 3 * upsample_multiplier);
                             }
                         }
+                    }
+                }
+                */
+
+                if (markers != null)
+                {
+                    foreach (UIMarker mark in markers)
+                    {
+                        mark.Draw(this);
                     }
                 }
 

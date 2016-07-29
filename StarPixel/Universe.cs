@@ -35,6 +35,7 @@ namespace StarPixel
 
         public void Start()
         {
+            /*
             Ship playership = CreateNewShip("F2");
             playership.ai = new IntellegenceHuman();
             playership.MountThruster("better");
@@ -54,6 +55,15 @@ namespace StarPixel
             ship0.pos = Utility.CosSin( Utility.RandAngle(),  Utility.Rand(200,300)  );
             ship0.MountWeapon("shooter", 0);
             //ship0.MountWeapon("shooter", 1);
+            */
+
+            Ship broship = CreateNewShip("F2");
+            broship.ai = new IntellegenceRoamer();
+            broship.MountThruster("better");
+            broship.Paint(Color.Red);
+            broship.MountShield("default");
+            broship.MountArmor("default");
+
 
             for (int i = 0; i < 100; i++)
             {
@@ -64,7 +74,7 @@ namespace StarPixel
                 ship1.MountArmor("default");
                 ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
 
-                ship1.Paint(new Color(Utility.Rand(1.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
+                ship1.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
             }
 
             for (int i = 0; i < 25; i++)
@@ -74,7 +84,7 @@ namespace StarPixel
                 ship2.MountThruster(Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better"));
                 ship2.MountShield("default");
                 ship2.MountArmor("default");
-                ship2.Paint( new Color(Utility.Rand(1.0f), Utility.Rand(1.0f), Utility.Rand(1.0f) ));
+                ship2.Paint( new Color(0.0f, Utility.Rand(1.0f), Utility.Rand(1.0f) ));
                 ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(3000, 4000));
             }
         }

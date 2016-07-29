@@ -140,6 +140,16 @@ namespace StarPixel
             inputs.Update();
             GiveInputsToAi();
 
+            camera_widget.markers = null;
+            if (focus_ship != null && focus_ship.ai != null)
+            {
+                List<UIMarker> markers = focus_ship.ai.GetUiMarkers();
+                if (markers != null)
+                {
+                    camera_widget.markers = markers;
+                }
+            }
+
             if ( inputs.KeyDownEvent(Keys.OemTilde))
             {
                 mode_control = !mode_control;
