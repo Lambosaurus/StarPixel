@@ -86,7 +86,7 @@
     <Compile Include="Component.cs" />
     <Compile Include="AssetShipTemplates.cs" />
     <Compile Include="UI.cs" />
-    <Compile Include="UiMarkers.cs" />
+    <Compile Include="UIMarkers.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="GameConst.cs" />
     <Compile Include="Utility.cs" />

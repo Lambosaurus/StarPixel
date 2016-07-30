@@ -27,10 +27,11 @@ namespace StarPixel
             collision_art.size_end = new Vector2(0.5f, 0.5f);
             collision_art.temperature = 3000f;
             collision_art.temperature_scatter = 1500f;
-            collision_art.temp_halflife = 0.5f;
+            collision_art.temp_halflife = 0.4f;
             collision_art.velocity_bounce = 1.4f;
             collision_art.velocity_scatter = 0.8f;
             collision_art.particle_size_scatter = 1.4f;
+            collision_art.bidirectional_scatter = true;
             ArtManager.explosions["phys_collision"] = collision_art;
 
 

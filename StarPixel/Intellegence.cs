@@ -164,7 +164,7 @@ namespace StarPixel
     public class IntellegenceRoamer : Intellegence
     {
 
-        float target_range = 1200;
+        float target_range = 1500;
         Vector2 target;
         float target_ok_distance;
 
@@ -174,15 +174,15 @@ namespace StarPixel
 
         float desired_angle;
 
-        public IntellegenceRoamer(float gain = 1.5f)
+        public IntellegenceRoamer(float gain = 1.0f)
         {
             target = Utility.RandVec(target_range);
             target_ok_distance = 20f;
 
 
             angle_tracker = new PID(10f * gain, 0.5f * gain, 10f * gain);
-            x_tracker = new PID(0.5f * gain, 0.3f * gain, 1f * gain);
-            y_tracker = new PID(0.5f * gain, 0.3f * gain, 1f * gain);
+            x_tracker = new PID(0.6f * gain, 0.3f * gain, 1f * gain);
+            y_tracker = new PID(0.6f * gain, 0.3f * gain, 1f * gain);
 
             /*
             angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
@@ -227,10 +227,9 @@ namespace StarPixel
 
         public override List<UIMarker> GetUiMarkers()
         {
-            MarkerFilledCircle target_marker = new MarkerFilledCircle();
-            target_marker.radius = target_ok_distance;
-            target_marker.pos = target;
-
+            MarkerCircle target_marker = new MarkerCircle( target, target_ok_distance, Color.Red );
+            target_marker.line_color = Color.Orange;
+            target_marker.dash = 2;
 
             List<UIMarker> markers = new List<UIMarker>();
             markers.Add(target_marker);

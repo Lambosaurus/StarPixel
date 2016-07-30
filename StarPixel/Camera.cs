@@ -165,7 +165,7 @@ namespace StarPixel
                     shcolor = dead_shield_bar_color;
                 }
 
-                ArtLine.DrawArcU(camera, center, -MathHelper.PiOver2,
+                ArtLine.DrawArc(camera, center, -MathHelper.PiOver2,
                     MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity,
                     r + (1.5f * bar_width) + (1 * bar_width),
                     shcolor, bar_width);
@@ -184,7 +184,7 @@ namespace StarPixel
 
                     if (k > 0)
                     {
-                        ArtLine.DrawArcU(camera, center, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
+                        ArtLine.DrawArc(camera, center, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
                             r + (0.5f * bar_width),
                             ColorManager.HPColor(k), bar_width);
                     }

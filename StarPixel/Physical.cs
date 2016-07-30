@@ -86,7 +86,7 @@ namespace StarPixel
 
             // modify the imact velocity in the direction of the surface normal.
             // This is based on the overlap, and functions as a spring.
-            relative_impact_velocity += (Utility.CosSin(sect.surface_normal) * (0.1f + (sect.overlap * 0.05f)));
+            relative_impact_velocity += (Utility.CosSin(sect.surface_normal) * (0.2f + (sect.overlap * 0.05f)));
 
             // calculate the 'bounce' velocity.
             // The velocity which must be created between the two physicals, as a result of the collision
@@ -140,10 +140,8 @@ namespace StarPixel
             Vector2 explosion_velocity = phys_mass_ratio * phys.velocity + this_mass_ratio * this.velocity;
 
             // Inform the universe of the explosion.
-            // I need to create art for this to work.
             exp.Explode(universe, sect.position, explosion_velocity, Utility.CosSin(sect.surface_normal + MathHelper.PiOver2));
-            exp.Explode(universe, sect.position, explosion_velocity, Utility.CosSin(sect.surface_normal - MathHelper.PiOver2));
-
+            
             return true; // a collision was indeed serviced.
         }
     }

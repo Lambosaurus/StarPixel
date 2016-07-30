@@ -24,10 +24,12 @@ namespace StarPixel
 
 
         public static Texture2D pixel;
+        public static Texture2D circle;
 
         public static void Load(ContentManager content)
         {
             pixel = content.Load<Texture2D>("px");
+            circle = content.Load<Texture2D>("Circle");
 
             foreach (ArtSpriteResource sprite in sprites.Values)
             {

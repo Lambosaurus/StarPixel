@@ -19,9 +19,10 @@ namespace StarPixel
         public float minimum_spawn_alpha = 0.5f;
         
         public float particle_size_scatter = 2.0f; // this a maximum multiplier that may be rolled. (multiplier applied ontop of existing std sizes) 
+
+        public bool bidirectional_scatter = false;
         
-        
-        
+
         public ArtExplosionResource(string particle_name) : base (particle_name)
         {
         }
@@ -31,6 +32,8 @@ namespace StarPixel
         {
             scale = Utility.Sqrt(scale);
             int count = (int)(particle_count * scale);
+            if (bidirectional_scatter) { count *= 2; }
+
 
             ArtExplosion exp = new ArtExplosion(this, scale, count, cloud_center, cloud_velocity);
             
@@ -50,6 +53,7 @@ namespace StarPixel
                 //Vector2 vel = Utility.CosSin(angle, Utility.Rand(0.5f * std_velocity, std_velocity));
 
                 Vector2 vel = Utility.RandVec(velocity_scatter) + skew;
+                if (bidirectional_scatter) { vel = Utility.RandBool() ? vel : -vel; }
                 float angle = Utility.Angle(vel);
                 float particle_scale = 1.0f / Utility.Rand(scatter_min, particle_size_scatter);
                 float alpha = Utility.Rand(minimum_spawn_alpha, 1.0f);
