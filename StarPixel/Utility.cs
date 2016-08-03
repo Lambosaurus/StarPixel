@@ -20,7 +20,8 @@ namespace StarPixel
     public static class Utility
     {
         public const float natural_log_half = -0.693147180559f; // close enough....
-        public const int framerate = 60;
+        public const float root_two = 1.41421356237f;
+
 
 
         // lol, 32KB right here. Ez.
@@ -202,6 +203,16 @@ namespace StarPixel
             return value;
         }
 
+        public static float Max(float a, float b)
+        {
+            return (a > b) ? a : b;
+        }
+
+        public static float Min(float a, float b)
+        {
+            return (a < b) ? a : b;
+        }
+
         public static bool PointInWindow( Vector2 point, Vector2 limits)
         {
             return point.X >= 0 &&
@@ -275,6 +286,11 @@ namespace StarPixel
         public static float Cross( Vector2 one, Vector2 two )
         {
             return ((one.X * two.Y) - (one.Y * two.X));
+        }
+
+        public static float Dot(Vector2 one, Vector2 two)
+        {
+            return (one.X * two.X) + (one.Y * two.Y);
         }
     }
 }

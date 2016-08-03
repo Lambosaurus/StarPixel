@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ArtExplosionResource : ArtParticleCloudResource
+    public class ArtExplosionResource : ArtParticleResource
     {
         
         public float velocity_bounce = 4;
@@ -23,6 +23,8 @@ namespace StarPixel
         public bool bidirectional_scatter = false;
         
 
+
+
         public ArtExplosionResource(string particle_name) : base (particle_name)
         {
         }
@@ -33,7 +35,7 @@ namespace StarPixel
             scale = Utility.Sqrt(scale);
             int count = (int)(particle_count * scale);
             if (bidirectional_scatter) { count *= 2; }
-
+            
 
             ArtExplosion exp = new ArtExplosion(this, scale, count, cloud_center, cloud_velocity);
             

@@ -108,7 +108,6 @@ namespace StarPixel
                 this.Exit();
             }
 
-            ui.Update();
 
             /*
             KeyboardState new_keys = Keyboard.GetState();
@@ -178,7 +177,10 @@ namespace StarPixel
                 time_update_counter--;
                 universe.Update();
             }
-            
+
+
+            ui.Update();
+
             base.Update(gameTime);
         }
 

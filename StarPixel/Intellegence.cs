@@ -163,10 +163,13 @@ namespace StarPixel
 
     public class IntellegenceRoamer : Intellegence
     {
+        Vector2 pos;
 
         float target_range = 1500;
         Vector2 target;
         float target_ok_distance;
+        
+        List<Vector2> targets;
 
         PID angle_tracker;
         PID x_tracker;
@@ -174,9 +177,18 @@ namespace StarPixel
 
         float desired_angle;
 
+        int k = 0;
+
         public IntellegenceRoamer(float gain = 1.0f)
         {
-            target = Utility.RandVec(target_range);
+            targets = new List<Vector2>();
+
+            for (int i = 0; i < 4; i++)
+            {
+                targets.Add(Utility.RandVec(target_range));
+            }
+            target = targets[0];
+            targets.RemoveAt(0);
             target_ok_distance = 20f;
 
 
@@ -193,10 +205,14 @@ namespace StarPixel
 
         public override void Process(ShipFacade link)
         {
+            pos = link.pos;
 
             if ((target - link.pos).Length() < target_ok_distance)
             {
-                target = Utility.RandVec(target_range);
+                targets.Add(Utility.RandVec(target_range));
+                target = targets[0];
+                targets.RemoveAt(0);
+                k = (k + 1) % 24;
             }
             
 
@@ -227,13 +243,68 @@ namespace StarPixel
 
         public override List<UIMarker> GetUiMarkers()
         {
-            MarkerCircle target_marker = new MarkerCircle( target, target_ok_distance, Color.Red );
-            target_marker.line_color = Color.Orange;
-            target_marker.dash = 2;
+            MarkerCircle t1 = new MarkerCircle(target, target_ok_distance, Color.Red);
+            t1.dashing = ArtPrimitive.CircleDashing.Moderate;
+            t1.icons_top.Add(new MarkerIcon((Symbols.GreekL)k, Color.Red));
+            
+
+            MarkerCircle t2 = new MarkerCircle(targets[0], target_ok_distance, Color.Red*0.6f);
+            t2.dashing = ArtPrimitive.CircleDashing.Moderate;
+            t2.icons_top.Add(new MarkerIcon((Symbols.GreekL)((k+1)%24), Color.Red * 0.6f));
+
+
+            MarkerCircle t3 = new MarkerCircle(targets[1], target_ok_distance, Color.Red*0.4f);
+            t3.dashing = ArtPrimitive.CircleDashing.Moderate;
+            t3.icons_top.Add(new MarkerIcon((Symbols.GreekL)((k + 2) % 24), Color.Red * 0.4f));
+
+            MarkerCircle t4 = new MarkerCircle(targets[2], target_ok_distance, Color.Red * 0.2f);
+            t4.dashing = ArtPrimitive.CircleDashing.Moderate;
+            t4.icons_top.Add(new MarkerIcon((Symbols.GreekL)((k + 3) % 24), Color.Red * 0.2f));
+
+            MarkerCircle zone = new MarkerCircle(new Vector2(0, 0), target_range, Color.Yellow);
+            zone.fill_color = Color.Transparent;
+            zone.line_thickness = 1;
+
+            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Beta, Color.Orange, 0.5f));
+            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Alpha, Color.Orange, 0.5f));
+            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Tau, Color.Orange, 0.5f));
+            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Mu, Color.Orange, 0.5f));
+            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Alpha, Color.Orange, 0.5f));
+            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Nu, Color.Orange, 0.5f));
+
+            Color lblue = new Color(0.15f, 0.3f, 1.0f);
+
+           
+            MarkerQuad t0 = new MarkerQuad(pos, 30, lblue, MarkerQuad.QuadType.Diamond);
+            t0.dashing = ArtPrimitive.ShapeDashing.One;
+            t0.fill_color = Color.Transparent;
+
+            MarkerLine heading = new MarkerLine(t0, new MarkerPoint( pos + new Vector2(x_tracker.Value(), y_tracker.Value()), 4.0f, lblue));
+            heading.draw_startpoint = false;
+
+            MarkerLine target1 = new MarkerLine(t0, t1);
+            target1.line_color *= 0.7f;
+
+            MarkerLine target2 = new MarkerLine(t1, t2);
+            target2.draw_startpoint = false;
+            target2.line_color *= 0.7f;
+
+            MarkerLine target3 = new MarkerLine(t2,t3);
+            target3.draw_startpoint = false;
+            target3.line_color *= 0.7f;
+
+            MarkerLine target4 = new MarkerLine(t3, t4);
+            target4.draw_startpoint = false;
+            target4.line_color *= 0.7f;
 
             List<UIMarker> markers = new List<UIMarker>();
-            markers.Add(target_marker);
-
+            markers.Add(target1);
+            markers.Add(target2);
+            markers.Add(target3);
+            markers.Add(target4);
+            markers.Add(zone);
+            markers.Add(heading);
+                   
             return markers;
         }
     }

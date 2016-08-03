@@ -16,25 +16,26 @@ namespace StarPixel
         public Damage dmg { get; private set; }
         public float radius { get; private set; }
 
-        public ArtExplosionResource art_resource { get; private set; }
+        public ArtExplosionResource art_cloud_resource { get; private set; }
+        
         public float art_scale { get; private set; }
 
-        public Explosion(Damage arg_dmg, float arg_radius, ArtExplosionResource arg_art, float arg_art_scale = 1.0f)
+        public Explosion(Damage arg_dmg, float arg_radius, ArtExplosionResource arg_cloud_art, float arg_art_scale = 1.0f)
         {
             dmg = arg_dmg;
             radius = arg_radius;
-            art_resource = arg_art;
+            art_cloud_resource = arg_cloud_art;
             art_scale = arg_art_scale;
         }
 
         public static Explosion operator *(Explosion exp, float scale)
         {
-            return new Explosion(exp.dmg * scale, exp.radius * Utility.Sqrt(scale), exp.art_resource, scale * exp.art_scale );
+            return new Explosion(exp.dmg * scale, exp.radius * Utility.Sqrt(scale), exp.art_cloud_resource, scale * exp.art_scale );
         }
 
         public void Explode(Universe universe, Vector2 pos, Vector2 velocity, Vector2 skew)
         {
-            universe.art_temp.Add(art_resource.New(art_scale, pos, velocity, skew));
+            universe.art_temp.Add(art_cloud_resource.New(art_scale, pos, velocity, skew));
         }
     }
 

@@ -16,6 +16,7 @@ namespace StarPixel
         float maximum_integral;
 
         float last_value = 0;
+        float delta = 0;
 
         public PID( float arg_p, float arg_i, float arg_d, float update_rate = GameConst.framerate, float maximum_i = 10f )
         {
@@ -27,12 +28,17 @@ namespace StarPixel
 
         public float Update( float value )
         {
-            float delta = value - last_value;
+            delta = value - last_value;
             last_value = value;
 
             integral = Utility.Clamp(integral + value, -maximum_integral, maximum_integral);
 
-            return (p * value) + (d * delta) + (i * integral);
+            return Value();
+        }
+
+        public float Value()
+        {
+            return (p * last_value) + (d * delta) + (i * integral);
         }
 
         

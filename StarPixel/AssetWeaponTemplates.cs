@@ -19,25 +19,34 @@ namespace StarPixel
 
         public static void GenerateAssets()
         {
-            ArtExplosionResource collision_art = new ArtExplosionResource("particle");
-            collision_art.coloring_method = ParticleColoring.Temp;
-            collision_art.particle_count = 8;
-            collision_art.particle_life = 2f;
-            collision_art.size_start = new Vector2(4f, 0.8f);
-            collision_art.size_end = new Vector2(0.5f, 0.5f);
-            collision_art.temperature = 3000f;
-            collision_art.temperature_scatter = 1500f;
-            collision_art.temp_halflife = 0.4f;
-            collision_art.velocity_bounce = 1.4f;
-            collision_art.velocity_scatter = 0.8f;
-            collision_art.particle_size_scatter = 1.4f;
-            collision_art.bidirectional_scatter = true;
-            ArtManager.explosions["phys_collision"] = collision_art;
+            ArtExplosionResource collision_cloud = new ArtExplosionResource("particle");
+            collision_cloud.coloring_method = ParticleColoring.Temp;
+            collision_cloud.particle_count = 8;
+            collision_cloud.particle_life = 2f;
+            collision_cloud.size_start = new Vector2(4f, 0.8f);
+            collision_cloud.size_end = new Vector2(0.5f, 0.5f);
+            collision_cloud.temperature = 3000f;
+            collision_cloud.temperature_scatter = 1500f;
+            collision_cloud.temp_halflife = 0.4f;
+            collision_cloud.velocity_bounce = 1.4f;
+            collision_cloud.velocity_scatter = 0.8f;
+            collision_cloud.particle_size_scatter = 1.4f;
+            collision_cloud.bidirectional_scatter = true;
+            ArtManager.explosions["phys_collision"] = collision_cloud;
 
+            /*
+            ArtParticleResource collision_particle = new ArtParticleResource("particle_large");
+            collision_particle.coloring_method = ParticleColoring.Temp;
+            collision_particle.particle_life = 0.6f;
+            collision_particle.size_start = new Vector2(2f, 2f);
+            collision_particle.size_end = new Vector2(4f, 4f);
+            collision_particle.temperature = 3000f;
+            collision_particle.temperature_scatter = 1500f;
+            ArtManager.particles["phys_collision"] = collision_particle;
+            */
 
-
+            
             ArtExplosionResource exp_art = new ArtExplosionResource("particle");
-
             
             exp_art.particle_count = 6;
             exp_art.size_start = new Vector2(2.0f, 0.35f);

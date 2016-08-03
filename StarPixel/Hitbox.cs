@@ -368,7 +368,7 @@ namespace StarPixel
                 p2 = Utility.Rotate(corners[i], angle) + pos;
                 p2 = camera.Map(p2);
 
-                ArtLine.DrawLine(camera, p1, p2, Color.Red, 4);
+                ArtPrimitive.DrawLine(camera, p1, p2, Color.Red, 4);
 
                 p1 = p2;
             }

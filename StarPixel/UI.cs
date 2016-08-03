@@ -126,12 +126,12 @@ namespace StarPixel
         {
             if (mode_control)
             {
-                if (universe == focus_universe)
+                if (universe == focus_universe && focus_ai != null)
                 {
                     focus_ai.weapon_target = position;
+                    focus_ai.firing = (inputs.mb.LeftButton == ButtonState.Pressed);
                 }
 
-                focus_ai.firing = (inputs.mb.LeftButton == ButtonState.Pressed);
             }
         }
 
@@ -149,6 +149,18 @@ namespace StarPixel
                     camera_widget.markers = markers;
                 }
             }
+
+            if (inputs.kb.IsKeyDown(Keys.Tab))
+            {
+                foreach (Physical phys in focus_universe.physicals)
+                {
+                    if (phys is Ship)
+                    {
+                        camera_widget.markers.Add( new MarkerShipDefence((Ship)phys));
+                    }
+                }
+            }
+
 
             if ( inputs.KeyDownEvent(Keys.OemTilde))
             {

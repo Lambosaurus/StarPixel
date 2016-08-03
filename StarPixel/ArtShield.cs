@@ -11,7 +11,7 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ArtShieldResource : ArtParticleCloudResource
+    public class ArtShieldResource : ArtParticleResource
     {
         public float particle_velocity;
            

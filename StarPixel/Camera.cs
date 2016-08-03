@@ -18,19 +18,19 @@ namespace StarPixel
 
         public Vector2 velocity;
 
-        public RenderTarget2D surface;
+        public RenderTarget2D surface { get; private set; }
 
-        public SpriteBatch batch;
-        public GraphicsDevice device;
+        public SpriteBatch batch { get; private set; }
+        public GraphicsDevice device { get; private set; }
 
-        public Vector2 onscreen_res;
-        public Vector2 res;
-        public Vector2 midpoint;
+        public Vector2 onscreen_res { get; private set; }
+        public Vector2 res { get; private set; }
+        public Vector2 midpoint { get; private set; }
 
         public bool DRAW_HITBOXES = false;
 
-        public int upsample_multiplier = 1;
-
+        public int upsample_multiplier { get; private set; } = 1;
+    
         public Camera(GraphicsDevice arg_device, SpriteBatch arg_batch, int x, int y, int arg_upsample_multiplier = 1)
         {
             upsample_multiplier = arg_upsample_multiplier;
@@ -101,24 +101,7 @@ namespace StarPixel
                 batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
                 universe.Draw(this);
-
-                /*
-                if (draw_all_ship_stats)
-                {
-                    foreach (Physical phys in universe.physicals)
-                    {
-                        if (phys is Ship)
-                        {
-                            Ship sh = (Ship)phys;
-                            
-                            if (ContainsCircle(sh.pos, sh.hitbox.radius))
-                            {
-                                StatusBarDrawer.DrawTargetBars(this, sh, Map(sh.pos), sh.angle, 3 * upsample_multiplier);
-                            }
-                        }
-                    }
-                }
-                */
+                
 
                 if (markers != null)
                 {
@@ -142,55 +125,6 @@ namespace StarPixel
             else
             {
                 arg_batch.Draw(surface, arg_pos, Color.White);
-            }
-        }
-    }
-
-    public static class StatusBarDrawer
-    {
-        static float armor_bar_sep = 0.05f;
-
-        static Color shield_bar_color = Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f);
-        static Color dead_shield_bar_color = Color.Lerp(Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f), Color.Black, 0.6f);
-
-        public static void DrawTargetBars(Camera camera, Ship ship, Vector2 center, float angle = -MathHelper.PiOver2, float bar_width = 4f)
-        {
-            float r = ship.template.shield_radius * camera.scale;
-            
-            if (ship.shield != null)
-            {
-                Color shcolor = shield_bar_color;
-                if (!ship.shield.active)
-                {
-                    shcolor = dead_shield_bar_color;
-                }
-
-                ArtLine.DrawArc(camera, center, -MathHelper.PiOver2,
-                    MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity,
-                    r + (1.5f * bar_width) + (1 * bar_width),
-                    shcolor, bar_width);
-            }
-
-            if (ship.armor != null)
-            {
-                float a1 = ship.armor.start_angle + angle;
-                a1 = Utility.WrapAngle(a1);
-
-                for (int i = 0; i < ship.armor.segment_count; i++)
-                {
-                    float a2 = a1 + ship.armor.per_segment_angle;
-
-                    float k = ship.armor.integrity[i] / ship.armor.max_integrity;
-
-                    if (k > 0)
-                    {
-                        ArtLine.DrawArc(camera, center, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
-                            r + (0.5f * bar_width),
-                            ColorManager.HPColor(k), bar_width);
-                    }
-
-                    a1 = a2;
-                }
             }
         }
     }

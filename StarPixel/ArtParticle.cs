@@ -11,9 +11,9 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public enum ParticleColoring { Blend, Temp }
-
-    public class ArtParticleCloudResource
+    public enum ParticleColoring { Temp, Blend };
+    
+    public class ArtParticleResource
     {
         public int particle_count = 10;
 
@@ -36,8 +36,10 @@ namespace StarPixel
         string sprite_name;
         public Texture2D sprite;
         public Vector2 sprite_center;
+        
+        public float max_particle_radius;
 
-        public ArtParticleCloudResource(string particle_name)
+        public ArtParticleResource(string particle_name)
         {
             sprite_name = particle_name;
         }
@@ -48,13 +50,15 @@ namespace StarPixel
 
             Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
             sprite_center = size / 2;
+
+            max_particle_radius = sprite_center.Length() * Utility.Max(size_start.Length(), size_end.Length());
         }
     }
 
     
     public class ArtParticleCloud : ArtTemporary
     {
-        protected ArtParticleCloudResource resource;
+        protected ArtParticleResource resource;
 
         protected int count;
 
@@ -78,7 +82,7 @@ namespace StarPixel
         protected Vector2 center;
         public float radius; // must be set by derivitive
 
-        public ArtParticleCloud( ArtParticleCloudResource arg_resource, float size, int arg_count, Vector2 arg_center)
+        public ArtParticleCloud( ArtParticleResource arg_resource, float size, int arg_count, Vector2 arg_center)
         {
             resource = arg_resource;
 
@@ -113,6 +117,7 @@ namespace StarPixel
         {
             return alpha_max > 0.05;
         }
+
 
         public void UpdateCenter(Vector2 arg_center)
         {

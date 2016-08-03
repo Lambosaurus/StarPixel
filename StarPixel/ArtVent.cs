@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Media;
 namespace StarPixel
 {
 
-    public class ArtVentResource : ArtParticleCloudResource
+    public class ArtVentResource : ArtParticleResource
     {
         public float velocity_scatter = 0.1f;
         public float velocity_ejection = 1.0f;

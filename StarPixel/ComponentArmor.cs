@@ -87,7 +87,7 @@ namespace StarPixel
                 {
                     integrity[segment] = 0.0f;
                     Damage remaining = resistance.RemainingDamage(integrity[segment], exp.dmg);
-                    return new Explosion(remaining, exp.radius, exp.art_resource, exp.art_scale);
+                    return new Explosion(remaining, exp.radius, exp.art_cloud_resource, exp.art_scale);
                 }
                 else
                 {

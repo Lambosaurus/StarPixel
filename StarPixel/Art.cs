@@ -10,6 +10,25 @@ using Microsoft.Xna.Framework.Input;
 
 namespace StarPixel
 {
+    public static class Symbols
+    {
+        public enum GreekU { Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta, Theta, Iota, Kappa, Lambda, Mu, Nu, Xi, Omicron, Pi, Rho, Sigma, Tau, Upsion, Phi, Chi, Psi, Omega };
+        public enum GreekL { Alpha, Beta, Gamma, Delta, Epsilon, Zeta, Eta, Theta, Iota, Kappa, Lambda, Mu, Nu, Xi, Omicron, Pi, Rho, Sigma, Tau, Upsion, Phi, Chi, Psi, Omega };
+
+        public enum Number { Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine };
+
+        public static SpriteTileSheet greek_sheet { get; private set; }
+        public static SpriteTileSheet number_sheet { get; private set; }
+
+        public static void Load(ContentManager content)
+        {
+            greek_sheet = new SpriteTileSheet("Markers/Greek", 38, 52);
+            greek_sheet.Load(content);
+
+            number_sheet = new SpriteTileSheet("Markers/Number", 38, 52);
+            number_sheet.Load(content);
+        }
+    }
 
     public static class ArtManager
     {
@@ -22,14 +41,11 @@ namespace StarPixel
 
         public static Dictionary<string, ArtShieldResource> shields = new Dictionary<string, ArtShieldResource>();
 
-
-        public static Texture2D pixel;
-        public static Texture2D circle;
-
+        
         public static void Load(ContentManager content)
         {
-            pixel = content.Load<Texture2D>("px");
-            circle = content.Load<Texture2D>("Circle");
+            ArtPrimitive.Load(content);
+            Symbols.Load(content);
 
             foreach (ArtSpriteResource sprite in sprites.Values)
             {
@@ -53,6 +69,7 @@ namespace StarPixel
         }
 
         // TODO, change all these to GetTemplate form
+        // I cant remember what this means.
         public static ArtSpriteResource GetSpriteResource(string key)
         {
             return sprites[key];

@@ -239,13 +239,7 @@ namespace StarPixel
         {
             base.Update();
 
-
-            if (ai != null)
-            {
-                ai.Process(facade);                
-            }
-
-
+            
             if (thrusters != null) { thrusters.Update(); }
 
             if (shield != null) { shield.Update(); }
@@ -259,7 +253,11 @@ namespace StarPixel
 
             hull_sprite.Update(pos, angle);
             if ( paint_sprite != null ) { paint_sprite.Update(pos, angle); }
-            
+
+            if (ai != null)
+            {
+                ai.Process(facade);
+            }
         }
 
 
