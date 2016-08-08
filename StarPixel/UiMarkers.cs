@@ -54,7 +54,7 @@ namespace StarPixel
             return radius;
         }
 
-        public void DrawMarkers(Camera camera)
+        public void DrawIcons(Camera camera)
         {
             float offset = 0.0f;
 
@@ -90,13 +90,24 @@ namespace StarPixel
     {
         public float line_join_radius = 0.0f;
 
-        
+        public MarkerIcon icon { get; private set; } = null; 
+
+
         public MarkerPoint(Vector2 position, float arg_size, Color arg_color)
         {
             line_color = arg_color;
             pos = position;
-
+            
             radius = arg_size; // this doesnt work when zoom.
+        }
+
+        public MarkerPoint( Vector2 position, MarkerIcon arg_icon )
+        {
+            icon = arg_icon;
+            pos = position;
+            line_color = arg_icon.color; // needed so that a marker line will correctly inherit color
+            radius = arg_icon.scale * arg_icon.center.Y; // we assume Y is greater than Y. This is a bit dodge, but it works for existing icons.
+            line_join_radius = radius * 1.5f;
         }
 
         public override bool InView(Camera camera)
@@ -106,16 +117,23 @@ namespace StarPixel
 
         public override float LineRadius(float scale, float angle)
         {
-            return line_join_radius;
+            return line_join_radius / scale;
         }
 
         public override void Draw(Camera camera)
         {
             if (!InView(camera)) { return; }
 
-            ArtPrimitive.DrawCircle(camera, camera.Map(pos), line_color, radius * camera.upsample_multiplier);
+            if (icon == null)
+            {
+                ArtPrimitive.DrawCircle(camera, camera.Map(pos), line_color, radius * camera.upsample_multiplier);
+            }
+            else
+            {
+                icon.Draw(camera, camera.Map(pos));
+            }
 
-            DrawMarkers(camera);
+            DrawIcons(camera);
         }
 
 
@@ -155,35 +173,56 @@ namespace StarPixel
                 }
             }
 
-            DrawMarkers(camera);
+            DrawIcons(camera);
         }
     }
     
-    public class MarkerQuad : MarkerNode
+
+    public class MarkerPoly : MarkerNode
     {
-        public enum QuadType { Square, Diamond };
+        public enum Type { Tri = 3, Quad = 4, Pent = 5 };
 
         public ArtPrimitive.ShapeDashing dashing = ArtPrimitive.ShapeDashing.None;
+
         public float angle;
-        public float size;
+        public float inner_radius;
 
-        public MarkerQuad(Vector2 arg_pos, float arg_radius, Color color, QuadType quad = QuadType.Square)
+        int n;
+
+        public MarkerPoly(Vector2 arg_pos, float arg_radius, Color color, Type sides, bool rotate = false )
         {
-            size = arg_radius;
-            radius = arg_radius * Utility.root_two;
-
-
+            n = (int)sides;
             pos = arg_pos;
+            angle = (rotate ? 0 : MathHelper.Pi/ n) + MathHelper.PiOver2;
+            inner_radius = arg_radius;
+            radius = inner_radius / Utility.Cos(MathHelper.Pi / n);
             line_color = color;
             fill_color = color * FILL_ALPHA;
-
-            angle = (quad == QuadType.Square) ? 0.0f : MathHelper.PiOver4;
         }
 
+        
         public override float LineRadius(float scale, float arg_angle)
         {
-            float equiv_angle = Utility.Mod(arg_angle + MathHelper.PiOver4 - angle, MathHelper.PiOver2) - MathHelper.PiOver4;
-            return size / Utility.Cos( equiv_angle );
+            float da = MathHelper.TwoPi / (int)n;
+            // sweet pants, i can apply this equation to any shape i want!
+            float equiv_angle = Utility.Mod(arg_angle - angle, da) - (da/2);
+            return inner_radius / Utility.Cos(equiv_angle);
+        }
+
+        public void DrawCenter(Camera camera, Vector2 center, Color color, float in_rad)
+        {
+            if (n == 3)
+            {
+                ArtPrimitive.DrawTriangle(camera, center, new Vector2(in_rad, in_rad), color, angle);
+            }
+            else if (n == 4)
+            {
+                ArtPrimitive.DrawSquare(camera, center, new Vector2(in_rad, in_rad), color, angle + MathHelper.PiOver4);
+            }
+            else if (n == 5)
+            {
+                ArtPrimitive.DrawPentagon(camera, center, new Vector2(in_rad, in_rad), color, angle + MathHelper.TwoPi/5.0f);
+            }
         }
 
         public override void Draw(Camera camera)
@@ -191,25 +230,28 @@ namespace StarPixel
             if (!InView(camera)) { return; }
 
             Vector2 center = camera.Map(pos);
-            float radius_s = size * camera.scale;
+            float radius_s = inner_radius * camera.scale;
 
-            if (radius * camera.scale / camera.upsample_multiplier < minimum_radius)
+            if (radius_s * camera.scale / camera.upsample_multiplier < minimum_radius)
             {
                 float mrs = minimum_radius * camera.upsample_multiplier;
-                ArtPrimitive.DrawSquare(camera, center, new Vector2(mrs, mrs), line_color, angle);
+                DrawCenter(camera, center, line_color, mrs);
             }
             else
             {
-                ArtPrimitive.DrawSquare(camera, center, new Vector2(radius_s, radius_s), fill_color, angle);
-                ArtPrimitive.DrawBox(camera, center, new Vector2(radius_s, radius_s), line_color, line_thickness, angle, dashing);
+                DrawCenter(camera, center, fill_color, radius_s);
+                ArtPrimitive.DrawPolyLine(camera, center, radius_s, n, line_color, line_thickness, angle, dashing);
             }
 
-            DrawMarkers(camera);
+            DrawIcons(camera);
         }
     }
 
+
     public class MarkerLine : UIMarker
     {
+        public int line_count = 1;
+
         public float line_thickness = 4;
         public Color line_color;
 
@@ -259,15 +301,36 @@ namespace StarPixel
             if (InView(camera))
             {
                 Vector2 line_vector = (endpoint.pos - startpoint.pos);
-                line_vector.Normalize();
-                float angle = Utility.Angle(line_vector);
-                
-                Vector2 st = startpoint.pos + (startpoint.LineRadius(camera.scale, angle) * line_vector);
-                Vector2 en = endpoint.pos - (endpoint.LineRadius(camera.scale, angle - MathHelper.TwoPi) * line_vector);
-                
-                if ( Utility.Dot(en - st, line_vector) > 0.0f )
+
+                if (line_vector != Vector2.Zero) // if the startpoint and endpoint are set to the same, then line_vector.normalize fails
                 {
-                    ArtPrimitive.DrawLine(camera, camera.Map(st), camera.Map(en), line_color, line_thickness);
+
+                    line_vector.Normalize();
+                    float angle = Utility.Angle(line_vector);
+
+                    Vector2 st = startpoint.pos + (startpoint.LineRadius(camera.scale, angle) * line_vector);
+                    Vector2 en = endpoint.pos - (endpoint.LineRadius(camera.scale, angle - MathHelper.TwoPi) * line_vector);
+
+                    if (Utility.Dot(en - st, line_vector) > 0.0f)
+                    {
+                        float line_width = line_thickness *2.0f / (line_count + 1.0f);
+
+                        if (line_count < 1) { line_count = 1; }
+                        else if (line_count > 3) { line_count = 3; } // make sure its in range
+
+                        else if (line_count == 1 || line_count == 3) // odd numbers get a center line
+                        {
+                            ArtPrimitive.DrawLine(camera, camera.Map(st), camera.Map(en), line_color, line_width);
+                        }
+                        
+                        if (line_count > 1) // two and three get edge lines
+                        {
+                            Vector2 delta = Utility.RotatePos(line_vector) * camera.upsample_multiplier * line_width * (line_count == 2 ? 1f: 2f);
+                            ArtPrimitive.DrawLine(camera, camera.Map(st) + delta, camera.Map(en) + delta, line_color, line_width);
+                            ArtPrimitive.DrawLine(camera, camera.Map(st) - delta, camera.Map(en) - delta, line_color, line_width);
+                        }
+
+                    }
                 }
             }
 
@@ -315,12 +378,13 @@ namespace StarPixel
         
         public void Draw(Camera camera, Vector2 position)
         {
-            tile_sheet.Draw(camera.batch, symbol_no, position, scale, color);
+            // scale divided by 2, because there was a bug, and now im used to that size
+            tile_sheet.Draw(camera.batch, symbol_no, position, scale * camera.upsample_multiplier / 2.0f, color);
         }
     }
 
 
-    public class MarkerShipDefence : UIMarker
+    public class MarkerPhysicalDefence : UIMarker
     {
         static float armor_bar_sep = 0.05f;
 
@@ -329,52 +393,85 @@ namespace StarPixel
 
         static float line_width = 4.0f;
 
-        Ship ship;
+        Physical phys;
 
-        public MarkerShipDefence(Ship arg_ship)
+        const float MINIMUM_RADIUS = 16f;
+
+        public MarkerPhysicalDefence(Physical arg_phys)
         {
-            ship = arg_ship;
+            phys = arg_phys;
 
-            radius = ship.template.shield_radius;
-            pos = ship.pos;
+            radius = phys.radius;
+            pos = phys.pos;
         }
         
         public override void Draw(Camera camera)
         {
-            pos = camera.Map(ship.pos);
+            pos = camera.Map(phys.pos);
             
-            float angle = ship.angle;
-            float s_radius = camera.scale * radius;
+            float angle = phys.angle;
+            float a_radius = camera.scale * radius;
+            float s_radius = a_radius + (line_width * camera.upsample_multiplier * 2);
+
+            float m_radius = MINIMUM_RADIUS * camera.upsample_multiplier;
+            bool compact_view = s_radius < m_radius;
             
-            if (ship.shield != null)
+            
+            if (phys.shield != null)
             {
-                Color shcolor = (ship.shield.active) ? shield_bar_color : dead_shield_bar_color;
+                float s_integrity = phys.shield.integrity / phys.shield.max_integrity;
 
-                ArtPrimitive.DrawArc(camera, pos, -MathHelper.PiOver2,
-                    MathHelper.TwoPi * ship.shield.integrity / ship.shield.max_integrity, s_radius, shcolor, line_width);
-            }
-
-            if (ship.armor != null)
-            {
-                float a1 = ship.armor.start_angle + angle;
-                a1 = Utility.WrapAngle(a1);
-
-                for (int i = 0; i < ship.armor.segment_count; i++)
+                if (compact_view)
                 {
-                    float a2 = a1 + ship.armor.per_segment_angle;
-
-                    float k = ship.armor.integrity[i] / ship.armor.max_integrity;
-
-                    if (k > 0)
+                    if (phys.shield.active)
                     {
-                        ArtPrimitive.DrawArc(camera, pos, a1 + armor_bar_sep, ship.armor.per_segment_angle - (2 * armor_bar_sep),
-                            s_radius - (2*line_width * camera.upsample_multiplier),
-                            ColorManager.HPColor(k), line_width);
+                        Color shcolor = Color.Lerp(Color.Black, shield_bar_color, s_integrity);
+                        ArtPrimitive.DrawCircle(camera, pos, shcolor, m_radius);
                     }
-
-                    a1 = a2;
+                }
+                else
+                {
+                    Color shcolor = (phys.shield.active) ? shield_bar_color : dead_shield_bar_color;
+                    ArtPrimitive.DrawArc(camera, pos, -MathHelper.PiOver2, MathHelper.TwoPi * s_integrity, s_radius, shcolor, line_width);
                 }
             }
+
+            if (phys.armor != null)
+            {
+                if (compact_view)
+                {
+                    float a_integrity = 0.0f;
+                    for (int i = 0; i < phys.armor.segment_count; i++)
+                    {
+                        a_integrity += phys.armor.integrity[i] / phys.armor.max_integrity;
+                    }
+                    a_integrity /= phys.armor.segment_count;
+
+                    ArtPrimitive.DrawCircleTag(camera, pos, m_radius * 0.9f, ColorManager.HPColor(a_integrity), phys.angle);
+
+                }
+                else
+                {
+                    float a1 = phys.armor.start_angle + angle;
+                    a1 = Utility.WrapAngle(a1);
+
+                    for (int i = 0; i < phys.armor.segment_count; i++)
+                    {
+                        float a2 = a1 + phys.armor.per_segment_angle;
+
+                        float k = phys.armor.integrity[i] / phys.armor.max_integrity;
+
+                        if (k > 0)
+                        {
+                            ArtPrimitive.DrawArc(camera, pos, a1 + armor_bar_sep, phys.armor.per_segment_angle - (2 * armor_bar_sep),
+                                a_radius, ColorManager.HPColor(k), line_width);
+                        }
+
+                        a1 = a2;
+                    }
+                }
+            }
+
         }
     }
 }

@@ -45,9 +45,10 @@ namespace StarPixel
             {
                 Vector2 bounce;
 
-                ComponentShield shield = phys.GetActiveShield();
-                if ( shield != null)
+                if ( phys.shield != null && phys.shield.active)
                 {
+                    ComponentShield shield = phys.shield;
+
                     Intersection sect = shield.hitbox.Intersect(pos);
                     if ( sect != null )
                     {

@@ -136,8 +136,6 @@ namespace StarPixel
         
         public ComponentThruster thrusters = null;
 
-        public ComponentShield shield = null;
-        public ComponentArmor armor = null;
         
         public Intellegence ai;
 
@@ -156,6 +154,8 @@ namespace StarPixel
 
             mass = template.base_mass;
             inertia = template.base_mass * template.mass_avg_radius * template.mass_avg_radius;
+
+            radius = template.shield_radius;
 
             hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
            
@@ -194,19 +194,7 @@ namespace StarPixel
             armor = AssetArmorTemplates.armor_templates[template_name].New(this);
             facade.UpdateHardware();
         }
-
-
-        public override ComponentShield GetActiveShield()
-        {
-            if (shield != null)
-            {
-                if (shield.active)
-                {
-                    return shield;
-                }
-            }
-            return null;
-        }
+        
 
         public override void AdsorbExplosion(Explosion exp, Vector2 position)
         {

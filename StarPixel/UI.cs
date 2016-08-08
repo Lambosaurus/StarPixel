@@ -51,6 +51,8 @@ namespace StarPixel
     
     public class UI
     {
+        public enum ControlMode { Control, Observe }
+
         List<Widget> widgets; // ordered by depth: First object is deepest
 
         GraphicsDevice device;
@@ -65,7 +67,7 @@ namespace StarPixel
         Ship focus_ship;
         IntellegenceHuman focus_ai;
 
-        bool mode_control;
+        ControlMode mode = ControlMode.Observe;
 
         Color cursor_color_control = Color.Red;
         Color cursor_color_observer = Color.Yellow;
@@ -77,15 +79,13 @@ namespace StarPixel
             batch = arg_batch;
             device = arg_device;
 
-            camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, 2) );
+            camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, 2) ); // UPSAMPLE_MULTILIER
             status_widget = new WidgetShipStatus(arg_device, arg_batch, 100, 100);
             status_widget.pos.Y = height - status_widget.size.Y;
             
             widgets.Add(camera_widget);
             widgets.Add(status_widget);
-
-            mode_control = false;
-
+            
             inputs = new InputState();
         }
 
@@ -124,39 +124,49 @@ namespace StarPixel
 
         public void MouseCallBack( Universe universe, Vector2 position )
         {
-            if (mode_control)
+            if (mode == ControlMode.Control)
             {
                 if (universe == focus_universe && focus_ai != null)
                 {
                     focus_ai.weapon_target = position;
                     focus_ai.firing = (inputs.mb.LeftButton == ButtonState.Pressed);
                 }
-
+            }
+            else
+            {
             }
         }
 
         public void Update()
         {
             inputs.Update();
-            GiveInputsToAi();
-
+            
             camera_widget.markers = null;
-            if (focus_ship != null && focus_ship.ai != null)
+
+            if (inputs.kb.IsKeyDown(Keys.LeftShift))
             {
-                List<UIMarker> markers = focus_ship.ai.GetUiMarkers();
-                if (markers != null)
+                if (focus_ship != null && focus_ship.ai != null)
                 {
-                    camera_widget.markers = markers;
+                    List<UIMarker> markers = focus_ship.ai.GetUiMarkers();
+                    if (markers != null)
+                    {
+                        camera_widget.markers = markers;
+                    }
                 }
             }
 
             if (inputs.kb.IsKeyDown(Keys.Tab))
             {
+                if (camera_widget.markers == null) { camera_widget.markers = new List<UIMarker>(); }
+
                 foreach (Physical phys in focus_universe.physicals)
                 {
                     if (phys is Ship)
                     {
-                        camera_widget.markers.Add( new MarkerShipDefence((Ship)phys));
+                        if (camera_widget.camera.ContainsCircle(phys.pos, phys.radius))
+                        {
+                            camera_widget.markers.Add(new MarkerPhysicalDefence(phys));
+                        }
                     }
                 }
             }
@@ -164,7 +174,7 @@ namespace StarPixel
 
             if ( inputs.KeyDownEvent(Keys.OemTilde))
             {
-                mode_control = !mode_control;
+                mode = (mode == ControlMode.Control) ? ControlMode.Observe : ControlMode.Control;
             }
 
             
@@ -181,7 +191,7 @@ namespace StarPixel
                 widget.Update(inputs, give_focus);
             }
 
-            if (mode_control)
+            if (mode == ControlMode.Control)
             {
                 GiveInputsToAi();
             }
@@ -204,7 +214,7 @@ namespace StarPixel
                 widget.Draw(batch);
             }
 
-            batch.Draw(cursor_target, inputs.pos - cursor_center, (mode_control) ? cursor_color_control : cursor_color_observer );
+            batch.Draw(cursor_target, inputs.pos - cursor_center, (mode == ControlMode.Control) ? cursor_color_control : cursor_color_observer );
 
             batch.End();
 

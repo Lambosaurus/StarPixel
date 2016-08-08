@@ -163,7 +163,7 @@ namespace StarPixel
 
     public class IntellegenceRoamer : Intellegence
     {
-        Vector2 pos;
+        ShipFacade link;
 
         float target_range = 1500;
         Vector2 target;
@@ -203,10 +203,10 @@ namespace StarPixel
             */
         }
 
-        public override void Process(ShipFacade link)
+        public override void Process(ShipFacade arg_link)
         {
-            pos = link.pos;
-
+            link = arg_link;
+            
             if ((target - link.pos).Length() < target_ok_distance)
             {
                 targets.Add(Utility.RandVec(target_range));
@@ -243,6 +243,8 @@ namespace StarPixel
 
         public override List<UIMarker> GetUiMarkers()
         {
+            if (link == null) { return null; }
+
             MarkerCircle t1 = new MarkerCircle(target, target_ok_distance, Color.Red);
             t1.dashing = ArtPrimitive.CircleDashing.Moderate;
             t1.icons_top.Add(new MarkerIcon((Symbols.GreekL)k, Color.Red));
@@ -274,21 +276,22 @@ namespace StarPixel
 
             Color lblue = new Color(0.15f, 0.3f, 1.0f);
 
-           
-            MarkerQuad t0 = new MarkerQuad(pos, 30, lblue, MarkerQuad.QuadType.Diamond);
-            t0.dashing = ArtPrimitive.ShapeDashing.One;
-            t0.fill_color = Color.Transparent;
 
-            MarkerLine heading = new MarkerLine(t0, new MarkerPoint( pos + new Vector2(x_tracker.Value(), y_tracker.Value()), 4.0f, lblue));
-            heading.draw_startpoint = false;
+            //MarkerQuad t0 = new MarkerQuad(link.pos, 30, lblue, MarkerQuad.Type.Diamond);
+            MarkerPoly t0 = new MarkerPoly(link.pos, 30, lblue, MarkerPoly.Type.Pent, true);
+            t0.dashing = ArtPrimitive.ShapeDashing.One;
+            //t0.line_color = Color.Transparent;
+            //t0.fill_color = lblue;
+            //t0.fill_color = Color.Transparent;
+            
 
             MarkerLine target1 = new MarkerLine(t0, t1);
             target1.line_color *= 0.7f;
-
+            
             MarkerLine target2 = new MarkerLine(t1, t2);
             target2.draw_startpoint = false;
             target2.line_color *= 0.7f;
-
+            
             MarkerLine target3 = new MarkerLine(t2,t3);
             target3.draw_startpoint = false;
             target3.line_color *= 0.7f;
@@ -303,8 +306,7 @@ namespace StarPixel
             markers.Add(target3);
             markers.Add(target4);
             markers.Add(zone);
-            markers.Add(heading);
-                   
+            
             return markers;
         }
     }

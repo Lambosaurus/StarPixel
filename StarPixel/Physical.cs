@@ -19,16 +19,21 @@ namespace StarPixel
         public float inertia;
         public float angular_velocity;
 
+        public float radius;
+
         public Universe universe;
 
         public Hitbox hitbox;
 
+        public ComponentShield shield = null;
+        public ComponentArmor armor = null;
 
         public Physical(Universe arg_universe) : base()
         {
             universe = arg_universe;
             mass = 10;
             inertia = 50; // things feel right with the current thruster torque model when inertia is about 5x mass.
+            radius = 10;
 
             angular_velocity = 0.0f;
         }
@@ -61,13 +66,7 @@ namespace StarPixel
             float torque = Utility.Cross(eccentricity, force); // GameConst.forcerad_to_torque;
             this.Push(force, torque);
         }
-
-        public virtual ComponentShield GetActiveShield()
-        {
-            return null;
-        }
-
-
+        
 
         public bool HitCheck(Physical phys)
         {

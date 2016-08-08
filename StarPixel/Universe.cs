@@ -45,7 +45,7 @@ namespace StarPixel
             playership.MountWeapon("shooter", 1);
             playership.MountArmor("default");
 
-
+            
             Ship ship0 = CreateNewShip("F2");
             ship0.ai = new IntellegenceHunter(playership);
             ship0.MountThruster("default");
@@ -54,7 +54,7 @@ namespace StarPixel
             ship0.Paint(Color.Blue);
             ship0.pos = Utility.CosSin( Utility.RandAngle(),  Utility.Rand(200,300)  );
             ship0.MountWeapon("shooter", 0);
-            //ship0.MountWeapon("shooter", 1);
+            ship0.MountWeapon("shooter", 1);
             */
 
             Ship broship = CreateNewShip("F2");
