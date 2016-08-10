@@ -32,6 +32,17 @@ namespace StarPixel
             return ship;
         }
         
+        public Physical PhysAtPoint( Vector2 point )
+        {
+            foreach ( Physical phys in physicals )
+            {
+                if ( (point - phys.pos).Length() < phys.radius )
+                {
+                    return phys;
+                }
+            }
+            return null;
+        }
 
         public void Start()
         {

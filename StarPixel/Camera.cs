@@ -33,6 +33,7 @@ namespace StarPixel
     
         public Camera(GraphicsDevice arg_device, SpriteBatch arg_batch, int x, int y, int arg_upsample_multiplier = 1)
         {
+            
             upsample_multiplier = arg_upsample_multiplier;
 
             pos = new Vector2(0, 0);

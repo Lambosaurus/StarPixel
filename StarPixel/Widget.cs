@@ -23,6 +23,7 @@ namespace StarPixel
 
         public virtual void Update(InputState inputs, bool mouse_focus)
         {
+
         }
         
 
@@ -52,6 +53,8 @@ namespace StarPixel
 
         public List<UIMarker> markers = null;
 
+
+        
         public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample_multiplier)
         {
             ui = arg_ui;
@@ -60,6 +63,8 @@ namespace StarPixel
         
         public override void Update(InputState inputs, bool mouse_focus )
         {
+            base.Update(inputs, mouse_focus);
+
             if (focus_entity != null)
             {
                 camera.MoveTo(focus_entity.pos);

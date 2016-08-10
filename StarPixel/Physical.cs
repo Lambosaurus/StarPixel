@@ -101,12 +101,10 @@ namespace StarPixel
             // this may cause problems if it pushes a ship into a second collsion. Whatevs.
             this.pos += bounce * 1.5f * phys_mass_ratio;
             phys.pos -= bounce * 1.5f * this_mass_ratio;
-            
         
             // calculate the generated foce between each ship required to produce the bounce velocity
             //Vector2 force = ((bounce) / ((1 / mass) + (1 / phys.mass)));
-
-
+            
             // Vector2 velocity_this = (force / mass) + Utility.RotatePos(eccentricity_this * Utility.Cross(eccentricity_this, force) / intertia);
             // Vector2 velocity_phys = (force / phys.mass) + Utility.RotatePos(eccentricity_phys * Utility.Cross(eccentricity_phys, force) / phys.intertia)
 

@@ -47,6 +47,26 @@ namespace StarPixel
         {
             return kb.IsKeyDown(key) && !old_kb.IsKeyDown(key);
         }
+
+        public enum MouseButton { Left, Middle, Right };
+        
+        public bool MouseButtonEvent(MouseButton button, ButtonState evt )
+        {
+            ButtonState b_old;
+            ButtonState b_new;
+
+            if (button == MouseButton.Left) { b_old = old_mb.LeftButton; b_new = mb.LeftButton; }
+            else if (button == MouseButton.Right) { b_old = old_mb.RightButton; b_new = mb.RightButton; }
+            else { b_old = old_mb.MiddleButton; b_new = mb.MiddleButton; }
+
+            return (b_new != b_old) && (evt == b_new);
+        }
+
+        public bool MouseButtonState(MouseButton button, ButtonState evt)
+        {
+            ButtonState b = (button == MouseButton.Left) ? mb.LeftButton : ((button == MouseButton.Right) ? mb.RightButton : mb.MiddleButton);
+            return b == evt;
+        }
     }
     
     public class UI
@@ -64,7 +84,7 @@ namespace StarPixel
         WidgetShipStatus status_widget;
         
         Universe focus_universe;
-        Ship focus_ship;
+        Physical focus_phys;
         IntellegenceHuman focus_ai;
 
         ControlMode mode = ControlMode.Observe;
@@ -100,9 +120,9 @@ namespace StarPixel
             camera_widget.universe = arg_universe;
         }
 
-        public void FocusShip(Ship arg_ship)
+        public void FocusPhys(Physical arg_ship)
         {
-            focus_ship = arg_ship;
+            focus_phys = arg_ship;
             camera_widget.focus_entity = arg_ship;
         }
 
@@ -132,8 +152,16 @@ namespace StarPixel
                     focus_ai.firing = (inputs.mb.LeftButton == ButtonState.Pressed);
                 }
             }
-            else
+            else if (mode == ControlMode.Observe)
             {
+                if (inputs.MouseButtonEvent(InputState.MouseButton.Left, ButtonState.Pressed))
+                {
+                    Physical new_phys = universe.PhysAtPoint(camera_widget.camera.InverseMouseMap(inputs.pos - camera_widget.pos));
+                    if (new_phys != null)
+                    {
+                        this.FocusPhys(new_phys);
+                    }
+                }
             }
         }
 
@@ -145,12 +173,17 @@ namespace StarPixel
 
             if (inputs.kb.IsKeyDown(Keys.LeftShift))
             {
-                if (focus_ship != null && focus_ship.ai != null)
+
+                if (focus_phys != null && focus_phys is Ship)
                 {
-                    List<UIMarker> markers = focus_ship.ai.GetUiMarkers();
-                    if (markers != null)
+                    Ship ship = (Ship)focus_phys;
+                    if (ship.ai != null)
                     {
-                        camera_widget.markers = markers;
+                        List<UIMarker> markers = ship.ai.GetUiMarkers();
+                        if (markers != null)
+                        {
+                            camera_widget.markers = markers;
+                        }
                     }
                 }
             }

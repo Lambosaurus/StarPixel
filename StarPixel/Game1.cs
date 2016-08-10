@@ -59,7 +59,7 @@ namespace StarPixel
             {
                 if ((Ship)universe.physicals[0] is Ship)
                 {
-                    ui.FocusShip((Ship)universe.physicals[0]);
+                    ui.FocusPhys((Ship)universe.physicals[0]);
                     //ui.GiveHumanAIHandle((IntellegenceHuman)(((Ship)universe.physicals[0]).ai));
                 }
             }
