@@ -98,12 +98,14 @@ namespace StarPixel
             particle_ports = ship.template.thruster_ports;
             particle_vents = new List<ArtVent>();
 
+            
             foreach (ThrusterPort port in ship.template.thruster_ports)
             {
                 //particle_ports.Add( port.Copy() );
                 ArtVent vent = ArtManager.GetVentResource(template.particle_effects).New(port.size);
                 particle_vents.Add(vent);
             }
+            
         }
 
 
@@ -121,6 +123,7 @@ namespace StarPixel
             float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : reverse_thrust);
 
 
+            
             // we generate the particles for each port
             int i = 0;
             foreach (ThrusterPort port in particle_ports)
@@ -135,6 +138,8 @@ namespace StarPixel
                 
                 i++;
             }
+            
+            
 
 
 
@@ -154,10 +159,12 @@ namespace StarPixel
         {
             sparkles.Draw(camera);
 
+            
             foreach (ArtVent vent in particle_vents)
             {
                 vent.Draw(camera);
             }
+            
 
         }
     }

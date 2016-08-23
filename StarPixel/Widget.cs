@@ -21,10 +21,12 @@ namespace StarPixel
             size = arg_size;
         }
 
+
         public virtual void Update(InputState inputs, bool mouse_focus)
         {
 
         }
+
         
 
         // a chance to do sprite batch stuff before the draw

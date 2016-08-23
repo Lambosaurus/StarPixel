@@ -28,6 +28,10 @@ namespace StarPixel
         public ComponentShield shield = null;
         public ComponentArmor armor = null;
 
+
+        public float leftmost;
+        public float rightmost;
+
         public Physical(Universe arg_universe) : base()
         {
             universe = arg_universe;
@@ -37,6 +41,7 @@ namespace StarPixel
 
             angular_velocity = 0.0f;
         }
+        
 
         public override void Update()
         {
@@ -46,6 +51,9 @@ namespace StarPixel
             angle = Utility.WrapAngle(angle);
 
             base.Update();
+
+            leftmost = pos.X - radius;
+            rightmost = pos.X + radius;
 
             hitbox.Update(pos, angle);
         }

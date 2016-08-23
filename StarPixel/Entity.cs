@@ -38,7 +38,7 @@ namespace StarPixel
         }
 
         public event EventHandler Clicked;
-
+        
         public Entity()
         {
             pos = new Vector2(0, 0);

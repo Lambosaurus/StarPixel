@@ -8,20 +8,25 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 
+
 namespace StarPixel
 {
-
+    
     /// This is the main type for your game
     public class Game1 : Microsoft.Xna.Framework.Game
     {
+        
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
         // meh. Its a semi comfortable res for developing in.
-        int window_res_x = 1200;
-        int window_res_y = 800;
+        
+        int window_res_x = (GameConst.screensaver) ? 1920 : 1200;
+        int window_res_y = (GameConst.screensaver) ? 1080 : 800;
+        bool fullscreen = GameConst.screensaver;
+        
+        
         UI ui;
-
         Universe universe;
 
         double time_accelleration = 1.0;
@@ -34,6 +39,8 @@ namespace StarPixel
             graphics = new GraphicsDeviceManager(this);
             graphics.PreferredBackBufferHeight = window_res_y;
             graphics.PreferredBackBufferWidth = window_res_x;
+
+            if(fullscreen != graphics.IsFullScreen) { graphics.ToggleFullScreen(); }
 
             Content.RootDirectory = "Content";
         }
@@ -108,6 +115,14 @@ namespace StarPixel
                 this.Exit();
             }
 
+            if (GameConst.screensaver)
+            {
+                if (ui.inputs.pos != ui.inputs.old_pos)
+                {
+                    this.Exit();
+                }
+            }
+
 
             /*
             KeyboardState new_keys = Keyboard.GetState();
@@ -169,7 +184,7 @@ namespace StarPixel
             }
             mouse_middle = Mouse.GetState().MiddleButton;
             */
-            
+
             // this could be a little neater.
             time_update_counter += time_accelleration;
             while (time_update_counter > 1.0)

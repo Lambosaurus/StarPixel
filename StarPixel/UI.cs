@@ -247,7 +247,10 @@ namespace StarPixel
                 widget.Draw(batch);
             }
 
-            batch.Draw(cursor_target, inputs.pos - cursor_center, (mode == ControlMode.Control) ? cursor_color_control : cursor_color_observer );
+            if (!GameConst.screensaver)
+            {
+                batch.Draw(cursor_target, inputs.pos - cursor_center, (mode == ControlMode.Control) ? cursor_color_control : cursor_color_observer);
+            }
 
             batch.End();
 

@@ -279,8 +279,8 @@ namespace StarPixel
             return null;
         }
 
-        // Returns the intersection of two HitboxPolygons
-        public Intersection IntersectPolygon(HitboxPolygon hitbox)
+
+        Intersection IntersectPolygonHalf(HitboxPolygon hitbox)
         {
             Intersection best_sect = null;
 
@@ -301,37 +301,38 @@ namespace StarPixel
                         // we average the surface normal and the corner normal
                         // To provide a better approximation of the impact normal
                         float corner_normal = corner_normals[i] + angle;
-                        sect.surface_normal += Utility.AngleDelta(corner_normal + MathHelper.Pi, sect.surface_normal) / 2.0f;
-                        sect.surface_normal = Utility.WrapAngle(sect.surface_normal);
 
-                        best_sect = sect;
-                    }
-                }
-            }
-
-            // repeat the above, but testing the points in the other polygon
-            for (int i = 0; i < hitbox.count; i++)
-            {
-                Vector2 point = hitbox.pos + Utility.Rotate(hitbox.corners[i], hitbox.angle);
-
-                Intersection sect = this.Intersect(point);
-                if (sect != null)
-                {
-                    if (best_sect == null || sect.overlap > best_sect.overlap)
-                    {
-                        // we average the surface normal and the corner normal
-                        // Note here that PI is added differently than above.
-                        // This is because the sect.surface normal is calculated wrt to hitbox, not this
-                        float corner_normal = hitbox.corner_normals[i] + hitbox.angle;
-                        sect.surface_normal += Utility.AngleDelta(corner_normal + MathHelper.Pi, sect.surface_normal) / 2.0f;
-                        sect.surface_normal = Utility.WrapAngle(sect.surface_normal - MathHelper.Pi);
-
+                        float delta = Utility.AngleDelta(corner_normal + MathHelper.Pi, sect.surface_normal);
+                        sect.surface_normal = Utility.WrapAngle(sect.surface_normal + delta / 2.0f);
+                        
+                        //sect.surface_normal = Utility.Angle(hitbox.pos - pos); // COM approx. A backup solution.
+                    
                         best_sect = sect;
                     }
                 }
             }
 
             return best_sect;
+        }
+
+        // Returns the intersection of two HitboxPolygons
+        public Intersection IntersectPolygon(HitboxPolygon hitbox)
+        {
+            //TODO: abstract the two point test loops out.
+
+
+            Intersection best_sect = this.IntersectPolygonHalf(hitbox);
+            Intersection next_sect = hitbox.IntersectPolygonHalf(this);
+
+            if (next_sect != null)
+            {
+                next_sect.surface_normal = Utility.WrapAngle(next_sect.surface_normal + MathHelper.Pi);
+            }
+            else { return best_sect; }
+
+            if (best_sect == null) { return next_sect; }
+            
+            return (best_sect.overlap > next_sect.overlap) ? best_sect : next_sect;
         }
 
 

@@ -165,7 +165,7 @@ namespace StarPixel
     {
         ShipFacade link;
 
-        float target_range = 1500;
+        float target_range = 2000;
         Vector2 target;
         float target_ok_distance;
         
@@ -239,6 +239,15 @@ namespace StarPixel
                 link.thrusters.output_thrust.Y = Utility.Clamp(mov.Y);
                 link.thrusters.output_torque = Utility.Clamp(a_mov);
             }
+
+            
+            for (int i = 0; i < link.weapon_count; i++)
+            {
+                WeaponFacade weapon = link.Weapon(i);
+                weapon.fire = true;
+                weapon.target_angle = 0.0f;
+            }
+            
         }
 
         public override List<UIMarker> GetUiMarkers()
@@ -278,7 +287,7 @@ namespace StarPixel
 
 
             //MarkerQuad t0 = new MarkerQuad(link.pos, 30, lblue, MarkerQuad.Type.Diamond);
-            MarkerPoly t0 = new MarkerPoly(link.pos, 30, lblue, MarkerPoly.Type.Pent, true);
+            MarkerPoly t0 = new MarkerPoly(link.pos, 30, lblue, MarkerPoly.Type.Quad, true);
             t0.dashing = ArtPrimitive.ShapeDashing.One;
             //t0.line_color = Color.Transparent;
             //t0.fill_color = lblue;

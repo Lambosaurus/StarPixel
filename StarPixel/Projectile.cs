@@ -21,7 +21,7 @@ namespace StarPixel
         public Ship parent;
 
         public Explosion explosion;
-
+        
         public override void Update()
         {
             if (life-- <= 0)
