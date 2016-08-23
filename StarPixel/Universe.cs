@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
-
 namespace StarPixel
 {
     public class Universe
@@ -44,6 +43,8 @@ namespace StarPixel
             return null;
         }
 
+        
+
         public void Start()
         {
             /*
@@ -76,7 +77,7 @@ namespace StarPixel
             broship.MountArmor("default");
 
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 200; i++)
             {
                 Ship ship1 = CreateNewShip("F2");
                 ship1.ai = new IntellegenceRoamer();
@@ -84,6 +85,8 @@ namespace StarPixel
                 ship1.MountShield("green");
                 ship1.MountArmor("default");
                 ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
+
+                ship1.MountWeapon("shooter", 0);
 
                 ship1.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
             }
@@ -106,8 +109,9 @@ namespace StarPixel
 
         public void Update()
         {
+
             // we use physcount, not the actual physicals.count, so we dont update newly added objects
-            for( int i = 0; i < physcount; i++ )
+            for (int i = 0; i < physcount; i++)
             {
                 physicals[i].Update();
             }
@@ -115,10 +119,46 @@ namespace StarPixel
             for (int i = 0; i < projcount; i++)
             {
                 projectiles[i].Update();
+            }
 
-                // check projectile against all targets.
-                for (int k = 0; k < physcount; k++)
+
+
+            // OK, i guess we are going with the linq implementation. Its pretty snazzy.
+            physicals = physicals.OrderBy(x => x.leftmost).ToList();
+            projectiles = projectiles.OrderBy(x => x.pos.X).ToList();
+            
+            /*
+            physicals.Sort(Physical.SortByLeftmost);
+            projectiles.Sort(Entity.SortByX);
+            */
+            // TimSort seems to take 30% longer than the builtin quicksort.
+            // Maybe it will be benificial later with larger sets
+            /*
+            if (projcount != 0) {  projectiles.TimSort(0, projcount, Entity.SortByX); }
+            */
+
+
+
+            int z = 0;
+            for (int i = 0; i < projcount && z < physcount; i++)
+            {
+                while (physicals[z].rightmost < projectiles[i].pos.X)
                 {
+                    if (++z >= physcount)
+                    {
+                        break;
+                    }
+                }
+                if (z >= physcount) { break; }
+                
+                // check projectile against all targets.
+                for (int k = z; k < physcount; k++)
+                {
+                    if (projectiles[i].pos.X < physicals[k].leftmost)
+                    {
+                        break;
+                    }
+
                     if (projectiles[i].HitCheck(this, physicals[k]))
                     {
                         break; // hit already found. We done here.
@@ -126,16 +166,20 @@ namespace StarPixel
                 }
             }
 
-            // check each physical for collisions
+
+
             for (int i = 0; i < physcount; i++)
             {
-                // dont check physicals that have already check you.
                 for (int k = i + 1; k < physcount; k++)
                 {
-                    physicals[i].HitCheck(physicals[k]);
+                    if (physicals[k].leftmost > physicals[i].rightmost)
+                    {
+                        break;
+                    }
+                    if (physicals[i].hitbox.WithinRadius(physicals[k].hitbox)) { physicals[i].HitCheck(physicals[k]); }
                 }
             }
-            
+
             for (int i = 0; i < tempcount; i++)
             {
                 art_temp[i].Update();
@@ -175,25 +219,29 @@ namespace StarPixel
             physcount = physicals.Count;
 
 
+            // just creating a new list is significantly faster.
+            List<Projectile> new_projectiles = new List<Projectile>();
             for (int i = projectiles.Count - 1; i >= 0; i--)
             {
-                if (projectiles[i].ReadyForRemoval())
+                if (!projectiles[i].ReadyForRemoval())
                 {
-                    projectiles.RemoveAt(i);
+                    new_projectiles.Add(projectiles[i]);
                 }
             }
+            projectiles = new_projectiles;
             projcount = projectiles.Count;
+            
 
-
-            for (int i = art_temp.Count - 1; i >= 0; i--)
+            List<ArtTemporary> new_art_temp = new List<ArtTemporary>();
+            for (int i = art_temp.Count - 1; i >=0; i--)
             {
-                if (art_temp[i].ReadyForRemoval())
+                if ( !art_temp[i].ReadyForRemoval() )
                 {
-                    art_temp.RemoveAt(i);
+                    new_art_temp.Add(art_temp[i]);
                 }
             }
+            art_temp = new_art_temp;
             tempcount = art_temp.Count;
-
         }
 
         public Entity OnClick(Vector2 pos)
