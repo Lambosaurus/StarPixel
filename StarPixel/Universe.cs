@@ -14,23 +14,39 @@ namespace StarPixel
     public class Universe
     {
         public List<Physical> physicals = new List<Physical>();
-        int physcount = 0;
+        List<Physical> new_physicals = new List<Physical>();
 
         public List<Projectile> projectiles = new List<Projectile>();
-        int projcount = 0;
-
-        public List<ArtTemporary> art_temp = new List<ArtTemporary>();
-        int tempcount = 0;
+        List<Projectile> new_projectiles = new List<Projectile>();
+        
+        List<ArtTemporary> art_temp = new List<ArtTemporary>();
+        List<ArtTemporary> new_art_temp = new List<ArtTemporary>();
        
 
         // creates a new ship from given template name, and adds it into the universe.
         public Ship CreateNewShip( string template_name )
         {
             Ship ship = AssetShipTemplates.ship_templates[template_name].New(this);
-            physicals.Add(ship);
+            AddPhysical(ship);
             return ship;
         }
-        
+
+
+        public void AddPhysical( Physical phys )
+        {
+            new_physicals.Add(phys);
+        }
+        public void AddProjectile(Projectile proj)
+        {
+            new_projectiles.Add(proj);
+        }
+        public void AddArtTemp(ArtTemporary art_temp)
+        {
+            new_art_temp.Add(art_temp);
+        }
+
+
+
         public Physical PhysAtPoint( Vector2 point )
         {
             foreach ( Physical phys in physicals )
@@ -107,70 +123,59 @@ namespace StarPixel
         {
         }
 
+
         public void Update()
         {
-
-            // we use physcount, not the actual physicals.count, so we dont update newly added objects
-            for (int i = 0; i < physcount; i++)
-            {
-                physicals[i].Update();
-            }
-
-            for (int i = 0; i < projcount; i++)
-            {
-                projectiles[i].Update();
-            }
-
-
-
-            // OK, i guess we are going with the linq implementation. Its pretty snazzy.
-            physicals = physicals.OrderBy(x => x.leftmost).ToList();
-            projectiles = projectiles.OrderBy(x => x.pos.X).ToList();
             
-            /*
-            physicals.Sort(Physical.SortByLeftmost);
-            projectiles.Sort(Entity.SortByX);
-            */
-            // TimSort seems to take 30% longer than the builtin quicksort.
-            // Maybe it will be benificial later with larger sets
-            /*
-            if (projcount != 0) {  projectiles.TimSort(0, projcount, Entity.SortByX); }
-            */
+            // Update our things
+            foreach (Physical phys in physicals) { phys.Update(); }
+            foreach (Projectile proj in projectiles) { proj.Update(); }
+            foreach (ArtTemporary art in art_temp) { art.Update(); }
 
 
+            // Sort our lists for the collison detection.
+            //physicals = physicals.OrderBy(x => x.leftmost).ToList();
+            //projectiles = projectiles.OrderBy(x => x.pos.X).ToList();
+            if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByLeftmost); }
+            if (projectiles.Count != 0) { projectiles.TimSort(Projectile.CompareByX); }
 
+
+            // Our nifty sort based projectile to physical collision detection
             int z = 0;
-            for (int i = 0; i < projcount && z < physcount; i++)
+            for (int i = 0; i < projectiles.Count && z < physicals.Count; i++)
             {
                 while (physicals[z].rightmost < projectiles[i].pos.X)
                 {
-                    if (++z >= physcount)
+                    if (++z >= physicals.Count)
                     {
                         break;
                     }
                 }
-                if (z >= physcount) { break; }
+                if (z >= physicals.Count) { break; }
                 
                 // check projectile against all targets.
-                for (int k = z; k < physcount; k++)
+                for (int k = z; k < physicals.Count; k++)
                 {
                     if (projectiles[i].pos.X < physicals[k].leftmost)
                     {
                         break;
                     }
 
-                    if (projectiles[i].HitCheck(this, physicals[k]))
+                    if (physicals[k].hitbox.WithinRadius(projectiles[i].pos))
                     {
-                        break; // hit already found. We done here.
+                        if (projectiles[i].HitCheck(this, physicals[k]))
+                        {
+                            break; // hit already found. We done here.
+                        }
                     }
                 }
             }
 
 
 
-            for (int i = 0; i < physcount; i++)
+            for (int i = 0; i < physicals.Count; i++)
             {
-                for (int k = i + 1; k < physcount; k++)
+                for (int k = i + 1; k < physicals.Count; k++)
                 {
                     if (physicals[k].leftmost > physicals[i].rightmost)
                     {
@@ -180,35 +185,13 @@ namespace StarPixel
                 }
             }
 
-            for (int i = 0; i < tempcount; i++)
-            {
-                art_temp[i].Update();
-            }
 
-            this.WelcomeNewEntities();
-            this.MaintainEntityLists();   
+            MaintainEntityLists();
         }
 
-
-        void WelcomeNewEntities()
-        {
-            for ( int i = physcount; i < physicals.Count; i++)
-            {
-                physicals[i].NewObjectUpdate();
-            }
-            
-            for (int i = projcount; i < projectiles.Count; i++)
-            {
-                projectiles[i].NewObjectUpdate();
-            }
-        }
-
-        // maintains the lists of entities
-        // culling entities that are ready to die, and updating counts
         void MaintainEntityLists()
         {
-            // remove physicals that are good to be removed.
-            // this is done separately for a good reason. probably.
+            // clear items that have been flagged as dead.
             for (int i = physicals.Count - 1; i >= 0; i--)
             {
                 if (physicals[i].ReadyForRemoval())
@@ -216,34 +199,55 @@ namespace StarPixel
                     physicals.RemoveAt(i);
                 }
             }
-            physcount = physicals.Count;
 
-
-            // just creating a new list is significantly faster.
-            List<Projectile> new_projectiles = new List<Projectile>();
-            for (int i = projectiles.Count - 1; i >= 0; i--)
+            // If many items are getting removed, its just faster to get a new list.
+            List<Projectile> remaining_projectiles = new List<Projectile>();
+            foreach (Projectile proj in projectiles)
             {
-                if (!projectiles[i].ReadyForRemoval())
+                if (!proj.ReadyForRemoval())
                 {
-                    new_projectiles.Add(projectiles[i]);
+                    remaining_projectiles.Add(proj);
                 }
             }
-            projectiles = new_projectiles;
-            projcount = projectiles.Count;
+            projectiles = remaining_projectiles;
+
+            List<ArtTemporary> remaining_art_temp = new List<ArtTemporary>();
+            foreach ( ArtTemporary art in art_temp )
+            {
+                if (!art.ReadyForRemoval())
+                {
+                    remaining_art_temp.Add(art);
+                }
+            }
+            art_temp = remaining_art_temp;
+
+
+
+            // Add items that have been created this frame.
+            foreach ( Physical phys in new_physicals )
+            {
+                phys.NewObjectUpdate();
+                physicals.Add(phys);
+            }
+            new_physicals.Clear();
             
-
-            List<ArtTemporary> new_art_temp = new List<ArtTemporary>();
-            for (int i = art_temp.Count - 1; i >=0; i--)
+            foreach (Projectile proj in new_projectiles)
             {
-                if ( !art_temp[i].ReadyForRemoval() )
-                {
-                    new_art_temp.Add(art_temp[i]);
-                }
+                proj.NewObjectUpdate();
+                projectiles.Add(proj);
             }
-            art_temp = new_art_temp;
-            tempcount = art_temp.Count;
+            new_projectiles.Clear();
+
+            foreach (ArtTemporary art in new_art_temp)
+            {
+                art_temp.Add(art);
+            }
+            new_art_temp.Clear();
+            
         }
 
+        
+        
         public Entity OnClick(Vector2 pos)
         {
             foreach (Physical phys in physicals)

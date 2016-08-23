@@ -60,8 +60,8 @@ namespace StarPixel
             ui.FocusUniverse(universe);
 
             universe.Start();
-
             
+            universe.Update(); // this is a shitty way of making the below work
             if (universe.physicals.Count != 0)
             {
                 if ((Ship)universe.physicals[0] is Ship)
@@ -70,6 +70,7 @@ namespace StarPixel
                     //ui.GiveHumanAIHandle((IntellegenceHuman)(((Ship)universe.physicals[0]).ai));
                 }
             }
+            
             
 
         }

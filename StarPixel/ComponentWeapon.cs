@@ -170,7 +170,7 @@ namespace StarPixel
             projectile.explosion = explosion;
             projectile.parent = ship;
 
-            ship.universe.projectiles.Add(projectile);
+            ship.universe.AddProjectile(projectile);
         }
     }
 

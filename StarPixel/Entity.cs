@@ -37,6 +37,11 @@ namespace StarPixel
             }
         }
 
+        public static int CompareByX(Entity a, Entity b)
+        {
+            return (a.pos.X > b.pos.X) ? 1 : -1;
+        }
+
         public event EventHandler Clicked;
         
         public Entity()

@@ -35,7 +35,7 @@ namespace StarPixel
 
         public void Explode(Universe universe, Vector2 pos, Vector2 velocity, Vector2 skew)
         {
-            universe.art_temp.Add(art_cloud_resource.New(art_scale, pos, velocity, skew));
+            universe.AddArtTemp(art_cloud_resource.New(art_scale, pos, velocity, skew));
         }
     }
 

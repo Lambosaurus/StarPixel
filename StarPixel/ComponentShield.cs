@@ -84,7 +84,7 @@ namespace StarPixel
         public void Pop()
         {
             active = false;
-            ship.universe.art_temp.Add(art.Pop(ship.velocity));
+            ship.universe.AddArtTemp(art.Pop(ship.velocity));
         }
 
         public void Reform()

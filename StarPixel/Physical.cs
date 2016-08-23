@@ -41,7 +41,12 @@ namespace StarPixel
 
             angular_velocity = 0.0f;
         }
-        
+
+        public static int CompareByLeftmost(Physical a, Physical b)
+        {
+            return (a.pos.X > b.pos.X) ? 1 : -1;
+        }
+
 
         public override void Update()
         {
