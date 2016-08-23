@@ -126,6 +126,7 @@ namespace StarPixel
 
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
+            
             return new Vector2(c*scale, s*scale);
         }
 

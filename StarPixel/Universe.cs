@@ -131,39 +131,54 @@ namespace StarPixel
             foreach (Physical phys in physicals) { phys.Update(); }
             foreach (Projectile proj in projectiles) { proj.Update(); }
             foreach (ArtTemporary art in art_temp) { art.Update(); }
+            
+            CollisionChecks();
+   
+            MaintainEntityLists();
+        }
 
-
+        void CollisionChecks()
+        {
             // Sort our lists for the collison detection.
-            //physicals = physicals.OrderBy(x => x.leftmost).ToList();
-            //projectiles = projectiles.OrderBy(x => x.pos.X).ToList();
             if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByLeftmost); }
             if (projectiles.Count != 0) { projectiles.TimSort(Projectile.CompareByX); }
 
+            // the linq sort methods are alright, but the TimSort is just faster if the lists are already generally sorted
+            /*
+            physicals = physicals.OrderBy(x => x.leftmost).ToList();
+            projectiles = projectiles.OrderBy(x => x.pos.X).ToList();
+            */
 
             // Our nifty sort based projectile to physical collision detection
             int z = 0;
-            for (int i = 0; i < projectiles.Count && z < physicals.Count; i++)
+            foreach (Projectile proj in projectiles)
             {
-                while (physicals[z].rightmost < projectiles[i].pos.X)
+                // This particle (and therefore all particles past this point) cannot collide
+                // if rightmost point is to the left of us.
+                while (physicals[z].rightmost < proj.pos.X)
                 {
-                    if (++z >= physicals.Count)
+                    if (++z >= physicals.Count) // We are out of collide targets. Stop
                     {
                         break;
                     }
                 }
                 if (z >= physicals.Count) { break; }
-                
-                // check projectile against all targets.
+
+
+                // we start checking physicals from z onwards
                 for (int k = z; k < physicals.Count; k++)
                 {
-                    if (projectiles[i].pos.X < physicals[k].leftmost)
+                    Physical phys = physicals[k];
+
+                    // if the leftmost point is to our right, then this and future phys cannot collide with us
+                    if (proj.pos.X < phys.leftmost)
                     {
                         break;
                     }
 
-                    if (physicals[k].hitbox.WithinRadius(projectiles[i].pos))
+                    if (phys.hitbox.WithinRadius(proj.pos)) // a prelim check before we open up the abstraction
                     {
-                        if (projectiles[i].HitCheck(this, physicals[k]))
+                        if (proj.HitCheck(this, phys))
                         {
                             break; // hit already found. We done here.
                         }
@@ -175,18 +190,24 @@ namespace StarPixel
 
             for (int i = 0; i < physicals.Count; i++)
             {
+                Physical phys_a = physicals[i];
+
+                // only check forwards in the list. Checking backwards will double up our comparasons.
                 for (int k = i + 1; k < physicals.Count; k++)
                 {
-                    if (physicals[k].leftmost > physicals[i].rightmost)
+                    Physical phys_b = physicals[k];
+
+                    // if the leftmost point is to our right, then this and future phys cannot collide with us
+                    if (phys_a.rightmost < phys_b.leftmost)
                     {
                         break;
                     }
-                    if (physicals[i].hitbox.WithinRadius(physicals[k].hitbox)) { physicals[i].HitCheck(physicals[k]); }
+                    if (phys_a.hitbox.WithinRadius(phys_b.hitbox)) // a prelim check before we open up the abstraction
+                    {
+                        phys_a.HitCheck(phys_b);
+                    }
                 }
             }
-
-
-            MaintainEntityLists();
         }
 
         void MaintainEntityLists()
