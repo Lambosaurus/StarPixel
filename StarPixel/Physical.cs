@@ -44,7 +44,7 @@ namespace StarPixel
 
         public static int CompareByLeftmost(Physical a, Physical b)
         {
-            return (a.pos.X > b.pos.X) ? 1 : -1;
+            return (a.leftmost > b.leftmost) ? 1 : -1;
         }
 
 

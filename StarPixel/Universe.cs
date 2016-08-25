@@ -141,7 +141,7 @@ namespace StarPixel
         {
             // Sort our lists for the collison detection.
             if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByLeftmost); }
-            if (projectiles.Count != 0) { projectiles.TimSort(Projectile.CompareByX); }
+            if (projectiles.Count != 0) { projectiles.TimSort(Entity.CompareByX); }
 
             // the linq sort methods are alright, but the TimSort is just faster if the lists are already generally sorted
             /*
@@ -176,7 +176,7 @@ namespace StarPixel
                         break;
                     }
 
-                    if (phys.hitbox.WithinRadius(proj.pos)) // a prelim check before we open up the abstraction
+                    if ( (proj.pos - phys.pos).LengthSquared() < (phys.radius*phys.radius) ) // a prelim check before we open up the abstraction
                     {
                         if (proj.HitCheck(this, phys))
                         {
