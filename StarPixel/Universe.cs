@@ -159,6 +159,7 @@ namespace StarPixel
             if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByLeftmost); }
 
             if (projectiles.Count != 0) { projectiles.TimSort(Projectile.CompareByX); }
+            
 
             // the linq sort methods are alright, but the TimSort is just faster if the lists are already generally sorted
             /*
@@ -194,7 +195,6 @@ namespace StarPixel
                     }
 
                     if ( (phys.pos - proj.pos).LengthSquared() < phys.radius_sq ) // a prelim check before we open up the abstraction
-
                     {
                         if (proj.HitCheck(this, phys))
                         {

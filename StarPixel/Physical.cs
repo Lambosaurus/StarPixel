@@ -48,7 +48,6 @@ namespace StarPixel
         public static int CompareByRightmost(Physical a, Physical b)
         {
             return (a.rightmost > b.rightmost) ? 1 : -1;
-
         }
 
 

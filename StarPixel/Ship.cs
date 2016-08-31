@@ -235,6 +235,7 @@ namespace StarPixel
             
             return components;
         }
+        
 
         
         public void MountThruster(string template_name)
