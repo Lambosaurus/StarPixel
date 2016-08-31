@@ -142,11 +142,6 @@ namespace StarPixel
 
                     i++;
                 }
-
-
-
-
-
                 sparkles.Update();
                 // This is a bad way of generating sparkles
                 // TODO: Fix this.
@@ -158,9 +153,9 @@ namespace StarPixel
                 // out thrust vector we have calculated needs to be rotated by the ships angle.
                 ship.Push(Utility.Rotate(new Vector2(output_thrust_x, output_thrust_y), ship.angle), output_torque);
             }
-
             else
             {
+                sparkles.Update();
                 foreach (ArtVent vent in particle_vents)
                 {
                     vent.Update();

@@ -83,8 +83,9 @@ namespace StarPixel
                 
                 if (integrity[segment] < dmg_dealt)
                 {
+                    float segment_hp = integrity[segment];
                     integrity[segment] = 0.0f;
-                    return resistance.RemainingDamage(integrity[segment], dmg);
+                    return resistance.RemainingDamage(segment_hp, dmg);
                 }
                 else
                 {
