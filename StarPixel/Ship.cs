@@ -156,6 +156,7 @@ namespace StarPixel
             inertia = template.base_mass * template.mass_avg_radius * template.mass_avg_radius;
 
             radius = template.shield_radius;
+            radius_sq = radius * radius;
 
             hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
            
@@ -195,15 +196,47 @@ namespace StarPixel
             facade.UpdateHardware();
         }
         
-
-        public override void AdsorbExplosion(Explosion exp, Vector2 position)
+        public override void AdsorbDamage(Damage dmg, Vector2 position)
         {
-            if (armor != null)
+            Vector2 local_position = Utility.Rotate(position - pos, -angle);
+
+            Component[] components = ListComponents().ToArray();
+            float[] distances = new float[components.Length];
+
+            for (int i = 0; i < components.Length; i++)
             {
-                Explosion remaining = armor.AdsorbExplosion(exp, position);
+                distances[i] = (components[i].pos - local_position).LengthSquared();
+            }
+
+            Array.Sort(distances, components);
+
+            foreach (Component comp in components)
+            {
+                dmg = comp.AdsorbDamage(dmg);
+                if (dmg == null) { break; }
             }
         }
 
+
+        public List<Component> ListComponents()
+        {
+            List<Component> components = new List<Component>();
+
+            if (shield != null && !shield.destroyed) { components.Add(shield); }
+            if (thrusters != null && !thrusters.destroyed) { components.Add(thrusters); }
+
+            foreach (ComponentWeapon weapon in weapons)
+            {
+                if (weapon != null && !weapon.destroyed)
+                {
+                    components.Add(weapon);
+                }
+            }
+            
+            return components;
+        }
+
+        
         public void MountThruster(string template_name)
         {
             thrusters = AssetThrusterTemplates.thruster_templates[template_name].New(this);

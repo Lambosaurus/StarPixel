@@ -111,48 +111,61 @@ namespace StarPixel
 
         public override void Update()
         {
-            // we get the amount of thrust requested, ensuring its in a reasonable size
-            float control_x = Utility.Clamp(facade.output_thrust.X);
-            float control_y = Utility.Clamp(facade.output_thrust.Y);
-            float control_t = Utility.Clamp(facade.output_torque);
 
-
-            // we get the output values from the 
-            float output_torque = control_t * torque;
-            float output_thrust_y = control_y * side_thrust;
-            float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : reverse_thrust);
-
-
-            
-            // we generate the particles for each port
-            int i = 0;
-            foreach (ThrusterPort port in particle_ports)
+            if (!destroyed)
             {
-                particle_vents[i].Update();
 
-                float strength = (port.kx * control_x) + (port.ky * control_y) + (port.kt * control_t) ;
-                if (strength > 0)
+                // we get the amount of thrust requested, ensuring its in a reasonable size
+                float control_x = Utility.Clamp(facade.output_thrust.X);
+                float control_y = Utility.Clamp(facade.output_thrust.Y);
+                float control_t = Utility.Clamp(facade.output_torque);
+
+
+                // we get the output values from the 
+                float output_torque = control_t * torque;
+                float output_thrust_y = control_y * side_thrust;
+                float output_thrust_x = control_x * ((control_x > 0) ? main_thrust : reverse_thrust);
+
+
+
+                // we generate the particles for each port
+                int i = 0;
+                foreach (ThrusterPort port in particle_ports)
                 {
-                    particle_vents[i].Generate(ship.pos + Utility.Rotate(port.position, ship.angle), ship.velocity, port.angle + ship.angle, strength);
+                    particle_vents[i].Update();
+
+                    float strength = (port.kx * control_x) + (port.ky * control_y) + (port.kt * control_t);
+                    if (strength > 0)
+                    {
+                        particle_vents[i].Generate(ship.pos + Utility.Rotate(port.position, ship.angle), ship.velocity, port.angle + ship.angle, strength);
+                    }
+
+                    i++;
                 }
-                
-                i++;
+
+
+
+
+
+                sparkles.Update();
+                // This is a bad way of generating sparkles
+                // TODO: Fix this.
+                if (control_x > 0 && Utility.Rand(1.0f) > 0.94f / control_x)
+                {
+                    sparkles.Generate(ship.pos + Utility.Rotate(particle_ports[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, 1);
+                }
+
+                // out thrust vector we have calculated needs to be rotated by the ships angle.
+                ship.Push(Utility.Rotate(new Vector2(output_thrust_x, output_thrust_y), ship.angle), output_torque);
             }
-            
-            
 
-
-
-            sparkles.Update();
-            // This is a bad way of generating sparkles
-            // TODO: Fix this.
-            if (control_x > 0 && Utility.Rand(1.0f) > 0.94f / control_x)
+            else
             {
-                sparkles.Generate(ship.pos + Utility.Rotate(particle_ports[0].position, ship.angle), ship.velocity, ship.angle + MathHelper.Pi, 1);
+                foreach (ArtVent vent in particle_vents)
+                {
+                    vent.Update();
+                }
             }
-            
-            // out thrust vector we have calculated needs to be rotated by the ships angle.
-            ship.Push(Utility.Rotate(new Vector2(output_thrust_x, output_thrust_y), ship.angle), output_torque);
         }
 
         public void Draw(Camera camera)

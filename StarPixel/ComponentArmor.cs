@@ -18,9 +18,7 @@ namespace StarPixel
 
         public float segment_integrity = 60f;
 
-
-        public Resistance resistance = Resistance.Zero;
-
+        
         public ComponentArmor New( Ship ship )
         {
             ComponentArmor armor = new ComponentArmor(ship, ship.template.component_armor_size, this);
@@ -75,19 +73,18 @@ namespace StarPixel
             return segment;
         }
 
-        public Explosion AdsorbExplosion(Explosion exp, Vector2 arg_pos)
+        public Damage BlockDamage(Damage dmg, Vector2 arg_pos)
         {
             int segment = this.GetSegment(Utility.Angle(arg_pos - ship.pos));
 
             if (integrity[segment] > 0)
             {
-                float dmg_dealt = resistance.EvaluateDamage(exp.dmg);
+                float dmg_dealt = resistance.EvaluateDamage(dmg);
                 
                 if (integrity[segment] < dmg_dealt)
                 {
                     integrity[segment] = 0.0f;
-                    Damage remaining = resistance.RemainingDamage(integrity[segment], exp.dmg);
-                    return new Explosion(remaining, exp.radius, exp.art_cloud_resource, exp.art_scale);
+                    return resistance.RemainingDamage(integrity[segment], dmg);
                 }
                 else
                 {
@@ -96,7 +93,7 @@ namespace StarPixel
                 }
             }
 
-            return exp;
+            return dmg;
 
         }
 

@@ -14,23 +14,21 @@ namespace StarPixel
     public class Explosion
     {
         public Damage dmg { get; private set; }
-        public float radius { get; private set; }
 
         public ArtExplosionResource art_cloud_resource { get; private set; }
         
         public float art_scale { get; private set; }
 
-        public Explosion(Damage arg_dmg, float arg_radius, ArtExplosionResource arg_cloud_art, float arg_art_scale = 1.0f)
+        public Explosion(Damage arg_dmg, ArtExplosionResource arg_cloud_art, float arg_art_scale = 1.0f)
         {
             dmg = arg_dmg;
-            radius = arg_radius;
             art_cloud_resource = arg_cloud_art;
             art_scale = arg_art_scale;
         }
 
         public static Explosion operator *(Explosion exp, float scale)
         {
-            return new Explosion(exp.dmg * scale, exp.radius * Utility.Sqrt(scale), exp.art_cloud_resource, scale * exp.art_scale );
+            return new Explosion(exp.dmg * scale, exp.art_cloud_resource, scale * exp.art_scale );
         }
 
         public void Explode(Universe universe, Vector2 pos, Vector2 velocity, Vector2 skew)
@@ -45,7 +43,7 @@ namespace StarPixel
         public float thermal { get; private set; }
         public float electro { get; private set; }
         public float mining { get; private set; }
-
+        
         public Damage(float k, float t = 0.0f, float e = 0.0f, float m = 0.0f)
         {
             kinetic = k;
@@ -66,7 +64,7 @@ namespace StarPixel
             return new Damage(dmg.kinetic * inverse, dmg.thermal * inverse, dmg.electro * inverse, dmg.mining * inverse);
         }
     }
-
+    
     public class Resistance
     {
         public static Resistance Zero { get; private set; } = new Resistance(0,0,0,0);

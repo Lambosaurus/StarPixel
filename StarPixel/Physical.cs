@@ -15,36 +15,40 @@ namespace StarPixel
     {
         //public static Damage collision_dmg_per_force = new Damage(1.0f);
 
-        public float mass;
-        public float inertia;
-        public float angular_velocity;
+        public float mass { get; protected set; }
+        public float inertia { get; protected set; }
+        public float angular_velocity { get; protected set; }
 
-        public float radius;
+        public float radius { get; protected set; }
+        public float radius_sq { get; protected set; }
 
-        public Universe universe;
+        public Universe universe { get; protected set; }
 
-        public Hitbox hitbox;
+        public Hitbox hitbox { get; protected set; }
 
         public ComponentShield shield = null;
         public ComponentArmor armor = null;
+        
 
-
-        public float leftmost;
-        public float rightmost;
+        public float leftmost { get; protected set; }
+        public float rightmost { get; protected set; }
 
         public Physical(Universe arg_universe) : base()
         {
             universe = arg_universe;
-            mass = 10;
-            inertia = 50; // things feel right with the current thruster torque model when inertia is about 5x mass.
-            radius = 10;
-
+            
             angular_velocity = 0.0f;
         }
 
         public static int CompareByLeftmost(Physical a, Physical b)
         {
             return (a.leftmost > b.leftmost) ? 1 : -1;
+        }
+
+        public static int CompareByRightmost(Physical a, Physical b)
+        {
+            return (a.rightmost > b.rightmost) ? 1 : -1;
+
         }
 
 
@@ -64,6 +68,20 @@ namespace StarPixel
         }
 
         public virtual void AdsorbExplosion(Explosion exp, Vector2 position)
+        {
+            Damage dmg = exp.dmg;
+            if (armor != null)
+            {
+                dmg = armor.BlockDamage(dmg, position);
+            }
+
+            if (dmg != null)
+            {
+                this.AdsorbDamage(dmg, position);
+            }
+        }
+
+        public virtual void AdsorbDamage(Damage dmg, Vector2 position)
         {
 
         }
@@ -139,8 +157,7 @@ namespace StarPixel
 
             // generate an explosion as the result of the collision.
             // the radius is ish 1/4 of the larger hulls's radius. Maybe look into whether that is smart.
-            float explosion_radius = 20;
-            Explosion exp = new Explosion(new Damage(120), explosion_radius, ArtManager.explosions["phys_collision"]);
+            Explosion exp = new Explosion(new Damage(120), ArtManager.explosions["phys_collision"]);
             exp *= (force.Length() / 100f);
 
             // apply the damage to the phys.

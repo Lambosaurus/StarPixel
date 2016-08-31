@@ -80,24 +80,28 @@ namespace StarPixel
 
         float desired_angle;
 
+        ShipFacade link;
+        Vector2 target_pos;
+
         public IntellegenceHunter( Ship arg_target )
         {
             target = arg_target;
 
             
-            angle_tracker = new PID(10f, 0.5f, 10f);
-            x_tracker = new PID(0.3f, 0.3f, 1f);
-            y_tracker = new PID(0.3f, 0.3f, 1f);
+            angle_tracker = new PID(10f, 0.0f, 10f);
+            x_tracker = new PID(1f, 0.0f, 0.5f);
+            y_tracker = new PID(1f, 0.0f, 0.5f);
             
         }
 
-        public override void Process(ShipFacade link)
+        public override void Process(ShipFacade arg_link)
         {
+            link = arg_link;
 
             if (!target.destroyed)
             {
 
-                Vector2 target_pos = target.pos + (Utility.CosSin(target.angle + MathHelper.Pi)*target.hitbox.radius*3);
+                target_pos = target.pos + (Utility.CosSin(target.angle + MathHelper.Pi)*target.hitbox.radius*3);
 
 
                 Vector2 mov;
@@ -113,8 +117,10 @@ namespace StarPixel
                     desired_angle = Utility.Angle(mov);
                 }
                 */
-                
-                
+
+                desired_angle = Utility.Angle(mov);
+
+
                 for (int i = 0; i < link.weapon_count; i++)
                 {
                     WeaponFacade weapon = link.Weapon(i);
@@ -123,6 +129,8 @@ namespace StarPixel
 
                         Vector2 intercept = target.pos + ((target.velocity - link.velocity) * (target.pos - link.pos).Length() / weapon.projectile_velocity);
                         desired_angle = Utility.Angle(intercept - link.pos);
+
+
                         float range = (intercept - link.pos).Length();
 
 
@@ -156,6 +164,33 @@ namespace StarPixel
                 link.thrusters.output_torque = 0.0f;
             }
             
+        }
+
+        public override List<UIMarker> GetUiMarkers()
+        {
+            if (link == null) { return null; }
+
+            MarkerPoly t_target = new MarkerPoly(target.pos, 30, Color.Red, MarkerPoly.Type.Quad, true);
+            t_target.dashing = ArtPrimitive.ShapeDashing.One;
+
+            MarkerPoint t0 = new MarkerPoint(link.pos, 10, Color.Transparent);
+            t0.line_join_radius = 50;
+
+            MarkerPoint t_pos = new MarkerPoint(target_pos, 4, new Color(0.2f, 0.4f, 1.0f));
+            
+
+            MarkerLine target1 = new MarkerLine(t0, t_target);
+            target1.line_color *= 0.7f;
+
+            MarkerLine target2 = new MarkerLine(t0, t_pos);
+            target1.line_color *= 0.7f;
+
+
+            List<UIMarker> markers = new List<UIMarker>();
+            markers.Add(target1);
+            markers.Add(target2);
+
+            return markers;
         }
     }
 
@@ -192,9 +227,9 @@ namespace StarPixel
             target_ok_distance = 20f;
 
 
-            angle_tracker = new PID(10f * gain, 0.5f * gain, 10f * gain);
-            x_tracker = new PID(0.6f * gain, 0.3f * gain, 1f * gain);
-            y_tracker = new PID(0.6f * gain, 0.3f * gain, 1f * gain);
+            angle_tracker = new PID(10f * gain, 0.0f * gain, 10f * gain);
+            x_tracker = new PID(0.3f * gain, 0.0f * gain, 0.5f * gain);
+            y_tracker = new PID(0.3f * gain, 0.0f * gain, 0.5f * gain);
 
             /*
             angle_tracker = new PID(10f * Utility.random.Next(5, 15) / 10f, 0.5f * Utility.random.Next(5, 15) / 10f, 10f * Utility.random.Next(5, 15) / 10f);
@@ -240,13 +275,14 @@ namespace StarPixel
                 link.thrusters.output_torque = Utility.Clamp(a_mov);
             }
 
-            
+            /*
             for (int i = 0; i < link.weapon_count; i++)
             {
                 WeaponFacade weapon = link.Weapon(i);
                 weapon.fire = true;
                 weapon.target_angle = 0.0f;
             }
+            */
             
         }
 
@@ -254,67 +290,18 @@ namespace StarPixel
         {
             if (link == null) { return null; }
 
-            MarkerCircle t1 = new MarkerCircle(target, target_ok_distance, Color.Red);
+            MarkerCircle t1 = new MarkerCircle(target, target_ok_distance, new Color(0.2f, 0.4f, 1.0f) );
             t1.dashing = ArtPrimitive.CircleDashing.Moderate;
-            t1.icons_top.Add(new MarkerIcon((Symbols.GreekL)k, Color.Red));
+
+            MarkerPoint t0 = new MarkerPoint( link.pos, 10, Color.Transparent);
+            t0.line_join_radius = 50;
             
-
-            MarkerCircle t2 = new MarkerCircle(targets[0], target_ok_distance, Color.Red*0.6f);
-            t2.dashing = ArtPrimitive.CircleDashing.Moderate;
-            t2.icons_top.Add(new MarkerIcon((Symbols.GreekL)((k+1)%24), Color.Red * 0.6f));
-
-
-            MarkerCircle t3 = new MarkerCircle(targets[1], target_ok_distance, Color.Red*0.4f);
-            t3.dashing = ArtPrimitive.CircleDashing.Moderate;
-            t3.icons_top.Add(new MarkerIcon((Symbols.GreekL)((k + 2) % 24), Color.Red * 0.4f));
-
-            MarkerCircle t4 = new MarkerCircle(targets[2], target_ok_distance, Color.Red * 0.2f);
-            t4.dashing = ArtPrimitive.CircleDashing.Moderate;
-            t4.icons_top.Add(new MarkerIcon((Symbols.GreekL)((k + 3) % 24), Color.Red * 0.2f));
-
-            MarkerCircle zone = new MarkerCircle(new Vector2(0, 0), target_range, Color.Yellow);
-            zone.fill_color = Color.Transparent;
-            zone.line_thickness = 1;
-
-            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Beta, Color.Orange, 0.5f));
-            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Alpha, Color.Orange, 0.5f));
-            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Tau, Color.Orange, 0.5f));
-            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Mu, Color.Orange, 0.5f));
-            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Alpha, Color.Orange, 0.5f));
-            zone.icons_bot.Add(new MarkerIcon(Symbols.GreekU.Nu, Color.Orange, 0.5f));
-
-            Color lblue = new Color(0.15f, 0.3f, 1.0f);
-
-
-            //MarkerQuad t0 = new MarkerQuad(link.pos, 30, lblue, MarkerQuad.Type.Diamond);
-            MarkerPoly t0 = new MarkerPoly(link.pos, 30, lblue, MarkerPoly.Type.Quad, true);
-            t0.dashing = ArtPrimitive.ShapeDashing.One;
-            //t0.line_color = Color.Transparent;
-            //t0.fill_color = lblue;
-            //t0.fill_color = Color.Transparent;
-            
-
             MarkerLine target1 = new MarkerLine(t0, t1);
             target1.line_color *= 0.7f;
             
-            MarkerLine target2 = new MarkerLine(t1, t2);
-            target2.draw_startpoint = false;
-            target2.line_color *= 0.7f;
-            
-            MarkerLine target3 = new MarkerLine(t2,t3);
-            target3.draw_startpoint = false;
-            target3.line_color *= 0.7f;
-
-            MarkerLine target4 = new MarkerLine(t3, t4);
-            target4.draw_startpoint = false;
-            target4.line_color *= 0.7f;
 
             List<UIMarker> markers = new List<UIMarker>();
             markers.Add(target1);
-            markers.Add(target2);
-            markers.Add(target3);
-            markers.Add(target4);
-            markers.Add(zone);
             
             return markers;
         }

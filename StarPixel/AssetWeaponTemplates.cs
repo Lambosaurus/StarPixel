@@ -65,7 +65,7 @@ namespace StarPixel
 
             ArtManager.explosions.Add("boom", exp_art);
 
-            Explosion exp = new Explosion(new Damage(3), 0, exp_art);
+            Explosion exp = new Explosion(new Damage(3), exp_art);
 
 
 

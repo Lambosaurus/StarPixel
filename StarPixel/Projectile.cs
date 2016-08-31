@@ -56,7 +56,7 @@ namespace StarPixel
                         bounce.Normalize();
 
                         explosion.Explode(universe, pos, phys.velocity, bounce);
-                        shield.AdsorbExplosion(explosion, pos);
+                        shield.BlockDamage(explosion.dmg, pos);
                         this.Destory();
                         return true;
                     }

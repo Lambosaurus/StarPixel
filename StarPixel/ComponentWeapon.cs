@@ -137,19 +137,21 @@ namespace StarPixel
 
         public override void Update()
         {
-            if ( current_cooldown > 0 )
+            if (!destroyed)
             {
-                current_cooldown--;
+                if (current_cooldown > 0)
+                {
+                    current_cooldown--;
+                }
+
+                base.Update();
+
+
+                if (facade.fire)
+                {
+                    this.Fire(facade.target_angle);
+                }
             }
-
-            base.Update();
-            
-
-            if (facade.fire)
-            {
-                this.Fire(facade.target_angle);
-            }
-
         }
 
         public virtual void SpawnProjectile(float angle )

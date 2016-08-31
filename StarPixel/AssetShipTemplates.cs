@@ -75,8 +75,8 @@ namespace StarPixel
             template.AddThrusterPort(new Vector2(0, 9), 0.2f,     0.4f, -1, 0, 0);
             template.AddThrusterPort(new Vector2(0, -9), -0.2f,   0.4f, -1, 0, 0);
 
-            template.AddWeaponPort(new Vector2(10, 2), 1.0f, 0.0f, arc_180);
-            template.AddWeaponPort(new Vector2(10, -2), 1.0f, 0.0f, arc_180);
+            template.AddWeaponPort(new Vector2(10, 2), 1.0f, 0.0f, arc_180/4);
+            template.AddWeaponPort(new Vector2(10, -2), 1.0f, 0.0f, arc_180/4);
 
             ship_templates.Add("F2", template);
 

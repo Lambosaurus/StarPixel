@@ -15,7 +15,7 @@ namespace StarPixel
     {
         public string art_resource;
 
-        public Resistance resistance = Resistance.Zero;
+        public Resistance shield_resistance = Resistance.Zero;
 
         public float integrity = 120.0f;
         public float reform_integrity = 0.5f; // this is a percentage of maximum
@@ -58,7 +58,7 @@ namespace StarPixel
             hitbox = new HitboxCircle(radius);
             art = ArtManager.shields[template.art_resource].New(radius, size);
 
-            resistance = template.resistance * SHIELD_BASE_RESISTANCE;
+            resistance = template.shield_resistance * SHIELD_BASE_RESISTANCE;
 
             max_integrity = (arg_template.integrity * arg_size * Utility.Sqrt(arg_size));
             regen_rate = (arg_template.regen / GameConst.framerate) * arg_size;
@@ -67,9 +67,9 @@ namespace StarPixel
             active = true;
         }
 
-        public void AdsorbExplosion(Explosion exp, Vector2 arg_pos)
+        public void BlockDamage(Damage dmg, Vector2 arg_pos)
         {
-            float total_dmg = resistance.EvaluateDamage(exp.dmg);
+            float total_dmg = resistance.EvaluateDamage(dmg);
             integrity -= total_dmg;
 
 
@@ -95,20 +95,31 @@ namespace StarPixel
 
         public override void Update()
         {
-            hitbox.Update(ship.pos, ship.angle);
-            
             base.Update();
 
-            integrity += regen_rate;
+            hitbox.Update(ship.pos, ship.angle);
 
-            if (!active && integrity > reform_integrity)
+            if (!destroyed)
             {
-                this.Reform();
+                integrity += regen_rate;
+
+                if (!active && integrity > reform_integrity)
+                {
+                    this.Reform();
+                }
+
+                art.Update(ship.pos);
+
+                integrity = Utility.Clamp(integrity, 0.0f, max_integrity);
             }
+        }
 
-            art.Update(ship.pos);
+        public override void Destroy()
+        {
+            integrity = 0.0f;
+            if (active) { this.Pop(); }
 
-            integrity = Utility.Clamp(integrity, 0.0f, max_integrity);
+            base.Destroy();
         }
 
         public void Draw(Camera camera)

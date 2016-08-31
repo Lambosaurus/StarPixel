@@ -45,6 +45,8 @@ namespace StarPixel
 
         public float min_power = 0.0f;
         public float max_power = 0.0f;
+        
+        public Resistance resistance = Resistance.Zero;
     }
 
     public class Component
@@ -61,6 +63,8 @@ namespace StarPixel
 
         public float size { get; private set; }
         public bool destroyed { get; private set; }
+
+        public Vector2 pos { get; private set; }
 
         public Ship ship { get; private set; }
 
@@ -83,12 +87,31 @@ namespace StarPixel
             
         }
 
+        public virtual Damage AdsorbDamage( Damage dmg )
+        {
+            float dmg_dealt = base_template.resistance.EvaluateDamage(dmg);
+
+            if (health < dmg_dealt)
+            {
+                this.Destroy();
+                Damage remaining = base_template.resistance.RemainingDamage(health, dmg);
+                return remaining;
+            }
+            else
+            {
+                health -= dmg_dealt;
+                return null;
+            }
+        }
+
         public virtual void Update()
         {
         }
 
         public virtual void Destroy()
         {
+            health = 0.0f;
+            destroyed = true;
         }
     }
 

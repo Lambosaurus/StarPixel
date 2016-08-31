@@ -87,27 +87,43 @@ namespace StarPixel
 
             Ship broship = CreateNewShip("F2");
             broship.ai = new IntellegenceRoamer();
-            broship.MountThruster("better");
+            broship.MountThruster("default");
             broship.Paint(Color.Red);
             broship.MountShield("default");
             broship.MountArmor("default");
 
+            broship.MountWeapon("shooter", 0);
+            broship.MountWeapon("shooter", 1);
 
-            for (int i = 0; i < 200; i++)
+            
+            for (int i = 0; i < 120; i++)
             {
                 Ship ship1 = CreateNewShip("F2");
                 ship1.ai = new IntellegenceRoamer();
                 ship1.MountThruster( Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better") );
-                ship1.MountShield("green");
+                ship1.MountShield("default");
                 ship1.MountArmor("default");
                 ship1.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
-
-                ship1.MountWeapon("shooter", 0);
-
+                
                 ship1.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
-            }
+             
+                Ship ship2 = CreateNewShip("F2");
+                ship2.ai = new IntellegenceHunter(ship1);
+                ship2.MountThruster(Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better"));
+                ship2.MountShield("green");
+                ship2.MountArmor("default");
+                ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
 
-            for (int i = 0; i < 25; i++)
+                ship2.MountWeapon("shooter", 0);
+                if (Utility.RandBool()) { ship2.MountWeapon("shooter", 1); }
+
+
+                ship2.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
+                
+            }
+            
+
+            for (int i = 0; i < 0; i++)
             {
                 Ship ship2 = CreateNewShip("CG1");
                 ship2.ai = new IntellegenceRoamer(0.2f);
@@ -141,7 +157,8 @@ namespace StarPixel
         {
             // Sort our lists for the collison detection.
             if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByLeftmost); }
-            if (projectiles.Count != 0) { projectiles.TimSort(Entity.CompareByX); }
+
+            if (projectiles.Count != 0) { projectiles.TimSort(Projectile.CompareByX); }
 
             // the linq sort methods are alright, but the TimSort is just faster if the lists are already generally sorted
             /*
@@ -162,7 +179,7 @@ namespace StarPixel
                         break;
                     }
                 }
-                if (z >= physicals.Count) { break; }
+                if (z >= physicals.Count) { break; } // THats it, keep stopping.
 
 
                 // we start checking physicals from z onwards
@@ -176,7 +193,8 @@ namespace StarPixel
                         break;
                     }
 
-                    if ( (proj.pos - phys.pos).LengthSquared() < (phys.radius*phys.radius) ) // a prelim check before we open up the abstraction
+                    if ( (phys.pos - proj.pos).LengthSquared() < phys.radius_sq ) // a prelim check before we open up the abstraction
+
                     {
                         if (proj.HitCheck(this, phys))
                         {
