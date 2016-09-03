@@ -13,14 +13,19 @@ namespace StarPixel
 {
     public class Universe
     {
+        float maximum_physical_radius = 100;
+
         public List<Physical> physicals = new List<Physical>();
         List<Physical> new_physicals = new List<Physical>();
+
+        public List<Physical> physical_leftmost = new List<Physical>();
 
         public List<Projectile> projectiles = new List<Projectile>();
         List<Projectile> new_projectiles = new List<Projectile>();
         
         List<ArtTemporary> art_temp = new List<ArtTemporary>();
         List<ArtTemporary> new_art_temp = new List<ArtTemporary>();
+        
        
 
         // creates a new ship from given template name, and adds it into the universe.
@@ -35,6 +40,10 @@ namespace StarPixel
         public void AddPhysical( Physical phys )
         {
             new_physicals.Add(phys);
+            if (phys.radius > maximum_physical_radius)
+            {
+                maximum_physical_radius = phys.radius;
+            }
         }
         public void AddProjectile(Projectile proj)
         {
@@ -46,19 +55,54 @@ namespace StarPixel
         }
 
 
-
         public Physical PhysAtPoint( Vector2 point )
         {
-            foreach ( Physical phys in physicals )
+            float upper_search_pos = point.X + maximum_physical_radius;
+            float lower_search_pos = point.X - maximum_physical_radius;
+
+            int i = Utility.BinarySearch(physicals, lower_search_pos, x => x.pos.X);
+            
+            while (i < physicals.Count && physicals[i].pos.X < upper_search_pos)
             {
-                if ( (point - phys.pos).Length() < phys.radius )
-                {
-                    return phys;
-                }
+                Physical phys = physicals[i++];
+                if ((point - phys.pos).LengthSquared() < phys.radius_sq) { return phys; }
             }
+            
             return null;
         }
+        
+        public List<Physical> PhysInBox(Vector2 lower, Vector2 upper)
+        {
+            List<Physical> in_box = new List<Physical>();
 
+            int i = Utility.BinarySearch(physicals, lower.X, x => x.pos.X);
+            
+            while ( i < physicals.Count && physicals[i].pos.X < upper.X )
+            {
+                Physical phys = physicals[i++];
+                if (phys.pos.Y > lower.Y && phys.pos.Y < upper.Y) { in_box.Add(phys); }
+            }
+            return in_box;
+        }
+
+        public List<Physical> PhysicalsInRadius(Vector2 point, float radius)
+        {
+            float upper_search_pos = point.X + radius;
+            float lower_search_pos = point.X - radius;
+            float radius_sq = radius* radius;
+
+            List<Physical> in_rad = new List<Physical>();
+
+            int i = Utility.BinarySearch(physicals, lower_search_pos, x => x.pos.X);
+
+            while (i < physicals.Count && physicals[i].pos.X < upper_search_pos)
+            {
+                Physical phys = physicals[i++];
+                if ((point - phys.pos).LengthSquared() < radius_sq) { in_rad.Add(phys); }
+            }
+
+            return in_rad;
+        }
         
 
         public void Start()
@@ -142,7 +186,6 @@ namespace StarPixel
 
         public void Update()
         {
-            
             // Update our things
             foreach (Physical phys in physicals) { phys.Update(); }
             foreach (Projectile proj in projectiles) { proj.Update(); }
@@ -156,37 +199,32 @@ namespace StarPixel
         void CollisionChecks()
         {
             // Sort our lists for the collison detection.
-            if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByLeftmost); }
+            if (physicals.Count != 0) { physicals.TimSort(Physical.CompareByX); }
+            physical_leftmost = physicals.OrderBy(x => x.leftmost).ToList();
 
             if (projectiles.Count != 0) { projectiles.TimSort(Projectile.CompareByX); }
             
-
-            // the linq sort methods are alright, but the TimSort is just faster if the lists are already generally sorted
-            /*
-            physicals = physicals.OrderBy(x => x.leftmost).ToList();
-            projectiles = projectiles.OrderBy(x => x.pos.X).ToList();
-            */
-
+            
             // Our nifty sort based projectile to physical collision detection
             int z = 0;
             foreach (Projectile proj in projectiles)
             {
                 // This particle (and therefore all particles past this point) cannot collide
                 // if rightmost point is to the left of us.
-                while (physicals[z].rightmost < proj.pos.X)
+                while (physical_leftmost[z].rightmost < proj.pos.X)
                 {
-                    if (++z >= physicals.Count) // We are out of collide targets. Stop
+                    if (++z >= physical_leftmost.Count) // We are out of collide targets. Stop
                     {
                         break;
                     }
                 }
-                if (z >= physicals.Count) { break; } // THats it, keep stopping.
+                if (z >= physical_leftmost.Count) { break; } // THats it, keep stopping.
 
 
                 // we start checking physicals from z onwards
-                for (int k = z; k < physicals.Count; k++)
+                for (int k = z; k < physical_leftmost.Count; k++)
                 {
-                    Physical phys = physicals[k];
+                    Physical phys = physical_leftmost[k];
 
                     // if the leftmost point is to our right, then this and future phys cannot collide with us
                     if (proj.pos.X < phys.leftmost)
@@ -206,14 +244,14 @@ namespace StarPixel
 
 
 
-            for (int i = 0; i < physicals.Count; i++)
+            for (int i = 0; i < physical_leftmost.Count; i++)
             {
-                Physical phys_a = physicals[i];
+                Physical phys_a = physical_leftmost[i];
 
                 // only check forwards in the list. Checking backwards will double up our comparasons.
-                for (int k = i + 1; k < physicals.Count; k++)
+                for (int k = i + 1; k < physical_leftmost.Count; k++)
                 {
-                    Physical phys_b = physicals[k];
+                    Physical phys_b = physical_leftmost[k];
 
                     // if the leftmost point is to our right, then this and future phys cannot collide with us
                     if (phys_a.rightmost < phys_b.leftmost)
@@ -241,6 +279,7 @@ namespace StarPixel
 
             // If many items are getting removed, its just faster to get a new list.
             List<Projectile> remaining_projectiles = new List<Projectile>();
+            remaining_projectiles.Capacity = projectiles.Capacity;
             foreach (Projectile proj in projectiles)
             {
                 if (!proj.ReadyForRemoval())
@@ -251,6 +290,7 @@ namespace StarPixel
             projectiles = remaining_projectiles;
 
             List<ArtTemporary> remaining_art_temp = new List<ArtTemporary>();
+            remaining_art_temp.Capacity = art_temp.Capacity;
             foreach ( ArtTemporary art in art_temp )
             {
                 if (!art.ReadyForRemoval())

@@ -47,7 +47,7 @@ namespace StarPixel
 
         public float radius;
 
-        public Resistance resistance;
+        public Resistance shield_resistance;
 
         public ComponentShield( Ship arg_ship, float arg_size, ShieldTemplate arg_template): base(arg_ship, arg_size, arg_template)
         {
@@ -58,7 +58,7 @@ namespace StarPixel
             hitbox = new HitboxCircle(radius);
             art = ArtManager.shields[template.art_resource].New(radius, size);
 
-            resistance = template.shield_resistance * SHIELD_BASE_RESISTANCE;
+            shield_resistance = template.shield_resistance * SHIELD_BASE_RESISTANCE;
 
             max_integrity = (arg_template.integrity * arg_size * Utility.Sqrt(arg_size));
             regen_rate = (arg_template.regen / GameConst.framerate) * arg_size;
@@ -69,7 +69,7 @@ namespace StarPixel
 
         public void BlockDamage(Damage dmg, Vector2 arg_pos)
         {
-            float total_dmg = resistance.EvaluateDamage(dmg);
+            float total_dmg = shield_resistance.EvaluateDamage(dmg);
             integrity -= total_dmg;
 
 

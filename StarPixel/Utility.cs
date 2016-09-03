@@ -293,5 +293,22 @@ namespace StarPixel
         {
             return (one.X * two.X) + (one.Y * two.Y);
         }
+
+        
+        public static int BinarySearch<T>( List<T> items, float value, Func<T, float> property_fetcher )
+        {
+            int i = 0;
+            int k = items.Count-1;
+
+            while (k - i > 1)
+            {
+                int center = (i + k) / 2;
+
+                if (property_fetcher(items[center]) > value) { k = center; }
+                else { i = center; }
+            }
+            if (property_fetcher(items[i]) > value) { return i; }
+            return k;
+        }
     }
 }
