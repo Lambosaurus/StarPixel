@@ -101,9 +101,8 @@ namespace StarPixel
 
         public Damage RemainingDamage(float hp, Damage dmg)
         {
-            if (hp == 0) { return dmg; }
             float max_damage = this.EvaluateDamage(dmg);
-            return dmg * (max_damage / hp);
+            return dmg * ((max_damage - hp) / max_damage);
         }
     }
 }
