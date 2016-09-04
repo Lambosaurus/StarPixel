@@ -48,9 +48,10 @@ namespace StarPixel
             return kb.IsKeyDown(key) && !old_kb.IsKeyDown(key);
         }
 
-        public enum MouseButton { Left, Middle, Right };
+        public enum MouseButton { None = -1, Left, Middle, Right };
+        public enum ButtonEvent { Up = 0, Pressed = 1, Released = 2, Down = 3}; // this enum order is important.
         
-        public bool MouseButtonEvent(MouseButton button, ButtonState evt )
+        public ButtonEvent MouseButtonEvent(MouseButton button)
         {
             ButtonState b_old;
             ButtonState b_new;
@@ -58,8 +59,10 @@ namespace StarPixel
             if (button == MouseButton.Left) { b_old = old_mb.LeftButton; b_new = mb.LeftButton; }
             else if (button == MouseButton.Right) { b_old = old_mb.RightButton; b_new = mb.RightButton; }
             else { b_old = old_mb.MiddleButton; b_new = mb.MiddleButton; }
+            
+            return (ButtonEvent)((int)b_new + (((int)b_old) * 2)); // Mmmmm.. much more delicious than an if statement...
 
-            return (b_new != b_old) && (evt == b_new);
+            //return (b_new != b_old) && (evt == b_new);
         }
 
         public bool MouseButtonState(MouseButton button, ButtonState evt)
@@ -87,10 +90,16 @@ namespace StarPixel
         Physical focus_phys;
         IntellegenceHuman focus_ai;
 
-        ControlMode mode = ControlMode.Observe;
+        public ControlMode mode = ControlMode.Observe;
 
         Color cursor_color_control = Color.Red;
         Color cursor_color_observer = Color.Yellow;
+
+
+        Widget drag_widget = null;
+        InputState.MouseButton drag_button = InputState.MouseButton.None;
+        Vector2 drag_origin;
+        bool dragging = false;
 
         public UI( GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height )
         {
@@ -142,7 +151,8 @@ namespace StarPixel
             }
         }
 
-        public void MouseCallBack( Universe universe, Vector2 position )
+        /*
+        public void UniverseClick( Universe universe, Vector2 position )
         {
             if (mode == ControlMode.Control)
             {
@@ -152,28 +162,28 @@ namespace StarPixel
                     focus_ai.firing = (inputs.mb.LeftButton == ButtonState.Pressed);
                 }
             }
-            else if (mode == ControlMode.Observe)
+        }
+        */
+        
+
+        public Widget GetFocusedWidget()
+        {
+            // iterate in reverse, because the last widget is the topmost 
+            for (int i = widgets.Count-1; i >= 0; i--)
             {
-                if (inputs.MouseButtonEvent(InputState.MouseButton.Left, ButtonState.Pressed))
+                if (widgets[i].InWindow(inputs.pos))
                 {
-                    Physical new_phys = universe.PhysAtPoint(camera_widget.camera.InverseMouseMap(inputs.pos - camera_widget.pos));
-                    if (new_phys != null)
-                    {
-                        this.FocusPhys(new_phys);
-                    }
+                    return widgets[i];
                 }
             }
+            return null;
         }
 
-        public void Update()
+        public void HackyManualKeyEvents()
         {
-            inputs.Update();
-            
-            camera_widget.markers = null;
 
             if (inputs.kb.IsKeyDown(Keys.LeftShift))
             {
-
                 if (focus_phys != null && focus_phys is Ship)
                 {
                     Ship ship = (Ship)focus_phys;
@@ -204,25 +214,91 @@ namespace StarPixel
                 }
             }
 
-
-            if ( inputs.KeyDownEvent(Keys.OemTilde))
+            if (inputs.KeyDownEvent(Keys.OemTilde))
             {
                 mode = (mode == ControlMode.Control) ? ControlMode.Observe : ControlMode.Control;
             }
 
+            if (inputs.mb.ScrollWheelValue > inputs.old_mb.ScrollWheelValue)
+            {
+                camera_widget.camera.scale *= 1.1f;
+            }
+            else if (inputs.mb.ScrollWheelValue < inputs.old_mb.ScrollWheelValue)
+            {
+                camera_widget.camera.scale /= 1.1f;
+            }
+        }
+
+
+        public void ButtonEventManager(Widget focused, InputState.MouseButton button)
+        {
+            InputState.ButtonEvent evt = inputs.MouseButtonEvent(button);
+            if ( evt == InputState.ButtonEvent.Pressed )
+            {
+                if (drag_button == InputState.MouseButton.None)
+                {
+                    drag_button = button;
+                    drag_origin = inputs.pos;
+                    drag_widget = focused;
+                }
+                //drag_widget.DragStartCallback(inputs.pos, button);
+            }
+            else if ( evt == InputState.ButtonEvent.Released )
+            {
+                if (drag_button == button)
+                {
+                    drag_button = InputState.MouseButton.None;
+
+                    if (dragging)
+                    {
+                        dragging = false;
+                        drag_widget.DragReleaseCallback(inputs.pos);
+                    }
+                }
+                if (!dragging)
+                {
+                    focused.ClickCallback(inputs.pos, button);
+                }
+            }
+
+            if (drag_button == button)
+            {
+                if ( !dragging && drag_origin != inputs.pos )
+                {
+                    dragging = true;
+                    drag_widget.DragStartCallback(drag_origin, button);
+                }
+                if (dragging)
+                {
+                    drag_widget.DragCallback(inputs.pos);
+                }
+            }
+        }
+
+
+        public void Update()
+        {
+            inputs.Update();
             
-            bool mouse_focus_given = false;
+            camera_widget.markers = null;
+
+            Widget focused = GetFocusedWidget();
+
+
+            if (focused != null)
+            {
+                ButtonEventManager(focused, InputState.MouseButton.Left);
+                ButtonEventManager(focused, InputState.MouseButton.Right);
+            }
+
+            HackyManualKeyEvents();
 
             foreach (Widget widget in widgets)
             {
-                bool give_focus = false;
-                if ( !mouse_focus_given &&  Utility.PointInWindow(inputs.pos - widget.pos, widget.size) )
-                {
-                    give_focus = true;
-                    mouse_focus_given = true;
-                }
-                widget.Update(inputs, give_focus);
+                widget.Update(inputs);
             }
+
+            
 
             if (mode == ControlMode.Control)
             {

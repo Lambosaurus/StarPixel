@@ -22,21 +22,41 @@ namespace StarPixel
         }
 
 
-        public virtual void Update(InputState inputs, bool mouse_focus)
+        public virtual void Update(InputState inputs)
         {
-
         }
 
         
-
         // a chance to do sprite batch stuff before the draw
         public virtual void Render()
         {
-
         }
 
         // draw content onto the screen through the given sprite batch
         public virtual void Draw(SpriteBatch arg_batch)
+        {
+        }
+
+
+        public bool InWindow(Vector2 point)
+        {
+            return Utility.PointInWindow(point - pos, size);
+        }
+
+
+        public virtual void ClickCallback(Vector2 pos, InputState.MouseButton button)
+        {
+        }
+
+        public virtual void DragStartCallback(Vector2 pos, InputState.MouseButton button)
+        {
+        }
+
+        public virtual void DragCallback(Vector2 pos)
+        {
+        }
+
+        public virtual void DragReleaseCallback(Vector2 pos)
         {
         }
     }
@@ -63,15 +83,17 @@ namespace StarPixel
             camera = arg_camera;
         }
         
-        public override void Update(InputState inputs, bool mouse_focus )
+        public override void Update(InputState inputs )
         {
-            base.Update(inputs, mouse_focus);
+            base.Update(inputs);
 
+            
             if (focus_entity != null)
             {
                 camera.MoveTo(focus_entity.pos);
             }
-
+            
+            /*
             if (mouse_focus)
             {
                 if (focus_entity == null && inputs.mb.RightButton == ButtonState.Pressed)
@@ -79,19 +101,19 @@ namespace StarPixel
                     Vector2 mouse_delta = inputs.pos - inputs.old_pos;
                     camera.MoveTo(camera.pos - (mouse_delta * camera.upsample_multiplier / camera.scale));
                 }
+            }
+            */
+        }
 
-                if (inputs.mb.ScrollWheelValue > inputs.old_mb.ScrollWheelValue)
+        public override void ClickCallback(Vector2 point, InputState.MouseButton button)
+        {
+            Vector2 mapped_pos = camera.InverseMouseMap(point - pos);
+            if (ui.mode == UI.ControlMode.Observe )
+            {
+                Physical new_phys = universe.PhysAtPoint(mapped_pos);
+                if (new_phys != null)
                 {
-                    camera.scale *= 1.1f;
-                }
-                else if (inputs.mb.ScrollWheelValue < inputs.old_mb.ScrollWheelValue)
-                {
-                    camera.scale /= 1.1f;
-                }
-
-                if (universe != null)
-                {
-                    ui.MouseCallBack(universe, camera.InverseMouseMap(inputs.pos) );
+                    ui.FocusPhys(new_phys);
                 }
             }
         }

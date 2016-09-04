@@ -35,7 +35,7 @@ namespace StarPixel
         const float LOOKUP_CONSTANT = SINE_RESOLUTION / MathHelper.TwoPi; // or just (1 / rads step)
 
         static Random random;
-
+        
 
         // There is a lot of inlining done in this library.
         // its nasty and it takes ages to change stuff, but this stuff is used a lot.. so..
@@ -201,6 +201,13 @@ namespace StarPixel
         public static float Abs(float value)
         {
             if (value < 0) { return -value; }
+            return value;
+        }
+
+        public static Vector2 Abs(Vector2 value)
+        {
+            if (value.X < 0) { value.X = -value.X; }
+            if (value.Y < 0) { value.Y = -value.Y; }
             return value;
         }
 
