@@ -17,6 +17,9 @@ namespace StarPixel
     {
         public static Dictionary<string, WeaponTemplate> weapon_templates = new Dictionary<string, WeaponTemplate>();
 
+        // explosion to be multiplied by collision force
+        public static Explosion collision_explosion;
+
         public static void GenerateAssets()
         {
             ArtExplosionResource collision_cloud = new ArtExplosionResource("particle");
@@ -34,6 +37,10 @@ namespace StarPixel
             collision_cloud.bidirectional_scatter = true;
             ArtManager.explosions["phys_collision"] = collision_cloud;
 
+            collision_explosion = new Explosion(new Damage(0.5f), ArtManager.explosions["phys_collision"], 1.0f / 100);
+
+
+
             /*
             ArtParticleResource collision_particle = new ArtParticleResource("particle_large");
             collision_particle.coloring_method = ParticleColoring.Temp;
@@ -45,7 +52,7 @@ namespace StarPixel
             ArtManager.particles["phys_collision"] = collision_particle;
             */
 
-            
+
             ArtExplosionResource exp_art = new ArtExplosionResource("particle");
             
             exp_art.particle_count = 6;

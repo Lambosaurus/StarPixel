@@ -32,6 +32,7 @@ namespace StarPixel
 
         public float leftmost { get; protected set; }
         public float rightmost { get; protected set; }
+        
 
         public Physical(Universe arg_universe) : base()
         {
@@ -53,7 +54,7 @@ namespace StarPixel
 
         public override void Update()
         {
-            angular_velocity = Utility.Clamp(angular_velocity, -MathHelper.PiOver4, MathHelper.PiOver4);
+            angular_velocity = Utility.Clamp(angular_velocity, -GameConst.angular_velocity_limit, GameConst.angular_velocity_limit);
 
             angle += angular_velocity;
             angle = Utility.WrapAngle(angle);
@@ -156,8 +157,7 @@ namespace StarPixel
 
             // generate an explosion as the result of the collision.
             // the radius is ish 1/4 of the larger hulls's radius. Maybe look into whether that is smart.
-            Explosion exp = new Explosion(new Damage(120), ArtManager.explosions["phys_collision"]);
-            exp *= (force.Length() / 100f);
+            Explosion exp = AssetWeaponTemplates.collision_explosion * force.Length();
 
             // apply the damage to the phys.
             this.AdsorbExplosion(exp, sect.position);

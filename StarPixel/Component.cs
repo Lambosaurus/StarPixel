@@ -40,7 +40,7 @@ namespace StarPixel
 
     public class ComponentTemplate
     {
-        public float health = 100;
+        public float health = 50;
         public float thermal_capacity = 100;
 
         public float min_power = 0.0f;
@@ -75,11 +75,10 @@ namespace StarPixel
             ship = arg_ship;
 
             base_template = arg_base_template;
-            
+            size = arg_size;
             destroyed = false;
 
             max_health = base_template.health * size;
-            size = arg_size;
             max_power = base_template.max_power * size;
             min_power = base_template.min_power * size;
 

@@ -82,6 +82,7 @@ namespace StarPixel
 
         ShipFacade link;
         Vector2 target_pos;
+        Vector2 target_ship_last_vel;
 
         public IntellegenceHunter( Ship arg_target )
         {
@@ -120,6 +121,8 @@ namespace StarPixel
 
                 desired_angle = Utility.Angle(mov);
 
+                Vector2 target_accell = target.velocity - target_ship_last_vel;
+
 
                 for (int i = 0; i < link.weapon_count; i++)
                 {
@@ -127,7 +130,8 @@ namespace StarPixel
                     if (weapon.weapon_present)
                     {
 
-                        Vector2 intercept = target.pos + ((target.velocity - link.velocity) * (target.pos - link.pos).Length() / weapon.projectile_velocity);
+                        float time_estimate = (target.pos - link.pos).Length() / weapon.projectile_velocity;
+                        Vector2 intercept = target.pos + ((target.velocity - link.velocity) * time_estimate) + (0.5f * target_accell * time_estimate*time_estimate);
                         desired_angle = Utility.Angle(intercept - link.pos);
 
 
@@ -141,7 +145,8 @@ namespace StarPixel
                         }
                     }
                 }
-                
+
+                target_ship_last_vel = target.velocity;
 
 
                 float a_mov = angle_tracker.Update(Utility.AngleDelta(desired_angle, link.angle));

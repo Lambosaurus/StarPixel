@@ -107,11 +107,11 @@ namespace StarPixel
                 {
                     this.Reform();
                 }
-
-                art.Update(ship.pos);
-
+                
                 integrity = Utility.Clamp(integrity, 0.0f, max_integrity);
             }
+
+            art.Update(ship.pos);
         }
 
         public override void Destroy()
