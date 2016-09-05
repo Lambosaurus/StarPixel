@@ -63,6 +63,7 @@ namespace StarPixel
             float inverse = 1.0f / scalar;
             return new Damage(dmg.kinetic * inverse, dmg.thermal * inverse, dmg.electro * inverse, dmg.mining * inverse);
         }
+        
     }
     
     public class Resistance

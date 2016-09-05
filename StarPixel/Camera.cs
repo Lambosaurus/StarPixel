@@ -13,10 +13,13 @@ namespace StarPixel
 {
     public class Camera
     {
-        public Vector2 pos;
+        public Vector2 pos { get; private set; }
+
         public float scale;
 
-        public Vector2 velocity;
+        public Color background_color = Color.Black;
+
+        public Vector2 velocity { get; private set; }
 
         public RenderTarget2D surface { get; private set; }
 
@@ -56,7 +59,7 @@ namespace StarPixel
         }
 
         // maps a on camera point into the global coordinate frame
-        public Vector2 InverseMouseMap(Vector2 point)
+        public Vector2 InverseMap(Vector2 point)
         {
             return (((point * upsample_multiplier) - midpoint) / scale) + pos;
 
@@ -91,16 +94,26 @@ namespace StarPixel
             pos = new_pos;
         }
 
-
-        public void Draw(Universe universe, List<UIMarker> markers = null ) // bool draw_all_ship_stats)
+        public void Begin()
         {
+            ArtPrimitive.Setup(batch, upsample_multiplier);
             device.SetRenderTarget(surface);
-            device.Clear(Color.Black);
+            device.Clear(background_color);
+
+            batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+        }
+
+        public void End()
+        {
+            batch.End();
+        }
+        
+        public void Draw(Universe universe, List<UIMarker> markers = null )
+        {
+            Begin();
 
             if (universe != null)
             {
-                batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
                 universe.Draw(this);
                 
 
@@ -111,11 +124,10 @@ namespace StarPixel
                         mark.Draw(this);
                     }
                 }
-
-                batch.End();
             }
-        }
 
+            End();
+        }
 
         public void Blit(SpriteBatch arg_batch, Vector2 arg_pos)
         {

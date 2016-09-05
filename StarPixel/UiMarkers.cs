@@ -126,7 +126,7 @@ namespace StarPixel
 
             if (icon == null)
             {
-                ArtPrimitive.DrawCircle(camera, camera.Map(pos), line_color, radius * camera.upsample_multiplier);
+                ArtPrimitive.DrawCircle(camera.Map(pos), line_color, radius * camera.upsample_multiplier);
             }
             else
             {
@@ -160,15 +160,15 @@ namespace StarPixel
 
             if (radius_s / camera.upsample_multiplier < minimum_radius)
             {
-                ArtPrimitive.DrawCircle(camera, center, line_color, minimum_radius * camera.upsample_multiplier);
+                ArtPrimitive.DrawCircle(center, line_color, minimum_radius * camera.upsample_multiplier);
             }
             else
             {
-                ArtPrimitive.DrawCircle(camera, center, fill_color, radius_s);
+                ArtPrimitive.DrawCircle(center, fill_color, radius_s);
 
                 if (line_color != Color.Transparent)
                 {
-                    ArtPrimitive.DrawArc(camera, center, 0.0f, MathHelper.TwoPi,
+                    ArtPrimitive.DrawArc(center, 0.0f, MathHelper.TwoPi,
                         radius_s, line_color, line_thickness, dashing);
                 }
             }
@@ -213,15 +213,15 @@ namespace StarPixel
         {
             if (n == 3)
             {
-                ArtPrimitive.DrawTriangle(camera, center, new Vector2(in_rad, in_rad), color, angle);
+                ArtPrimitive.DrawTriangle(center, new Vector2(in_rad, in_rad), color, angle);
             }
             else if (n == 4)
             {
-                ArtPrimitive.DrawSquare(camera, center, new Vector2(in_rad, in_rad), color, angle + MathHelper.PiOver4);
+                ArtPrimitive.DrawSquare(center, new Vector2(in_rad, in_rad), color, angle + MathHelper.PiOver4);
             }
             else if (n == 5)
             {
-                ArtPrimitive.DrawPentagon(camera, center, new Vector2(in_rad, in_rad), color, angle + MathHelper.TwoPi/5.0f);
+                ArtPrimitive.DrawPentagon(center, new Vector2(in_rad, in_rad), color, angle + MathHelper.TwoPi/5.0f);
             }
         }
 
@@ -240,7 +240,7 @@ namespace StarPixel
             else
             {
                 DrawCenter(camera, center, fill_color, radius_s);
-                ArtPrimitive.DrawPolyLine(camera, center, radius_s, n, line_color, line_thickness, angle, dashing);
+                ArtPrimitive.DrawPolyLine(center, radius_s, n, line_color, line_thickness, angle, dashing);
             }
 
             DrawIcons(camera);
@@ -320,14 +320,14 @@ namespace StarPixel
 
                         else if (line_count == 1 || line_count == 3) // odd numbers get a center line
                         {
-                            ArtPrimitive.DrawLine(camera, camera.Map(st), camera.Map(en), line_color, line_width);
+                            ArtPrimitive.DrawLine(camera.Map(st), camera.Map(en), line_color, line_width);
                         }
                         
                         if (line_count > 1) // two and three get edge lines
                         {
                             Vector2 delta = Utility.RotatePos(line_vector) * camera.upsample_multiplier * line_width * (line_count == 2 ? 1f: 2f);
-                            ArtPrimitive.DrawLine(camera, camera.Map(st) + delta, camera.Map(en) + delta, line_color, line_width);
-                            ArtPrimitive.DrawLine(camera, camera.Map(st) - delta, camera.Map(en) - delta, line_color, line_width);
+                            ArtPrimitive.DrawLine(camera.Map(st) + delta, camera.Map(en) + delta, line_color, line_width);
+                            ArtPrimitive.DrawLine(camera.Map(st) - delta, camera.Map(en) - delta, line_color, line_width);
                         }
 
                     }
@@ -426,13 +426,13 @@ namespace StarPixel
                     if (phys.shield.active)
                     {
                         Color shcolor = Color.Lerp(Color.Black, shield_bar_color, s_integrity);
-                        ArtPrimitive.DrawCircle(camera, pos, shcolor, m_radius);
+                        ArtPrimitive.DrawCircle(pos, shcolor, m_radius);
                     }
                 }
                 else
                 {
                     Color shcolor = (phys.shield.active) ? shield_bar_color : dead_shield_bar_color;
-                    ArtPrimitive.DrawArc(camera, pos, -MathHelper.PiOver2, MathHelper.TwoPi * s_integrity, s_radius, shcolor, line_width);
+                    ArtPrimitive.DrawArc(pos, -MathHelper.PiOver2, MathHelper.TwoPi * s_integrity, s_radius, shcolor, line_width);
                 }
             }
 
@@ -447,7 +447,7 @@ namespace StarPixel
                     }
                     a_integrity /= phys.armor.segment_count;
 
-                    ArtPrimitive.DrawCircleTag(camera, pos, m_radius * 0.9f, ColorManager.HPColor(a_integrity), phys.angle);
+                    ArtPrimitive.DrawCircleTag(pos, m_radius * 0.9f, ColorManager.HPColor(a_integrity), phys.angle);
 
                 }
                 else
@@ -463,7 +463,7 @@ namespace StarPixel
 
                         if (k > 0)
                         {
-                            ArtPrimitive.DrawArc(camera, pos, a1 + armor_bar_sep, phys.armor.per_segment_angle - (2 * armor_bar_sep),
+                            ArtPrimitive.DrawArc(pos, a1 + armor_bar_sep, phys.armor.per_segment_angle - (2 * armor_bar_sep),
                                 a_radius, ColorManager.HPColor(k), line_width);
                         }
 

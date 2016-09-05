@@ -301,6 +301,22 @@ namespace StarPixel
             return (one.X * two.X) + (one.Y * two.Y);
         }
 
+        public static void RectSort( ref Vector2 lower, ref Vector2 upper)
+        {
+            if (lower.X > upper.X)
+            {
+                float tmp = lower.X;
+                lower.X = upper.X;
+                upper.X = tmp;
+            }
+            if (lower.Y > upper.Y)
+            {
+                float tmp = lower.Y;
+                lower.Y = upper.Y;
+                upper.Y = tmp;
+            }
+        }
+
         
         public static int BinarySearch<T>( List<T> items, float value, Func<T, float> property_fetcher )
         {

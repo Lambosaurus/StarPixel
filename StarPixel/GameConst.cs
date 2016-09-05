@@ -21,8 +21,10 @@ namespace StarPixel
         public const bool screensaver = false;
 
         public const float angular_velocity_limit = MathHelper.PiOver4;
-        
-        
+
+        public const int upsample = 2;
+        public const float scroll_zoom = 1.14f;
+
         public static float C(int c)
         {
             float size = 1.0f;

@@ -25,6 +25,10 @@ namespace StarPixel
 
         static Texture2D circletag;
 
+
+        static SpriteBatch batch;
+        static int upsample = 1;
+
         public static void Load(ContentManager content)
         {
             pixel = content.Load<Texture2D>("px");
@@ -34,15 +38,21 @@ namespace StarPixel
             circletag = content.Load<Texture2D>("CircleTag");
         }
 
-        public static void DrawLine(Camera camera, Vector2 p1, Vector2 p2, Color color, float width)
+        public static void Setup( SpriteBatch arg_batch, int arg_upsample)
         {
-            Vector2 center = (p1 + p2) / 2;
-            Vector2 stretch = new Vector2(Vector2.Distance(p1, p2), width * camera.upsample_multiplier);
-            float angle2 = Utility.Angle(p1 - p2);
-            camera.batch.Draw(pixel, center, null, color, angle2, new Vector2(0.5f, 0.5f), stretch, SpriteEffects.None, 0);
+            batch = arg_batch;
+            upsample = arg_upsample;
         }
 
-        public static void DrawLineDashed( Camera camera, Vector2 p1, Vector2 p2, Color color, float width, int dashes)
+        public static void DrawLine(Vector2 p1, Vector2 p2, Color color, float width)
+        {
+            Vector2 center = (p1 + p2) / 2;
+            Vector2 stretch = new Vector2(Vector2.Distance(p1, p2), width * upsample);
+            float angle2 = Utility.Angle(p1 - p2);
+            batch.Draw(pixel, center, null, color, angle2, new Vector2(0.5f, 0.5f), stretch, SpriteEffects.None, 0);
+        }
+
+        public static void DrawLineDashed(Vector2 p1, Vector2 p2, Color color, float width, int dashes)
         {
             dashes += 2;
             int slices = (dashes*2) - 1;
@@ -56,7 +66,7 @@ namespace StarPixel
             {
                 end = start + segment_length;
 
-                DrawLine(camera, start, end, color, width);
+                DrawLine(start, end, color, width);
 
                 start = end + segment_length;
             }
@@ -68,7 +78,7 @@ namespace StarPixel
         const float HALF_ARC_COUNT_RADIUS = 30f;
         const float DOUBLE_ARC_COUNT_RADIUS = 300f;
 
-        public static void DrawArc(Camera camera, Vector2 center, float angle_start, float arc_length, float radius, Color color, float width, CircleDashing dashing = CircleDashing.None)
+        public static void DrawArc(Vector2 center, float angle_start, float arc_length, float radius, Color color, float width, CircleDashing dashing = CircleDashing.None)
         {
             int dash_spacing = (int)dashing;
 
@@ -106,7 +116,7 @@ namespace StarPixel
                 if ((dash_spacing == 0) || ((i % (dash_spacing * 2)) < dash_spacing))
                 {
                     // we skip every few segments to dash the lines
-                    DrawLine(camera, p1, p2, color, width);
+                    DrawLine(p1, p2, color, width);
                 }
 
                 p1 = p2;
@@ -114,7 +124,7 @@ namespace StarPixel
             }
         }
 
-        public static void DrawPolyLine(Camera camera, Vector2 center, float inner_radius, float n, Color color, float width, float angle = 0.0f, ShapeDashing dashing = ShapeDashing.None)
+        public static void DrawPolyLine(Vector2 center, float inner_radius, float n, Color color, float width, float angle = 0.0f, ShapeDashing dashing = ShapeDashing.None)
         {
             float corner_radius = inner_radius / Utility.Cos(MathHelper.Pi/n);
             float delta_angle = MathHelper.TwoPi / n;
@@ -130,44 +140,64 @@ namespace StarPixel
 
                 if (dashing == ShapeDashing.None)
                 {
-                    DrawLine(camera, pstart, pend, color, width);
+                    DrawLine(pstart, pend, color, width);
                 }
                 else
                 {
-                    DrawLineDashed(camera, pstart, pend, color, width, dashes);
+                    DrawLineDashed(pstart, pend, color, width, dashes);
                 }
 
                 pstart = pend;
             }
         }
 
-        public static void DrawCircle(Camera camera, Vector2 center, Color color, float radius)
+        public static void DrawBoxOutline(Vector2 lower, Vector2 upper, Color color, float width)
+        {
+            Vector2 p1 = new Vector2(lower.X, lower.Y);
+            Vector2 p2 = new Vector2(lower.X, upper.Y);
+            Vector2 p3 = new Vector2(upper.X, upper.Y);
+            Vector2 p4 = new Vector2(upper.X, lower.Y);
+
+            DrawLine(p1, p2, color, width);
+            DrawLine(p2, p3, color, width);
+            DrawLine(p3, p4, color, width);
+            DrawLine(p4, p1, color, width);
+        }
+
+        public static void DrawBoxFilled(Vector2 corner0, Vector2 corner1, Color color)
+        {
+            Vector2 center = (corner1 + corner0) / 2.0f;
+            Vector2 delta = Utility.Abs(corner1 - corner0);
+            batch.Draw(pixel, center, null, color, 0.0f, new Vector2(0.5f, 0.5f), delta, SpriteEffects.None, 0);
+        }
+
+        public static void DrawCircle(Vector2 center, Color color, float radius)
         {
             radius /= 49.0f; // circle.png is a circle of about 49 pix radius
-            camera.batch.Draw(circle, center, null, color, 0.0f, new Vector2(50f, 50f), new Vector2(radius, radius), SpriteEffects.None, 0);
+            batch.Draw(circle, center, null, color, 0.0f, new Vector2(50f, 50f), new Vector2(radius, radius), SpriteEffects.None, 0);
         }
 
-        public static void DrawSquare(Camera camera, Vector2 center, Vector2 size, Color color, float angle = 0.0f )
+        public static void DrawSquare(Vector2 center, Vector2 size, Color color, float angle = 0.0f )
         {
-            camera.batch.Draw(pixel, center, null, color, angle, new Vector2(0.5f, 0.5f), size*2, SpriteEffects.None, 0);
+            batch.Draw(pixel, center, null, color, angle, new Vector2(0.5f, 0.5f), size*2, SpriteEffects.None, 0);
         }
 
-        public static void DrawTriangle(Camera camera, Vector2 center, Vector2 size, Color color, float angle = 0.0f)
-        {
-            size /= 30.0f;
-            camera.batch.Draw(triangle, center, null, color, angle, new Vector2(31, 53), size, SpriteEffects.None, 0);
-        }
-
-        public static void DrawPentagon(Camera camera, Vector2 center, Vector2 size, Color color, float angle = 0.0f)
+        public static void DrawTriangle(Vector2 center, Vector2 size, Color color, float angle = 0.0f)
         {
             size /= 30.0f;
-            camera.batch.Draw(pentagon, center, null, color, angle, new Vector2(31, 36), size, SpriteEffects.None, 0);
+            batch.Draw(triangle, center, null, color, angle, new Vector2(31, 53), size, SpriteEffects.None, 0);
         }
 
-        public static void DrawCircleTag(Camera camera, Vector2 center, float size, Color color, float angle)
+        public static void DrawPentagon(Vector2 center, Vector2 size, Color color, float angle = 0.0f)
+        {
+            size /= 30.0f;
+            batch.Draw(pentagon, center, null, color, angle, new Vector2(31, 36), size, SpriteEffects.None, 0);
+        }
+
+        public static void DrawCircleTag(Vector2 center, float size, Color color, float angle)
         {
             size /= 20;
-            camera.batch.Draw(circletag, center, null, color, angle + MathHelper.PiOver4, new Vector2(15, 15), size, SpriteEffects.None, 0);
+            batch.Draw(circletag, center, null, color, angle + MathHelper.PiOver4, new Vector2(15, 15), size, SpriteEffects.None, 0);
         }
 
     }

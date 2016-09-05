@@ -76,6 +76,8 @@ namespace StarPixel
     {
         public enum ControlMode { Control, Observe }
 
+        public enum Cursors { None, Pointer, Select }
+
         List<Widget> widgets; // ordered by depth: First object is deepest
 
         GraphicsDevice device;
@@ -92,14 +94,14 @@ namespace StarPixel
 
         public ControlMode mode = ControlMode.Observe;
 
-        Color cursor_color_control = Color.Red;
-        Color cursor_color_observer = Color.Yellow;
 
-
+        public Color cursor_color = Color.Red;
+        
         Widget drag_widget = null;
         InputState.MouseButton drag_button = InputState.MouseButton.None;
         Vector2 drag_origin;
         bool dragging = false;
+       
 
         public UI( GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height )
         {
@@ -108,7 +110,7 @@ namespace StarPixel
             batch = arg_batch;
             device = arg_device;
 
-            camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, 2) ); // UPSAMPLE_MULTILIER
+            camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, GameConst.upsample) ); // UPSAMPLE_MULTILIER
             status_widget = new WidgetShipStatus(arg_device, arg_batch, 100, 100);
             status_widget.pos.Y = height - status_widget.size.Y;
             
@@ -129,10 +131,11 @@ namespace StarPixel
             camera_widget.universe = arg_universe;
         }
 
-        public void FocusPhys(Physical arg_ship)
+        public void FocusPhys(Physical phys)
         {
-            focus_phys = arg_ship;
-            camera_widget.focus_entity = arg_ship;
+            focus_phys = phys;
+            camera_widget.focus_entity = phys;
+            status_widget.Focus(phys);
         }
 
         public void GiveHumanAIHandle(IntellegenceHuman arg_ai)
@@ -218,15 +221,6 @@ namespace StarPixel
             {
                 mode = (mode == ControlMode.Control) ? ControlMode.Observe : ControlMode.Control;
             }
-
-            if (inputs.mb.ScrollWheelValue > inputs.old_mb.ScrollWheelValue)
-            {
-                camera_widget.camera.scale *= 1.1f;
-            }
-            else if (inputs.mb.ScrollWheelValue < inputs.old_mb.ScrollWheelValue)
-            {
-                camera_widget.camera.scale /= 1.1f;
-            }
         }
 
 
@@ -289,6 +283,15 @@ namespace StarPixel
             {
                 ButtonEventManager(focused, InputState.MouseButton.Left);
                 ButtonEventManager(focused, InputState.MouseButton.Right);
+
+                if (inputs.mb.ScrollWheelValue > inputs.old_mb.ScrollWheelValue)
+                {
+                    focused.ScrollCallback(true);
+                }
+                else if (inputs.mb.ScrollWheelValue < inputs.old_mb.ScrollWheelValue)
+                {
+                    focused.ScrollCallback(false);
+                }
             }
 
             HackyManualKeyEvents();
@@ -325,25 +328,27 @@ namespace StarPixel
 
             if (!GameConst.screensaver)
             {
-                batch.Draw(cursor_target, inputs.pos - cursor_center, (mode == ControlMode.Control) ? cursor_color_control : cursor_color_observer);
+                batch.Draw(cursor_point, inputs.pos, cursor_color);
             }
 
             batch.End();
 
         }
+        
 
 
-
-
-        // this is static because the loading is done before initilisation.
+        // Resources
         static Texture2D cursor_target;
         static Texture2D cursor_select;
+        static Texture2D cursor_point;
+
         static Vector2 cursor_center = new Vector2(7, 7);
 
         public static void Load(ContentManager content)
         {
             cursor_target = content.Load<Texture2D>("cursor_target");
             cursor_select = content.Load<Texture2D>("cursor_select");
+            cursor_point = content.Load<Texture2D>("cursor_point");
         }
     }
 }

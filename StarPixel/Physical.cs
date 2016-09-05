@@ -15,6 +15,8 @@ namespace StarPixel
     {
         //public static Damage collision_dmg_per_force = new Damage(1.0f);
 
+        public ArtSprite sprite { get; protected set; }
+
         public float mass { get; protected set; }
         public float inertia { get; protected set; }
         public float angular_velocity { get; protected set; }
@@ -97,7 +99,11 @@ namespace StarPixel
             float torque = Utility.Cross(eccentricity, force); // GameConst.forcerad_to_torque;
             this.Push(force, torque);
         }
-        
+
+        public override void Draw(Camera camera)
+        {
+            sprite.Draw(camera);
+        }
 
         public bool HitCheck(Physical phys)
         {

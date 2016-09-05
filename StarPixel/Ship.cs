@@ -130,8 +130,8 @@ namespace StarPixel
     public class Ship : Physical
     {
         public ShipTemplate template;
+        
 
-        public ArtSprite hull_sprite;
         public ArtSprite paint_sprite = null;
         
         public ComponentThruster thrusters = null;
@@ -158,7 +158,7 @@ namespace StarPixel
             radius = template.shield_radius;
             radius_sq = radius * radius;
 
-            hull_sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
+            sprite = ArtManager.GetSpriteResource( template.hull_art_resource ).New();
            
             weapons = new ComponentWeapon[template.weapon_ports.Count];
 
@@ -273,7 +273,7 @@ namespace StarPixel
                 if (weapon != null) { weapon.Update(); }
             }
 
-            hull_sprite.Update(pos, angle);
+            sprite.Update(pos, angle);
             if ( paint_sprite != null ) { paint_sprite.Update(pos, angle); }
 
             if (ai != null)
@@ -287,8 +287,8 @@ namespace StarPixel
         public override void Draw(Camera camera)
         {
             if (thrusters != null) { thrusters.Draw(camera); }
-            
-            hull_sprite.Draw(camera);
+
+            base.Draw(camera);
             if ( paint_sprite != null) { paint_sprite.Draw(camera); }
 
             if (shield != null) { shield.Draw(camera); }

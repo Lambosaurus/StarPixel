@@ -44,19 +44,30 @@ namespace StarPixel
         }
 
 
-        public virtual void ClickCallback(Vector2 pos, InputState.MouseButton button)
+        public virtual void ClickCallback(Vector2 point, InputState.MouseButton button)
         {
         }
 
-        public virtual void DragStartCallback(Vector2 pos, InputState.MouseButton button)
+        public virtual void DragStartCallback(Vector2 point, InputState.MouseButton button)
         {
         }
 
-        public virtual void DragCallback(Vector2 pos)
+        // this is distinct from the HoverCallback, because as long as the drag is held, it will
+        // persist on the widget, even if the cursor leaves the widget boundary
+        public virtual void DragCallback(Vector2 point)
         {
         }
 
-        public virtual void DragReleaseCallback(Vector2 pos)
+        public virtual void DragReleaseCallback(Vector2 point)
+        {
+        }
+
+        // returns the cursor sprite
+        public virtual void HoverCallback(Vector2 point)
+        {
+        }
+
+        public virtual void ScrollCallback( bool forwards )
         {
         }
     }
@@ -75,6 +86,11 @@ namespace StarPixel
 
         public List<UIMarker> markers = null;
 
+        public Vector2 drag_origin;
+        public Vector2 drag_last;
+        public bool drag_selection = false;
+        
+        public bool following = false;
 
         
         public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample_multiplier)
@@ -92,89 +108,128 @@ namespace StarPixel
             {
                 camera.MoveTo(focus_entity.pos);
             }
-            
-            /*
-            if (mouse_focus)
-            {
-                if (focus_entity == null && inputs.mb.RightButton == ButtonState.Pressed)
-                {
-                    Vector2 mouse_delta = inputs.pos - inputs.old_pos;
-                    camera.MoveTo(camera.pos - (mouse_delta * camera.upsample_multiplier / camera.scale));
-                }
-            }
-            */
         }
 
         public override void ClickCallback(Vector2 point, InputState.MouseButton button)
         {
-            Vector2 mapped_pos = camera.InverseMouseMap(point - pos);
-            if (ui.mode == UI.ControlMode.Observe )
+            if (button == InputState.MouseButton.Left)
             {
-                Physical new_phys = universe.PhysAtPoint(mapped_pos);
-                if (new_phys != null)
+                Vector2 mapped_pos = camera.InverseMap(point - pos);
+                if (ui.mode == UI.ControlMode.Observe)
                 {
-                    ui.FocusPhys(new_phys);
+                    Physical new_phys = universe.PhysAtPoint(mapped_pos);
+                    if (new_phys != null)
+                    {
+                        ui.FocusPhys(new_phys);
+                    }
                 }
             }
+        }
+
+        public override void DragStartCallback(Vector2 point, InputState.MouseButton button)
+        {
+            if (button == InputState.MouseButton.Left)
+            {
+                drag_selection = true;
+
+                drag_origin = point;
+                drag_last = point;
+            }
+        }
+
+        public override void DragCallback(Vector2 point)
+        {
+            drag_last = point;
+            /*
+            Vector2 delta = drag_last - point;
+            drag_last = point;
+
+            camera.MoveTo(camera.pos + (delta * camera.scale));
+            */
+        }
+
+        public override void DragReleaseCallback(Vector2 point)
+        {
+            drag_selection = false;
+
+            drag_last = point;
+
+            Utility.RectSort(ref drag_origin, ref drag_last);
+
+            List<Physical> selected = universe.PhysInBox(camera.InverseMap(drag_origin - pos), camera.InverseMap(drag_last - pos) );
+
+            if (selected.Count != 0)
+            {
+                ui.FocusPhys(selected[0]);
+            }
+
         }
 
         public override void Render(  )
         {
             camera.Draw(universe, markers);
-            
         }
         
         public override void Draw(SpriteBatch arg_batch)
         {
             camera.Blit(arg_batch, pos);
+
+            if (drag_selection)
+            {
+                ArtPrimitive.Setup(arg_batch, 1);
+                ArtPrimitive.DrawBoxOutline(drag_origin, drag_last, ui.cursor_color, 1.0f);
+                ArtPrimitive.DrawBoxFilled(drag_origin, drag_last, ui.cursor_color * 0.2f);
+            }
+        }
+
+        public override void ScrollCallback(bool forwards)
+        {
+            if (forwards)
+            {
+                camera.scale *= GameConst.scroll_zoom;
+            }
+            else
+            {
+                camera.scale /= GameConst.scroll_zoom;
+            }
+
         }
     }
 
 
     public class WidgetShipStatus : Widget
     {
-        RenderTarget2D surface;
-        SpriteBatch batch;
-        GraphicsDevice device;
+        Camera camera;
 
-        Color background_color;
-
-        Ship focus_ship;
-        bool ship_change;
+        Physical target;
 
         public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height) : base(new Vector2(width, height))
         {
-            surface = new RenderTarget2D(arg_device, width, height);
-            batch = arg_batch;
-            device = arg_device;
-
-            background_color = new Color(32,32,32);
+            camera = new Camera(arg_device, arg_batch, width, height, GameConst.upsample);
+            camera.background_color = new Color(32, 32, 32); ;
         }
 
-        public void FocusShip(Ship ship)
+        public void Focus(Physical new_target)
         {
-            focus_ship = ship;   
+            target = new_target;
+            camera.scale =  camera.res.X / ( 2 * target.radius );
         }
 
         public override void Render()
         {
-            device.SetRenderTarget(surface);
-            device.Clear(background_color);
+            camera.Begin();
 
-            batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
-            if (focus_ship != null)
+            if (target != null)
             {
+                target.sprite.Draw(camera, Vector2.Zero, 0.0f);
             }
 
-            batch.End();
+            camera.End();
         }
 
-        public override void Draw(SpriteBatch arg_batch)
+        public override void Draw(SpriteBatch batch)
         {
-            arg_batch.Draw(surface, pos, Color.White);
+            camera.Blit(batch, pos);
         }
-
     }
-
 }
