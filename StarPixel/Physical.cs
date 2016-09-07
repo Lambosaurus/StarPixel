@@ -29,7 +29,7 @@ namespace StarPixel
         public Hitbox hitbox { get; protected set; }
 
         public ComponentShield shield = null;
-        public ComponentArmor armor = null;
+        public HullArmor armor = null;
         
 
         public float leftmost { get; protected set; }
@@ -103,6 +103,11 @@ namespace StarPixel
         public override void Draw(Camera camera)
         {
             sprite.Draw(camera);
+        }
+
+        public virtual void DrawHitbox(Camera camera)
+        {
+            hitbox.Draw(camera, Color.Red, 4.0f);
         }
 
         public bool HitCheck(Physical phys)

@@ -168,9 +168,10 @@ namespace StarPixel
             total_alpha = 1.0f;
 
             Vector2 rel = arg_pos - pos;
+
             for (int i = 0; i < count; i++)
             {
-                float dst = dmg / ( 1.5f * size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
+                float dst = dmg / ( size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
                 alpha[i] += dst;
                 alpha[i] = Utility.Clamp(alpha[i], 0, 1);
             }

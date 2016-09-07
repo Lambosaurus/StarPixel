@@ -93,7 +93,7 @@ namespace StarPixel
         public bool following = false;
 
         
-        public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample_multiplier)
+        public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample)
         {
             ui = arg_ui;
             camera = arg_camera;
@@ -186,11 +186,11 @@ namespace StarPixel
         {
             if (forwards)
             {
-                camera.scale *= GameConst.scroll_zoom;
+                camera.SetScale( camera.scale * GameConst.scroll_zoom );
             }
             else
             {
-                camera.scale /= GameConst.scroll_zoom;
+                camera.SetScale(camera.scale / GameConst.scroll_zoom);
             }
 
         }
@@ -203,6 +203,8 @@ namespace StarPixel
 
         Physical target;
 
+        Vector2 padding = new Vector2(8,8);
+
         public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height) : base(new Vector2(width, height))
         {
             camera = new Camera(arg_device, arg_batch, width, height, GameConst.upsample);
@@ -212,7 +214,8 @@ namespace StarPixel
         public void Focus(Physical new_target)
         {
             target = new_target;
-            camera.scale =  camera.res.X / ( 2 * target.radius );
+            Vector2 scale = (camera.res - (padding*2)) / (target.sprite.resource.size * target.sprite.resource.scale);
+            camera.SetScale( Utility.Min(scale.X, scale.Y) );
         }
 
         public override void Render()
@@ -222,6 +225,15 @@ namespace StarPixel
             if (target != null)
             {
                 target.sprite.Draw(camera, Vector2.Zero, 0.0f);
+                if (target is Ship)
+                {
+                    ((Ship)target).paint_sprite.Draw(camera, Vector2.Zero, 0.0f);
+                }
+                
+                if (target.armor != null)
+                {
+                    target.hitbox.Draw(camera, target.armor, 4.0f, Vector2.Zero, 0.0f);
+                }
             }
 
             camera.End();

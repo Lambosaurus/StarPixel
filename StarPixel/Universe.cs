@@ -140,7 +140,7 @@ namespace StarPixel
             broship.MountWeapon("shooter", 1);
 
             
-            for (int i = 0; i < 120; i++)
+            for (int i = 0; i < 80; i++)
             {
                 Ship ship1 = CreateNewShip("F2");
                 ship1.ai = new IntellegenceRoamer();
@@ -167,7 +167,7 @@ namespace StarPixel
             }
             
 
-            for (int i = 0; i < 0; i++)
+            for (int i = 0; i < 20; i++)
             {
                 Ship ship2 = CreateNewShip("CG1");
                 ship2.ai = new IntellegenceRoamer(0.2f);
@@ -373,7 +373,7 @@ namespace StarPixel
             {
                 foreach (Physical phys in physicals)
                 {
-                    phys.hitbox.Draw(camera);
+                    phys.DrawHitbox(camera);
                 }
             }
         }

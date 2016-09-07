@@ -17,12 +17,10 @@ namespace StarPixel
         
         public const float collision_friction = 0.2f;
         public const float collision_elasticity = 0.9f;
-
-        public const bool screensaver = false;
-
+        
         public const float angular_velocity_limit = MathHelper.PiOver4;
 
-        public const int upsample = 2;
+        public const int upsample = 1;
         public const float scroll_zoom = 1.14f;
 
         public static float C(int c)

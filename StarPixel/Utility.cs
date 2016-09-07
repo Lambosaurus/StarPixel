@@ -169,7 +169,7 @@ namespace StarPixel
         }
 
         // returns a random value
-        public static float Rand(float max)
+        public static float Rand(float max = 1.0f)
         {
             return (max * random.Next(10000) / 10000f);
         }

@@ -30,6 +30,8 @@ namespace StarPixel
         public float radius;
         public float radius_sq;
 
+        public Vector2 size;
+
         public Hitbox()
         {
         }
@@ -73,9 +75,12 @@ namespace StarPixel
         }
 
 
-        public virtual void Draw(Camera camera)
+        public virtual void Draw(Camera camera, Color color, float width)
         {
+        }
 
+        public virtual void Draw(Camera camera, HullArmor armor, float width, Vector2 pos_override, float angle_override)
+        {
         }
     }
 
@@ -86,6 +91,7 @@ namespace StarPixel
         {
             radius = arg_radius;
             radius_sq = radius * radius;
+            size = new Vector2(radius, radius);
         }
 
         public override Intersection Intersect(Vector2 point)
@@ -133,6 +139,14 @@ namespace StarPixel
 
             return null;
         }
+
+        public override void Draw(Camera camera, Color color, float width = 2.0f)
+        {
+            if (!camera.ContainsCircle(pos, radius)) { return; }
+
+            Vector2 center = camera.Map(pos);
+            ArtPrimitive.DrawArc(center, 0.0f, MathHelper.TwoPi, radius * camera.scale, color, width);
+        }
     }
 
 
@@ -154,6 +168,9 @@ namespace StarPixel
             segment_normals = new float[count];
             corner_normals = new float[count];
 
+            Vector2 lower = Vector2.Zero;
+            Vector2 upper = Vector2.Zero;
+
             for (int i = 0; i < count; i++)
             {
                 Vector2 segment_p1 = corners[i];
@@ -166,8 +183,14 @@ namespace StarPixel
                 {
                     radius_sq = dist_sq;
                 }
+
+                if (segment_p1.X < lower.X) { lower.X = segment_p1.X; }
+                if (segment_p1.Y < lower.Y) { lower.Y = segment_p1.Y; }
+                if (segment_p1.X > upper.X) { upper.X = segment_p1.X; }
+                if (segment_p1.Y > upper.Y) { upper.Y = segment_p1.Y; }
             }
             radius = Utility.Sqrt(radius_sq);
+            size = upper - lower;
 
             // this must be after the previous loop, as the first corner needs the last segment normal
             for (int i = 0; i < count; i++)
@@ -178,9 +201,20 @@ namespace StarPixel
             }
         }
 
+        public HitboxPolygon( HitboxPolygon clone )
+        {
+            corners = clone.corners;
+            count = clone.count;
+            segment_normals = clone.segment_normals;
+            corner_normals = clone.corner_normals;
+            radius = clone.radius;
+            radius_sq = clone.radius_sq;
+            size = clone.size;
+        }
+
         public override Hitbox Copy()
         {
-            return new HitboxPolygon(corners);
+            return new HitboxPolygon(this);
         }
 
         public override Intersection Intersect(Vector2 arg_point)
@@ -355,8 +389,10 @@ namespace StarPixel
 
 
         // draws the red outlines of the hitbox onto screen. Kinda usefull.
-        public override void Draw(Camera camera)
+        public override void Draw(Camera camera, Color color, float width)
         {
+            if (!camera.ContainsCircle(pos, radius)) { return; }
+
             Vector2 p1 = Utility.Rotate( corners[0], angle) + pos;
             p1 = camera.Map(p1);
             Vector2 p2;
@@ -369,9 +405,48 @@ namespace StarPixel
                 p2 = Utility.Rotate(corners[i], angle) + pos;
                 p2 = camera.Map(p2);
 
-                ArtPrimitive.DrawLine(p1, p2, Color.Red, 4);
+                ArtPrimitive.DrawLine(p1, p2, color, width);
 
                 p1 = p2;
+            }
+        }
+
+        public override void Draw(Camera camera, HullArmor armor, float width, Vector2 pos_override, float angle_override)
+        {
+            Vector2 p1_u = corners[0];
+            Vector2 p1 = camera.Map( Utility.Rotate(p1_u, angle_override) + pos_override);
+            Vector2 p2;
+            Vector2 p2_u;
+
+            float slice_length = 100 / (armor.segment_count * camera.scale);
+
+            for (int j = 0; j < count; j++)
+            {
+                int i = j + 1;
+                if (i == count) { i = 0; }
+
+                p2_u = corners[i];
+                p2 = camera.Map(Utility.Rotate(p2_u, angle_override) + pos_override);
+
+                int slices = (int)((p2_u - p1_u).Length() / slice_length) + 1;
+
+                Vector2 s1 = p1;
+                Vector2 slice = (p2 - p1) / slices;
+
+                Color color = Color.Black;
+
+                for (int k = 0; k < slices; k++)
+                {
+                    Vector2 s2 = s1 + slice;
+                    color = ColorManager.HPColor( armor.integrity[ armor.GetSegment(Utility.Angle(s1))] / armor.max_integrity);
+                    ArtPrimitive.DrawLine(s1, s2, color, width);
+                    s1 = s2;
+                }
+
+                ArtPrimitive.DrawCircle(s1, color, width );
+
+                p1 = p2;
+                p1_u = p2_u;
             }
         }
     }

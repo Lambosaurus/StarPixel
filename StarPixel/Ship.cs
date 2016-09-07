@@ -265,9 +265,7 @@ namespace StarPixel
             if (thrusters != null) { thrusters.Update(); }
 
             if (shield != null) { shield.Update(); }
-
-            if (armor != null) { armor.Update(); }
-
+            
             foreach (ComponentWeapon weapon in weapons)
             {
                 if (weapon != null) { weapon.Update(); }
@@ -292,6 +290,15 @@ namespace StarPixel
             if ( paint_sprite != null) { paint_sprite.Draw(camera); }
 
             if (shield != null) { shield.Draw(camera); }
+        }
+
+        public override void DrawHitbox(Camera camera)
+        {
+            if (shield != null && shield.active)
+            {
+                shield.hitbox.Draw(camera, Color.Blue, 4.0f);
+            }
+            base.DrawHitbox(camera);
         }
 
     }

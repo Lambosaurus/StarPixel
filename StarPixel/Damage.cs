@@ -87,6 +87,7 @@ namespace StarPixel
 
         public static Resistance operator * ( Resistance one, Resistance two )
         {
+            // yea, this code took me a while to stare at, but its actually correct.
             return new Resistance(
                 1.0f - (one.kinetic * two.kinetic),
                 1.0f - (one.thermal * two.thermal),

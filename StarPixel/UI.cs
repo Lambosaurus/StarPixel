@@ -111,7 +111,7 @@ namespace StarPixel
             device = arg_device;
 
             camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, GameConst.upsample) ); // UPSAMPLE_MULTILIER
-            status_widget = new WidgetShipStatus(arg_device, arg_batch, 100, 100);
+            status_widget = new WidgetShipStatus(arg_device, arg_batch, 160, 160);
             status_widget.pos.Y = height - status_widget.size.Y;
             
             widgets.Add(camera_widget);
@@ -217,6 +217,11 @@ namespace StarPixel
                 }
             }
 
+            if (inputs.KeyDownEvent(Keys.F3))
+            {
+                camera_widget.camera.DRAW_HITBOXES = !camera_widget.camera.DRAW_HITBOXES;
+            }
+
             if (inputs.KeyDownEvent(Keys.OemTilde))
             {
                 mode = (mode == ControlMode.Control) ? ControlMode.Observe : ControlMode.Control;
@@ -320,17 +325,14 @@ namespace StarPixel
 
             device.SetRenderTarget(null);
             batch.Begin();
-
+            
             foreach (Widget widget in widgets)
             {
                 widget.Draw(batch);
             }
-
-            if (!GameConst.screensaver)
-            {
-                batch.Draw(cursor_point, inputs.pos, cursor_color);
-            }
-
+            
+            batch.Draw(cursor_point, inputs.pos, cursor_color);
+        
             batch.End();
 
         }

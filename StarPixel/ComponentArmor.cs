@@ -11,42 +11,53 @@ using Microsoft.Xna.Framework.Media;
 
 namespace StarPixel
 {
-    public class ArmorTemplate : ComponentTemplate
+    public class ArmorTemplate
     {
         public float electro_block = 0.2f;
 
 
         public float segment_integrity = 60f;
 
+        public Resistance armor_resistance = Resistance.Zero;
         
-        public ComponentArmor New( Ship ship )
+        public HullArmor New( Ship ship )
         {
-            ComponentArmor armor = new ComponentArmor(ship, ship.template.component_armor_size, this);
+            HullArmor armor = new HullArmor(ship, ship.template.component_armor_size, this);
             
 
             return armor;
         }
     }
 
-    public class ComponentArmor : Component
+    public class HullArmor
     {
         public static Resistance ARMOR_BASE_RESISTANCE = new Resistance(0.15f, 0, 0, 0.7f);
 
         ArmorTemplate template;
 
-        public int segment_count;
+        public int segment_count { get; protected set; }
 
-        public float[] integrity;
-        public float max_integrity;
+        public float[] integrity { get; protected set; }
+        public float max_integrity { get; protected set; }
 
-        public float start_angle;
-        public float per_segment_angle;
+        public float start_angle { get; protected set; }
+        public float per_segment_angle { get; protected set; }
 
-        public Resistance armor_resistance;
+        public Resistance armor_resistance { get; protected set; }
 
-        public ComponentArmor( Ship arg_ship, float arg_size, ArmorTemplate arg_template): base(arg_ship, arg_size, arg_template)
+        public Ship ship { get; protected set; }
+        public float size { get; protected set; }
+
+        float elipticity;
+
+        public HullArmor( Ship arg_ship, float arg_size, ArmorTemplate arg_template)
         {
+            ship = arg_ship;
+
+            elipticity = ship.hitbox.size.X / ship.hitbox.size.Y;
+
             template = arg_template;
+            size = arg_size;
 
             segment_count = ship.template.armor_segment_count;
 
@@ -61,7 +72,7 @@ namespace StarPixel
             per_segment_angle = MathHelper.TwoPi / segment_count;
             start_angle = (ship.template.armor_seam_on_rear == (segment_count%2 == 0)) ? 0.0f : -per_segment_angle / 2;
 
-            armor_resistance = template.resistance * ARMOR_BASE_RESISTANCE;
+            armor_resistance = template.armor_resistance * ARMOR_BASE_RESISTANCE;
             
         }
         
@@ -97,11 +108,7 @@ namespace StarPixel
             return dmg;
 
         }
-
-        public override void Update()
-        {
-
-        }
+        
     }
 }
 

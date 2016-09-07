@@ -21,9 +21,9 @@ namespace StarPixel
 
         // meh. Its a semi comfortable res for developing in.
         
-        int window_res_x = (GameConst.screensaver) ? 1920 : 1200;
-        int window_res_y = (GameConst.screensaver) ? 1080 : 800;
-        bool fullscreen = GameConst.screensaver;
+        int window_res_x = 1200;
+        int window_res_y = 800;
+        bool fullscreen = false;
         
         
         UI ui;
@@ -115,15 +115,7 @@ namespace StarPixel
             {
                 this.Exit();
             }
-
-            if (GameConst.screensaver)
-            {
-                if (ui.inputs.pos != ui.inputs.old_pos)
-                {
-                    this.Exit();
-                }
-            }
-
+            
 
             /*
             KeyboardState new_keys = Keyboard.GetState();
