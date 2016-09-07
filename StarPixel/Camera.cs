@@ -15,7 +15,7 @@ namespace StarPixel
     {
         public Vector2 pos { get; private set; }
 
-        public float scale;
+        public float scale { get; private set; }
 
         public Color background_color = Color.Black;
 
@@ -32,26 +32,28 @@ namespace StarPixel
 
         public bool DRAW_HITBOXES = false;
 
-        public int upsample_multiplier { get; private set; } = 1;
+        public int upsample { get; private set; } = 1;
+        
+        public float pixel_constant { get; private set; }
     
         public Camera(GraphicsDevice arg_device, SpriteBatch arg_batch, int x, int y, int arg_upsample_multiplier = 1)
         {
             
-            upsample_multiplier = arg_upsample_multiplier;
+            upsample = arg_upsample_multiplier;
 
             pos = new Vector2(0, 0);
-            scale = 1.0f * upsample_multiplier;
+            scale = 1.0f * upsample;
 
 
             batch = arg_batch;
             device = arg_device;
-            surface = new RenderTarget2D(device, x * upsample_multiplier, y * upsample_multiplier);
+            surface = new RenderTarget2D(device, x * upsample, y * upsample);
 
             onscreen_res = new Vector2(x, y);
-            res = onscreen_res * upsample_multiplier;
+            res = onscreen_res * upsample;
             midpoint = res / 2;
         }
-
+        
         // maps a global coordinate point into the onscreen coordinate
         public Vector2 Map(Vector2 point)
         {
@@ -61,10 +63,10 @@ namespace StarPixel
         // maps a on camera point into the global coordinate frame
         public Vector2 InverseMap(Vector2 point)
         {
-            return (((point * upsample_multiplier) - midpoint) / scale) + pos;
+            return (((point * upsample) - midpoint) / scale) + pos;
 
         }
-
+        
         public bool Contains(Vector2 point)
         {
             Vector2 onscreen = this.Map(point);
@@ -94,9 +96,15 @@ namespace StarPixel
             pos = new_pos;
         }
 
+        public void SetScale(float arg_scale)
+        {
+            scale = arg_scale;
+            pixel_constant = ((float)upsample) / scale;
+        }
+
         public void Begin()
         {
-            ArtPrimitive.Setup(batch, upsample_multiplier);
+            ArtPrimitive.Setup(batch, upsample);
             device.SetRenderTarget(surface);
             device.Clear(background_color);
 
@@ -131,9 +139,9 @@ namespace StarPixel
 
         public void Blit(SpriteBatch arg_batch, Vector2 arg_pos)
         {
-            if (upsample_multiplier != 1)
+            if (upsample != 1)
             {
-                arg_batch.Draw(surface, arg_pos, null, Color.White, 0.0f, new Vector2(0, 0), 1.0f / upsample_multiplier, SpriteEffects.None, 0);
+                arg_batch.Draw(surface, arg_pos, null, Color.White, 0.0f, new Vector2(0, 0), 1.0f / upsample, SpriteEffects.None, 0);
             }
             else
             {

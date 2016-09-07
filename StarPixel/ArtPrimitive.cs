@@ -81,8 +81,7 @@ namespace StarPixel
         public static void DrawArc(Vector2 center, float angle_start, float arc_length, float radius, Color color, float width, CircleDashing dashing = CircleDashing.None)
         {
             int dash_spacing = (int)dashing;
-
-
+            
             // calculate the number of segments we would use on a full circle
             int arc_count = STD_ARC_COUNT;
             if (radius > DOUBLE_ARC_COUNT_RADIUS)
@@ -97,6 +96,9 @@ namespace StarPixel
                 arc_count /= 2;
                 dash_spacing /= 2;
             }
+
+            radius *= upsample;
+
 
             angle_start = Utility.WrapAngle(angle_start);
 
@@ -126,6 +128,8 @@ namespace StarPixel
 
         public static void DrawPolyLine(Vector2 center, float inner_radius, float n, Color color, float width, float angle = 0.0f, ShapeDashing dashing = ShapeDashing.None)
         {
+            inner_radius *= upsample;
+
             float corner_radius = inner_radius / Utility.Cos(MathHelper.Pi/n);
             float delta_angle = MathHelper.TwoPi / n;
             
@@ -173,30 +177,31 @@ namespace StarPixel
 
         public static void DrawCircle(Vector2 center, Color color, float radius)
         {
-            radius /= 49.0f; // circle.png is a circle of about 49 pix radius
+            radius *= upsample / 49.0f; // circle.png is a circle of about 49 pix radius
             batch.Draw(circle, center, null, color, 0.0f, new Vector2(50f, 50f), new Vector2(radius, radius), SpriteEffects.None, 0);
         }
 
         public static void DrawSquare(Vector2 center, Vector2 size, Color color, float angle = 0.0f )
         {
+            size *= upsample;
             batch.Draw(pixel, center, null, color, angle, new Vector2(0.5f, 0.5f), size*2, SpriteEffects.None, 0);
         }
 
         public static void DrawTriangle(Vector2 center, Vector2 size, Color color, float angle = 0.0f)
         {
-            size /= 30.0f;
+            size *= upsample / 30.0f;
             batch.Draw(triangle, center, null, color, angle, new Vector2(31, 53), size, SpriteEffects.None, 0);
         }
 
         public static void DrawPentagon(Vector2 center, Vector2 size, Color color, float angle = 0.0f)
         {
-            size /= 30.0f;
+            size *= upsample / 30.0f;
             batch.Draw(pentagon, center, null, color, angle, new Vector2(31, 36), size, SpriteEffects.None, 0);
         }
 
         public static void DrawCircleTag(Vector2 center, float size, Color color, float angle)
         {
-            size /= 20;
+            size *= upsample / 20f;
             batch.Draw(circletag, center, null, color, angle + MathHelper.PiOver4, new Vector2(15, 15), size, SpriteEffects.None, 0);
         }
 

@@ -112,7 +112,7 @@ namespace StarPixel
 
         public override bool InView(Camera camera)
         {
-            return camera.ContainsCircle(pos, radius * camera.upsample_multiplier / camera.scale);
+            return camera.ContainsCircle(pos, radius * camera.pixel_constant);
         }
 
         public override float LineRadius(float scale, float angle)
@@ -126,7 +126,7 @@ namespace StarPixel
 
             if (icon == null)
             {
-                ArtPrimitive.DrawCircle(camera.Map(pos), line_color, radius * camera.upsample_multiplier);
+                ArtPrimitive.DrawCircle(camera.Map(pos), line_color, radius);
             }
             else
             {
@@ -156,11 +156,11 @@ namespace StarPixel
             if (!InView(camera)) { return; }
 
             Vector2 center = camera.Map(pos);
-            float radius_s = radius * camera.scale;
+            float radius_s = radius / camera.pixel_constant;
 
-            if (radius_s / camera.upsample_multiplier < minimum_radius)
+            if (radius_s / camera.pixel_constant < minimum_radius)
             {
-                ArtPrimitive.DrawCircle(center, line_color, minimum_radius * camera.upsample_multiplier);
+                ArtPrimitive.DrawCircle(center, line_color, minimum_radius);
             }
             else
             {
@@ -230,11 +230,11 @@ namespace StarPixel
             if (!InView(camera)) { return; }
 
             Vector2 center = camera.Map(pos);
-            float radius_s = inner_radius * camera.scale;
+            float radius_s = inner_radius / camera.pixel_constant;
 
-            if (radius_s * camera.scale / camera.upsample_multiplier < minimum_radius)
+            if (radius_s / camera.pixel_constant < minimum_radius)
             {
-                float mrs = minimum_radius * camera.upsample_multiplier;
+                float mrs = minimum_radius;
                 DrawCenter(camera, center, line_color, mrs);
             }
             else
@@ -325,7 +325,7 @@ namespace StarPixel
                         
                         if (line_count > 1) // two and three get edge lines
                         {
-                            Vector2 delta = Utility.RotatePos(line_vector) * camera.upsample_multiplier * line_width * (line_count == 2 ? 1f: 2f);
+                            Vector2 delta = Utility.RotatePos(line_vector) * line_width * (line_count == 2 ? 1f: 2f);
                             ArtPrimitive.DrawLine(camera.Map(st) + delta, camera.Map(en) + delta, line_color, line_width);
                             ArtPrimitive.DrawLine(camera.Map(st) - delta, camera.Map(en) - delta, line_color, line_width);
                         }
@@ -379,7 +379,7 @@ namespace StarPixel
         public void Draw(Camera camera, Vector2 position)
         {
             // scale divided by 2, because there was a bug, and now im used to that size
-            tile_sheet.Draw(camera.batch, symbol_no, position, scale * camera.upsample_multiplier / 2.0f, color);
+            tile_sheet.Draw(camera.batch, symbol_no, position, scale / 2.0f, color);
         }
     }
 
@@ -410,10 +410,10 @@ namespace StarPixel
             pos = camera.Map(phys.pos);
             
             float angle = phys.angle;
-            float a_radius = camera.scale * radius;
-            float s_radius = a_radius + (line_width * camera.upsample_multiplier * 2);
+            float a_radius = radius / camera.pixel_constant;
+            float s_radius = a_radius + (line_width* 2);
 
-            float m_radius = MINIMUM_RADIUS * camera.upsample_multiplier;
+            float m_radius = MINIMUM_RADIUS;
             bool compact_view = s_radius < m_radius;
             
             
