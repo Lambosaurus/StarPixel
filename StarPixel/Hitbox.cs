@@ -79,7 +79,7 @@ namespace StarPixel
         {
         }
 
-        public virtual void Draw(Camera camera, HullArmor armor, float width, Vector2 pos_override, float angle_override)
+        public virtual void Draw(Camera camera, Armor armor, float width, Vector2 pos_override, float angle_override)
         {
         }
     }
@@ -410,44 +410,49 @@ namespace StarPixel
                 p1 = p2;
             }
         }
-
-        public override void Draw(Camera camera, HullArmor armor, float width, Vector2 pos_override, float angle_override)
+        
+        /*
+        public override void Draw(Camera camera, Armor armor, float width, Vector2 pos_override, float angle_override)
         {
-            Vector2 p1_u = corners[0];
-            Vector2 p1 = camera.Map( Utility.Rotate(p1_u, angle_override) + pos_override);
+            Vector2 p1 = corners[0];
             Vector2 p2;
-            Vector2 p2_u;
 
-            float slice_length = 100 / (armor.segment_count * camera.scale);
+            float slice_length = 30 * camera.pixel_constant / (armor.segment_count);
+
+
+            Color color = Color.Black;
 
             for (int j = 0; j < count; j++)
             {
                 int i = j + 1;
                 if (i == count) { i = 0; }
 
-                p2_u = corners[i];
-                p2 = camera.Map(Utility.Rotate(p2_u, angle_override) + pos_override);
-
-                int slices = (int)((p2_u - p1_u).Length() / slice_length) + 1;
+                p2 = corners[i];
+              
+                int slices = (int)((p2 - p1).Length() / slice_length) + 1;
 
                 Vector2 s1 = p1;
                 Vector2 slice = (p2 - p1) / slices;
 
-                Color color = Color.Black;
-
+                int segment_1 = armor.GetSegment(Utility.Angle(s1) + armor.ship.angle);
                 for (int k = 0; k < slices; k++)
                 {
                     Vector2 s2 = s1 + slice;
-                    color = ColorManager.HPColor( armor.integrity[ armor.GetSegment(Utility.Angle(s1))] / armor.max_integrity);
-                    ArtPrimitive.DrawLine(s1, s2, color, width);
+                    int segment_2 = armor.GetSegment(Utility.Angle(s2) + armor.ship.angle);
+
+                    if (segment_1 == segment_2)
+                    {
+                        color = ColorManager.HPColor(armor.integrity[segment_1] / armor.max_integrity);
+                        ArtPrimitive.DrawLine(camera.Map(s1), camera.Map(s2), color, width);
+                    }
                     s1 = s2;
                 }
 
-                ArtPrimitive.DrawCircle(s1, color, width );
+                ArtPrimitive.DrawCircle(camera.Map(p1), color, width / 2.0f );
 
                 p1 = p2;
-                p1_u = p2_u;
             }
         }
+        */
     }
 }

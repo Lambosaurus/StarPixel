@@ -129,15 +129,15 @@ namespace StarPixel
             ship0.MountWeapon("shooter", 1);
             */
 
-            Ship broship = CreateNewShip("F2");
+            Ship broship = CreateNewShip("CG1");
             broship.ai = new IntellegenceRoamer();
             broship.MountThruster("default");
             broship.Paint(Color.Red);
             broship.MountShield("default");
             broship.MountArmor("default");
 
-            broship.MountWeapon("shooter", 0);
-            broship.MountWeapon("shooter", 1);
+            //broship.MountWeapon("shooter", 0);
+            //broship.MountWeapon("shooter", 1);
 
             
             for (int i = 0; i < 80; i++)

@@ -20,16 +20,16 @@ namespace StarPixel
 
         public Resistance armor_resistance = Resistance.Zero;
         
-        public HullArmor New( Ship ship )
+        public Armor New( Ship ship )
         {
-            HullArmor armor = new HullArmor(ship, ship.template.component_armor_size, this);
+            Armor armor = new Armor(ship, ship.template.component_armor_size, this);
             
 
             return armor;
         }
     }
 
-    public class HullArmor
+    public class Armor
     {
         public static Resistance ARMOR_BASE_RESISTANCE = new Resistance(0.15f, 0, 0, 0.7f);
 
@@ -50,7 +50,7 @@ namespace StarPixel
 
         float elipticity;
 
-        public HullArmor( Ship arg_ship, float arg_size, ArmorTemplate arg_template)
+        public Armor( Ship arg_ship, float arg_size, ArmorTemplate arg_template)
         {
             ship = arg_ship;
 
@@ -75,7 +75,8 @@ namespace StarPixel
             armor_resistance = template.armor_resistance * ARMOR_BASE_RESISTANCE;
             
         }
-        
+
+        /*
         public int GetSegment(float incoming_angle)
         {
             float aoa = Utility.WrapAngle(incoming_angle - start_angle - ship.angle);
@@ -83,10 +84,35 @@ namespace StarPixel
             if (segment >= segment_count) { return 0; } // you'd think this would never happen, but WrapAngle can return +2pi due to rounding errors.
             return segment;
         }
+        */
+
+        public int GetSegment(Vector2 point)
+        {
+            float aoa = Utility.Angle(point);
+            aoa = Utility.WrapAngle(aoa - start_angle - ship.angle);
+            int segment = (int)((aoa) / per_segment_angle);
+            if (segment >= segment_count) { return 0; } // you'd think this would never happen, but WrapAngle can return +2pi due to rounding errors.
+            return segment;
+        }
+
+        public int GetSegmentLocal(Vector2 point)
+        {
+
+            float aoa = Utility.Angle(point);
+            aoa = Utility.WrapAngle(aoa - start_angle);
+            int segment = (int)((aoa) / per_segment_angle);
+            if (segment >= segment_count) { return 0; } // you'd think this would never happen, but WrapAngle can return +2pi due to rounding errors.
+            return segment;
+        }
+
+        public float GetSegmentStartAngle(int segment)
+        {
+            return Utility.WrapAngle((segment * per_segment_angle) + start_angle);
+        }
 
         public Damage BlockDamage(Damage dmg, Vector2 arg_pos)
         {
-            int segment = this.GetSegment(Utility.Angle(arg_pos - ship.pos));
+            int segment = this.GetSegment( arg_pos - ship.pos );
 
             if (integrity[segment] > 0)
             {
@@ -108,18 +134,8 @@ namespace StarPixel
             return dmg;
 
         }
-        
     }
 }
-
-
-
-
-
-
-
-
-
 
 
 

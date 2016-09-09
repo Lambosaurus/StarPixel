@@ -205,6 +205,8 @@ namespace StarPixel
 
         Vector2 padding = new Vector2(8,8);
 
+        HitboxArmorMarker armor;
+
         public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height) : base(new Vector2(width, height))
         {
             camera = new Camera(arg_device, arg_batch, width, height, GameConst.upsample);
@@ -216,6 +218,15 @@ namespace StarPixel
             target = new_target;
             Vector2 scale = (camera.res - (padding*2)) / (target.sprite.resource.size * target.sprite.resource.scale);
             camera.SetScale( Utility.Min(scale.X, scale.Y) );
+
+            if (target.armor != null)
+            {
+                armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor, camera.pixel_constant * 4f);
+            }
+            else
+            {
+                armor = null;
+            }
         }
 
         public override void Render()
@@ -225,14 +236,19 @@ namespace StarPixel
             if (target != null)
             {
                 target.sprite.Draw(camera, Vector2.Zero, 0.0f);
-                if (target is Ship)
+                //if (target is Ship)
+                //{
+                //    ((Ship)target).paint_sprite.Draw(camera, Vector2.Zero, 0.0f);
+                //}
+
+                if (armor != null)
                 {
-                    ((Ship)target).paint_sprite.Draw(camera, Vector2.Zero, 0.0f);
+                    armor.Draw(camera, 8f);
                 }
                 
                 if (target.armor != null)
                 {
-                    target.hitbox.Draw(camera, target.armor, 4.0f, Vector2.Zero, 0.0f);
+                    //target.hitbox.Draw(camera, target.armor, 8.0f, Vector2.Zero, 0.0f);
                 }
             }
 

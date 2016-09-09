@@ -87,7 +87,7 @@ namespace StarPixel
 
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
-
+            
             return new Vector2( (c * point.X) - (s * point.Y),
                                 (s * point.X) + (c * point.Y) );
 
@@ -126,7 +126,8 @@ namespace StarPixel
 
             float c = cos_values[(int)(alpha * LOOKUP_CONSTANT)];
             float s = sin_values[(int)(alpha * LOOKUP_CONSTANT)];
-            
+            //float s = (float)Math.Sin(alpha);
+
             return new Vector2(c*scale, s*scale);
         }
 

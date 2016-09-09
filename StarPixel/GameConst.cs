@@ -20,7 +20,7 @@ namespace StarPixel
         
         public const float angular_velocity_limit = MathHelper.PiOver4;
 
-        public const int upsample = 1;
+        public const int upsample = 2;
         public const float scroll_zoom = 1.14f;
 
         public static float C(int c)

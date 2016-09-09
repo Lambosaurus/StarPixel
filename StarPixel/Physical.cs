@@ -29,7 +29,7 @@ namespace StarPixel
         public Hitbox hitbox { get; protected set; }
 
         public ComponentShield shield = null;
-        public HullArmor armor = null;
+        public Armor armor = null;
         
 
         public float leftmost { get; protected set; }

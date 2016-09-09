@@ -42,7 +42,8 @@ namespace StarPixel
             upsample = arg_upsample_multiplier;
 
             pos = new Vector2(0, 0);
-            scale = 1.0f * upsample;
+            SetScale(1.0f * upsample);
+
 
 
             batch = arg_batch;

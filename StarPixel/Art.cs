@@ -121,13 +121,15 @@ namespace StarPixel
         static Color HP_G = new Color(0, 0.65f, 0);
         static Color HP_Y = new Color(0.65f, 0.65f, 0);
         static Color HP_R = new Color(0.65f, 0, 0);
+        static Color HP_DEAD = new Color(0.1f, 0.1f, 0.4f);
 
         static float HP_MID = 0.66f;
         
         public static Color HPColor(float value)
         {
-            value = Utility.Clamp(value, 0.0f, 1.0f);
-
+            if (value <= 0.0f) { return HP_DEAD; }
+            else if (value > 1.0f) { return HP_G; }
+            
             return (value > HP_MID) ?
                 Color.Lerp(HP_Y, HP_G, (value - HP_MID)/(1.0f - HP_MID)) :
                 Color.Lerp(HP_R, HP_Y, (value)/ HP_MID);
