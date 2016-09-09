@@ -202,8 +202,10 @@ namespace StarPixel
         Camera camera;
 
         Physical target;
+        
+        float armor_width = 8f;
+        Vector2 padding;
 
-        Vector2 padding = new Vector2(8,8);
 
         HitboxArmorMarker armor;
 
@@ -211,6 +213,8 @@ namespace StarPixel
         {
             camera = new Camera(arg_device, arg_batch, width, height, GameConst.upsample);
             camera.background_color = new Color(32, 32, 32); ;
+
+            padding = new Vector2(armor_width, armor_width);
         }
 
         public void Focus(Physical new_target)
@@ -221,7 +225,8 @@ namespace StarPixel
 
             if (target.armor != null)
             {
-                armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor, camera.pixel_constant * 4.0f, camera.pixel_constant * 6f);
+                armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor,
+                    camera.pixel_constant * armor_width / 2.0f, camera.pixel_constant * armor_width);
             }
             else
             {
@@ -243,7 +248,7 @@ namespace StarPixel
 
                 if (armor != null)
                 {
-                    armor.Draw(camera, 8f);
+                    armor.Draw(camera, armor_width);
                 }
                 
                 if (target.armor != null)

@@ -23,8 +23,7 @@ namespace StarPixel
 
     }
 
-
-
+    
     public class HitboxArmorMarker
     {
         public List<Vector2>[] nodes;
@@ -40,19 +39,47 @@ namespace StarPixel
             armor = arg_armor;
             nodes = new List<Vector2>[armor.segment_count];
 
-            Vector2 p1 = hitbox.corners[0];
+
+            int count = hitbox.count;
+            Vector2[] corners = new Vector2[count];
+            Vector2[] displacements = new Vector2[count];
+
+            Vector2 last = hitbox.corners.Last();
+            
+            for (int i = 0; i < count; i++)
+            {
+                Vector2 p = hitbox.corners[i];
+
+                Vector2 delta = last - p;
+                delta.Normalize();
+
+                displacements[i] = Utility.RotateNeg(delta) * displacement / 2.0f;
+                corners[i] = p;
+                last = p;
+            }
+            for (int i = 0; i < count; i++)
+            {
+                int k = (i == count - 1) ? 0 : i + 1;
+
+                corners[i] += displacements[i];
+                corners[i] += displacements[k];
+            }
+
+
+
+            Vector2 p1 = corners[0];
             int first_segment = armor.GetSegmentLocal(p1);
             int segment = first_segment;
             nodes[segment] = new List<Vector2>();
 
             List<Vector2> popped = null;
 
-            for (int j = 0; j < hitbox.count; j++)
+            for (int j = 0; j < count; j++)
             {
                 // iterate through all hitbox segments
                 int i = j + 1;
-                if (i == hitbox.count) { i = 0; }
-                Vector2 p2 = hitbox.corners[i];
+                if (i == count) { i = 0; }
+                Vector2 p2 = corners[i];
 
                 // if this line has crossed an armor intersection
                 int new_segment = armor.GetSegmentLocal(p2);
@@ -110,42 +137,7 @@ namespace StarPixel
             {
                 trim(node, 1, sep);
                 trim(node, -1, sep);
-            }
-
-            /*
-            List<Vector2> displacements = new List<Vector2>();
-
-            Vector2 last = nodes.Last().Last();
-
-            foreach (List<Vector2> node in nodes)
-            {
-                foreach (Vector2 p in node)
-                {
-                    Vector2 delta = last - p;
-                    delta.Normalize();
-
-                    displacements.Add(Utility.RotateNeg(delta) * displacement);
-
-                    last = p;
-                }
-            }
-
-            int k = 0;
-            foreach (List<Vector2> node in nodes)
-            {
-                for ( int i = 0; i < node.Count; i++)
-                {
-                    int kl = k + 1;
-                    //if (kl < 0) { kl = displacements.Count - 1; }
-                    if (kl > displacements.Count - 1) { kl = 0; }
-
-                    node[i] += displacements[k];
-                    node[i] += displacements[kl];
-
-                    k++;
-                }
-            }
-            */
+            }            
         }
 
         void trim(List<Vector2> points, int direction, float reminaing)
