@@ -95,6 +95,7 @@
     <Compile Include="GameConst.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="Widget.cs" />
+    <Compile Include="WidgetElements.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

@@ -114,7 +114,7 @@ namespace StarPixel
         {
             if (button == InputState.MouseButton.Left)
             {
-                Vector2 mapped_pos = camera.InverseMap(point - pos);
+                Vector2 mapped_pos = camera.InverseMouseMap(point - pos);
                 if (ui.mode == UI.ControlMode.Observe)
                 {
                     Physical new_phys = universe.PhysAtPoint(mapped_pos);
@@ -156,7 +156,7 @@ namespace StarPixel
 
             Utility.RectSort(ref drag_origin, ref drag_last);
 
-            List<Physical> selected = universe.PhysInBox(camera.InverseMap(drag_origin - pos), camera.InverseMap(drag_last - pos) );
+            List<Physical> selected = universe.PhysInBox(camera.InverseMouseMap(drag_origin - pos), camera.InverseMouseMap(drag_last - pos) );
 
             if (selected.Count != 0)
             {
@@ -221,7 +221,7 @@ namespace StarPixel
 
             if (target.armor != null)
             {
-                armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor, camera.pixel_constant * 4f);
+                armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor, camera.pixel_constant * 4.0f, camera.pixel_constant * 6f);
             }
             else
             {

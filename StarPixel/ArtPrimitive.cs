@@ -38,6 +38,13 @@ namespace StarPixel
             circletag = content.Load<Texture2D>("CircleTag");
         }
 
+
+        public static void Setup( Camera camera )
+        {
+            batch = camera.batch;
+            upsample = camera.upsample;
+        }
+
         public static void Setup( SpriteBatch arg_batch, int arg_upsample)
         {
             batch = arg_batch;
@@ -71,8 +78,8 @@ namespace StarPixel
                 start = end + segment_length;
             }
         }
-
         
+
 
         const int STD_ARC_COUNT = 32;
         const float HALF_ARC_COUNT_RADIUS = 30f;

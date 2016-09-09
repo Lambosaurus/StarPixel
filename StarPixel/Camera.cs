@@ -30,6 +30,8 @@ namespace StarPixel
         public Vector2 res { get; private set; }
         public Vector2 midpoint { get; private set; }
 
+        Vector2 mapping_center;
+
         public bool DRAW_HITBOXES = false;
 
         public int upsample { get; private set; } = 1;
@@ -53,16 +55,24 @@ namespace StarPixel
             onscreen_res = new Vector2(x, y);
             res = onscreen_res * upsample;
             midpoint = res / 2;
+
+            BuildMap();
+        }
+
+        void BuildMap()
+        {
+            mapping_center = (midpoint / scale) - pos;
         }
         
         // maps a global coordinate point into the onscreen coordinate
         public Vector2 Map(Vector2 point)
         {
-            return midpoint + ((point - pos) * scale);
+            return (point + mapping_center) * scale;
+            //return midpoint + ((point - pos) * scale);
         }
 
         // maps a on camera point into the global coordinate frame
-        public Vector2 InverseMap(Vector2 point)
+        public Vector2 InverseMouseMap(Vector2 point)
         {
             return (((point * upsample) - midpoint) / scale) + pos;
 
@@ -95,17 +105,21 @@ namespace StarPixel
         {
             velocity = new_pos - pos;
             pos = new_pos;
+
+            BuildMap();
         }
 
         public void SetScale(float arg_scale)
         {
             scale = arg_scale;
             pixel_constant = ((float)upsample) / scale;
+
+            BuildMap();
         }
 
         public void Begin()
         {
-            ArtPrimitive.Setup(batch, upsample);
+            ArtPrimitive.Setup(this);
             device.SetRenderTarget(surface);
             device.Clear(background_color);
 

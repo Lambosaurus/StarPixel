@@ -145,7 +145,7 @@ namespace StarPixel
             if (!camera.ContainsCircle(pos, radius)) { return; }
 
             Vector2 center = camera.Map(pos);
-            ArtPrimitive.DrawArc(center, 0.0f, MathHelper.TwoPi, radius * camera.scale, color, width);
+            ArtPrimitive.DrawArc(center, 0.0f, MathHelper.TwoPi, radius / camera.pixel_constant, color, width);
         }
     }
 
