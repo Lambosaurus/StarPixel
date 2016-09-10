@@ -189,8 +189,7 @@ namespace StarPixel
 
             MarkerLine target2 = new MarkerLine(t0, t_pos);
             target1.line_color *= 0.7f;
-
-
+            
             List<UIMarker> markers = new List<UIMarker>();
             markers.Add(target1);
             markers.Add(target2);
