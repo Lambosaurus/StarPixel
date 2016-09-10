@@ -406,53 +406,11 @@ namespace StarPixel
                 p2 = camera.Map(p2);
 
                 ArtPrimitive.DrawLine(p1, p2, color, width);
+                ArtPrimitive.DrawCircle(p2, color, width);
 
                 p1 = p2;
             }
+            
         }
-        
-        /*
-        public override void Draw(Camera camera, Armor armor, float width, Vector2 pos_override, float angle_override)
-        {
-            Vector2 p1 = corners[0];
-            Vector2 p2;
-
-            float slice_length = 30 * camera.pixel_constant / (armor.segment_count);
-
-
-            Color color = Color.Black;
-
-            for (int j = 0; j < count; j++)
-            {
-                int i = j + 1;
-                if (i == count) { i = 0; }
-
-                p2 = corners[i];
-              
-                int slices = (int)((p2 - p1).Length() / slice_length) + 1;
-
-                Vector2 s1 = p1;
-                Vector2 slice = (p2 - p1) / slices;
-
-                int segment_1 = armor.GetSegment(Utility.Angle(s1) + armor.ship.angle);
-                for (int k = 0; k < slices; k++)
-                {
-                    Vector2 s2 = s1 + slice;
-                    int segment_2 = armor.GetSegment(Utility.Angle(s2) + armor.ship.angle);
-
-                    if (segment_1 == segment_2)
-                    {
-                        color = ColorManager.HPColor(armor.integrity[segment_1] / armor.max_integrity);
-                        ArtPrimitive.DrawLine(camera.Map(s1), camera.Map(s2), color, width);
-                    }
-                    s1 = s2;
-                }
-
-                ArtPrimitive.DrawCircle(camera.Map(p1), color, width / 2.0f );
-
-                p1 = p2;
-            }
-        }
-        */
     }
 }

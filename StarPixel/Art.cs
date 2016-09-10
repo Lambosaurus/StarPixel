@@ -118,10 +118,14 @@ namespace StarPixel
             return thermo_colors[(int)(thermo_color_constant * temp)];
         }
 
-        static Color HP_G = new Color(0, 0.65f, 0);
-        static Color HP_Y = new Color(0.65f, 0.65f, 0);
-        static Color HP_R = new Color(0.65f, 0, 0);
-        static Color HP_DEAD = new Color(0.1f, 0.1f, 0.4f);
+
+        public static Color shield_color = new Color(0.2f, 0.4f, 1.0f);
+        public static Color dead_shield_color = new Color(0.15f, 0.3f, 0.6f);
+        
+        public static Color HP_G = new Color(0, 0.65f, 0);
+        public static Color HP_Y = new Color(0.65f, 0.65f, 0);
+        public static Color HP_R = new Color(0.65f, 0, 0);
+        public static Color HP_DEAD = new Color(0.15f, 0.15f, 0.4f);
 
         static float HP_MID = 0.66f;
         

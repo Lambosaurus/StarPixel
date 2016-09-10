@@ -130,16 +130,20 @@ namespace StarPixel
             */
 
             Ship broship = CreateNewShip("CG1");
-            broship.ai = new IntellegenceRoamer();
             broship.MountThruster("default");
             broship.Paint(Color.Red);
             broship.MountShield("default");
             broship.MountArmor("default");
 
-            //broship.MountWeapon("shooter", 0);
-            //broship.MountWeapon("shooter", 1);
+            broship.MountWeapon("shooter", 0);
+            broship.MountWeapon("shooter", 1);
+            broship.MountWeapon("shooter", 2);
+            broship.MountWeapon("shooter", 3);
+            broship.MountWeapon("shooter", 4);
+            broship.MountWeapon("shooter", 5);
 
-            
+
+            Ship ship2 = null;
             for (int i = 0; i < 80; i++)
             {
                 Ship ship1 = CreateNewShip("F2");
@@ -151,25 +155,24 @@ namespace StarPixel
                 
                 ship1.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
              
-                Ship ship2 = CreateNewShip("F2");
+                ship2 = CreateNewShip("F2");
                 ship2.ai = new IntellegenceHunter(ship1);
                 ship2.MountThruster(Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better"));
                 ship2.MountShield("green");
                 ship2.MountArmor("default");
-                ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(1000, 3000));
+                ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(500, 2000));
 
                 ship2.MountWeapon("shooter", 0);
                 if (Utility.RandBool()) { ship2.MountWeapon("shooter", 1); }
-
-
-                ship2.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
                 
+                ship2.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
             }
             
+            broship.ai = new IntellegenceHunter( ship2 );
 
             for (int i = 0; i < 20; i++)
             {
-                Ship ship2 = CreateNewShip("CG1");
+                ship2 = CreateNewShip("CG1");
                 ship2.ai = new IntellegenceRoamer(0.2f);
                 ship2.MountThruster(Utility.RandBool() ? "default" : (Utility.RandBool() ? "worse" : "better"));
                 ship2.MountShield("default");

@@ -117,6 +117,13 @@ namespace StarPixel
             BuildMap();
         }
 
+        public void Traditional(float arg_scale)
+        {
+            arg_scale *= upsample;
+            pos = (midpoint / arg_scale);
+            SetScale(arg_scale);
+        }
+        
         public void Begin()
         {
             ArtPrimitive.Setup(this);

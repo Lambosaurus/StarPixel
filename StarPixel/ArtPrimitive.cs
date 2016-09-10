@@ -31,11 +31,11 @@ namespace StarPixel
 
         public static void Load(ContentManager content)
         {
-            pixel = content.Load<Texture2D>("px");
-            circle = content.Load<Texture2D>("Circle");
-            triangle = content.Load<Texture2D>("Triangle");
-            pentagon = content.Load<Texture2D>("Pentagon");
-            circletag = content.Load<Texture2D>("CircleTag");
+            pixel = content.Load<Texture2D>("Geo/px");
+            circle = content.Load<Texture2D>("Geo/Circle");
+            triangle = content.Load<Texture2D>("Geo/Triangle");
+            pentagon = content.Load<Texture2D>("Geo/Pentagon");
+            circletag = content.Load<Texture2D>("Geo/CircleTag");
         }
 
 

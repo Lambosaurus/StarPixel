@@ -45,12 +45,12 @@ namespace StarPixel
 
         public static int CompareByLeftmost(Physical a, Physical b)
         {
-            return (a.leftmost > b.leftmost) ? 1 : -1;
+            return (a.leftmost < b.leftmost) ? -1 : (a.leftmost == b.leftmost) ? 0 : 1;
         }
 
         public static int CompareByRightmost(Physical a, Physical b)
         {
-            return (a.rightmost > b.rightmost) ? 1 : -1;
+            return (a.rightmost < b.rightmost) ? -1 : (a.rightmost == b.rightmost) ? 0 : 1;
         }
 
 

@@ -13,12 +13,35 @@ namespace StarPixel
 {
     public class Widget
     {
+        public bool windowed = false;
+
         public Vector2 pos;
-        public Vector2 size;
-        
-        public Widget(Vector2 arg_size)
+        public Vector2 size { get; protected set; }
+
+        public Camera camera { get; protected set; }
+        public float uiscale { get; protected set; }
+
+        public static Color default_background_color = new Color(32, 32, 32, 128);
+
+        public Widget(Camera arg_camera, float arg_uiscale)
         {
-            size = arg_size;
+            camera = arg_camera;
+
+            uiscale = arg_uiscale;
+            size = camera.res / camera.upsample;
+        }
+
+        public Widget(GraphicsDevice device, SpriteBatch batch, Vector2 default_size, float arg_uiscale, int upscale = GameConst.upsample)
+        {
+            int width = (int)Math.Ceiling(default_size.X * arg_uiscale);
+            int height = (int)Math.Ceiling(default_size.Y * arg_uiscale);
+
+            uiscale = arg_uiscale;
+            size = new Vector2(width, height);
+
+            camera = new Camera(device, batch, width, height, upscale);
+            camera.Traditional(uiscale);
+            
         }
 
 
@@ -76,8 +99,6 @@ namespace StarPixel
 
     public class WidgetCamera : Widget
     {
-        public Camera camera;
-
         public Universe universe;
         public Entity focus_entity;
         public bool draw_stat_rings;
@@ -93,10 +114,9 @@ namespace StarPixel
         public bool following = false;
 
         
-        public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera.res / arg_camera.upsample)
+        public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera, 1.0f)
         {
             ui = arg_ui;
-            camera = arg_camera;
         }
         
         public override void Update(InputState inputs )
@@ -199,30 +219,39 @@ namespace StarPixel
 
     public class WidgetShipStatus : Widget
     {
-        Camera camera;
-
         Physical target;
-        
-        float armor_width = 8f;
-        Vector2 padding;
 
+        float target_scale;
+
+        float armor_width = 8f;
+        Vector2 padding = new Vector2(4,4);
+        float component_minimum_radius = 2f;
 
         HitboxArmorMarker armor;
+        WidgetElementBar shield_bar;
 
-        public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, int width, int height) : base(new Vector2(width, height))
+
+        const int default_width = 160;
+        const int default_height = 160;
+
+        public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, float arg_uiscale = 1.0f) : base( arg_device, arg_batch, new Vector2(default_width, default_height), arg_uiscale)
         {
-            camera = new Camera(arg_device, arg_batch, width, height, GameConst.upsample);
-            camera.background_color = new Color(32, 32, 32); ;
+            padding += new Vector2(armor_width, armor_width);
 
-            padding = new Vector2(armor_width, armor_width);
+            camera.background_color = new Color(32, 32, 32, 128);
+
+            shield_bar = new WidgetElementBar( new Vector2(10, 150), new Vector2(140, armor_width));
+            shield_bar.full_color = ColorManager.shield_color;
+            shield_bar.empty_color = ColorManager.HP_DEAD;
         }
 
         public void Focus(Physical new_target)
         {
             target = new_target;
             Vector2 scale = (camera.res - (padding*2)) / (target.sprite.resource.size * target.sprite.resource.scale);
-            camera.SetScale( Utility.Min(scale.X, scale.Y) );
-
+            target_scale = Utility.Min(scale.X, scale.Y);
+            camera.SetScale(target_scale);
+            
             if (target.armor != null)
             {
                 armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor,
@@ -240,6 +269,9 @@ namespace StarPixel
 
             if (target != null)
             {
+                camera.MoveTo(Vector2.Zero);
+                camera.SetScale(target_scale);
+
                 target.sprite.Draw(camera, Vector2.Zero, 0.0f);
                 //if (target is Ship)
                 //{
@@ -255,6 +287,31 @@ namespace StarPixel
                 {
                     //target.hitbox.Draw(camera, target.armor, 8.0f, Vector2.Zero, 0.0f);
                 }
+
+                if (target is Ship)
+                {
+                    foreach (Component component in ((Ship)target).ListComponents())
+                    {
+                        Vector2 center = camera.Map(component.pos);
+                        float scale = (component.size*2f) / camera.pixel_constant + (component_minimum_radius*camera.upsample);
+                        ArtPrimitive.DrawCircle(center, new Color(32, 32, 32), scale + (1f*camera.upsample));
+                        ArtPrimitive.DrawCircle(center, ColorManager.HPColor(component.health / component.max_health), scale);
+                    }
+                }
+
+                if (target.shield != null)
+                {
+                    shield_bar.full_color = (target.shield.active) ? ColorManager.shield_color : ColorManager.dead_shield_color;
+                    shield_bar.fill = target.shield.integrity / target.shield.max_integrity;
+                }
+                
+            }
+
+            camera.Traditional(uiscale);
+
+            if (target != null)
+            { 
+                shield_bar.Draw(camera);
             }
 
             camera.End();

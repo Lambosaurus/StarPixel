@@ -105,11 +105,11 @@ namespace StarPixel
 
         public WeaponFacade facade { get; private set; }
 
-        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port, float arg_size, WeaponTemplate arg_template) : base(arg_ship, arg_size, arg_template)
+        public ComponentWeapon(Ship arg_ship, WeaponPort arg_port, float arg_size, WeaponTemplate arg_template) : base(arg_ship, arg_port.position, arg_size, arg_template)
         {
             port = arg_port;
             template = arg_template;
-
+            
             explosion = template.explosion * size;
 
             facade = new WeaponFacade(port, this);

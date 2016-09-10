@@ -78,7 +78,7 @@ namespace StarPixel
         public ThrusterTemplate template { private set; get; }
         public ThrusterFacade facade { private set; get; }
 
-        public ComponentThruster(Ship ship, float arg_size, ThrusterTemplate arg_template) : base(ship, arg_size, arg_template)
+        public ComponentThruster(Ship ship, float arg_size, ThrusterTemplate arg_template) : base(ship, ship.template.component_thruster_pos, arg_size, arg_template)
         {
 
             template = arg_template;

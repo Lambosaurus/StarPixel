@@ -138,7 +138,7 @@ namespace StarPixel
                         float range = (intercept - link.pos).Length();
 
 
-                        if ( range < (weapon.projectile_life*weapon.projectile_velocity)/2f &&  Utility.AngleDelta(desired_angle, link.angle) < MathHelper.PiOver2)
+                        if ( range < (weapon.projectile_life*weapon.projectile_velocity)/2f &&  Utility.AngleWithin( desired_angle - link.angle, weapon.hardpoint_arc_min, weapon.hardpoint_arc_max ))
                         {
                             weapon.fire = true;
                             weapon.target_angle = desired_angle - link.angle;

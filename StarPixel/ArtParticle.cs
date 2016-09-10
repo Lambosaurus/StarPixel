@@ -82,6 +82,8 @@ namespace StarPixel
         protected Vector2 center;
         public float radius; // must be set by derivitive
 
+        public float particle_Radius;
+
         public ArtParticleCloud( ArtParticleResource arg_resource, float size, int arg_count, Vector2 arg_center)
         {
             resource = arg_resource;
@@ -98,6 +100,7 @@ namespace StarPixel
             particle_size_0 = resource.size_end * size;
             particle_size_1 = (resource.size_start - resource.size_end) * size;
 
+            particle_Radius = Utility.Sqrt(Utility.Max((resource.size_end * size).LengthSquared(), (resource.size_start * size).LengthSquared()));
 
 
             velocity = new Vector2[count];
@@ -164,7 +167,7 @@ namespace StarPixel
 
         public override bool InView(Camera camera)
         {
-            return this.Visible() && camera.ContainsCircle(center, radius);
+            return (camera.scale * particle_Radius > GameConst.minimum_draw_radius) && this.Visible() && camera.ContainsCircle(center, radius);
         }
 
         public void DrawParticle(Camera camera, int i, Color color)

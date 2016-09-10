@@ -111,7 +111,7 @@ namespace StarPixel
             device = arg_device;
 
             camera_widget = new WidgetCamera( this, new Camera(arg_device, arg_batch, width, height, GameConst.upsample) ); // UPSAMPLE_MULTILIER
-            status_widget = new WidgetShipStatus(arg_device, arg_batch, 160, 160);
+            status_widget = new WidgetShipStatus(arg_device, arg_batch);
             status_widget.pos.Y = height - status_widget.size.Y;
             
             widgets.Add(camera_widget);

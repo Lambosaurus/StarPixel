@@ -387,9 +387,7 @@ namespace StarPixel
     public class MarkerPhysicalDefence : UIMarker
     {
         static float armor_bar_sep = 0.05f;
-
-        static Color shield_bar_color = Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f);
-        static Color dead_shield_bar_color = Color.Lerp(Color.Lerp(Color.DeepSkyBlue, Color.Blue, 0.5f), Color.Black, 0.6f);
+        
 
         static float line_width = 4.0f;
 
@@ -425,13 +423,13 @@ namespace StarPixel
                 {
                     if (phys.shield.active)
                     {
-                        Color shcolor = Color.Lerp(Color.Black, shield_bar_color, s_integrity);
+                        Color shcolor = Color.Lerp(Color.Black, ColorManager.shield_color, s_integrity);
                         ArtPrimitive.DrawCircle(pos, shcolor, m_radius);
                     }
                 }
                 else
                 {
-                    Color shcolor = (phys.shield.active) ? shield_bar_color : dead_shield_bar_color;
+                    Color shcolor = (phys.shield.active) ? ColorManager.shield_color : ColorManager.dead_shield_color;
                     ArtPrimitive.DrawArc(pos, -MathHelper.PiOver2, MathHelper.TwoPi * s_integrity, s_radius, shcolor, line_width);
                 }
             }

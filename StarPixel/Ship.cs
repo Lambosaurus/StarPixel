@@ -76,7 +76,7 @@ namespace StarPixel
     {
         // lore data
         public string description; // FILL IT OUT, THE LORE MUST BE DEEP
-
+        
         // hull data
         public string hull_art_resource;
         public string paint_art_resource;
@@ -92,6 +92,7 @@ namespace StarPixel
         // thruster data
         public float component_thruster_size = 1.0f;
         public List<ThrusterPort> thruster_ports = new List<ThrusterPort>();
+        public Vector2 component_thruster_pos;
 
         // weapon data
         public List<WeaponPort> weapon_ports = new List<WeaponPort>();
@@ -99,6 +100,7 @@ namespace StarPixel
         // shield data
         public float component_shield_size = 1.0f;
         public float shield_radius;
+        public Vector2 component_shield_pos;
 
         // armor data
         public float component_armor_size = 1.0f;
@@ -212,8 +214,11 @@ namespace StarPixel
 
             foreach (Component comp in components)
             {
-                dmg = comp.AdsorbDamage(dmg);
-                if (dmg == null) { break; }
+                if (!comp.destroyed)
+                {
+                    dmg = comp.AdsorbDamage(dmg);
+                    if (dmg == null) { break; }
+                }
             }
         }
 
@@ -222,12 +227,12 @@ namespace StarPixel
         {
             List<Component> components = new List<Component>();
 
-            if (shield != null && !shield.destroyed) { components.Add(shield); }
-            if (thrusters != null && !thrusters.destroyed) { components.Add(thrusters); }
+            if (shield != null ) { components.Add(shield); }
+            if (thrusters != null) { components.Add(thrusters); }
 
             foreach (ComponentWeapon weapon in weapons)
             {
-                if (weapon != null && !weapon.destroyed)
+                if (weapon != null)
                 {
                     components.Add(weapon);
                 }

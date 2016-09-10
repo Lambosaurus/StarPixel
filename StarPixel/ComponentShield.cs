@@ -49,7 +49,7 @@ namespace StarPixel
 
         public Resistance shield_resistance;
 
-        public ComponentShield( Ship arg_ship, float arg_size, ShieldTemplate arg_template): base(arg_ship, arg_size, arg_template)
+        public ComponentShield( Ship arg_ship, float arg_size, ShieldTemplate arg_template): base(arg_ship, arg_ship.template.component_shield_pos, arg_size, arg_template)
         {
             template = arg_template;
 

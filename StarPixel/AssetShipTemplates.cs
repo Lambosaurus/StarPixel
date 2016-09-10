@@ -40,6 +40,9 @@ namespace StarPixel
 
             float arc_minimum = 0.05f;
             float arc_180 = MathHelper.Pi;
+            float arc_90 = MathHelper.Pi / 2.0f;
+            float arc_60 = MathHelper.Pi / 3.0f;
+            float arc_30 = MathHelper.Pi / 6.0f;
 
 
 
@@ -50,13 +53,17 @@ namespace StarPixel
             //template.base_intertia = 600;
             template.mass_avg_radius = 9; // length approx 18*2, so reccommended mass-radius is length/4
             template.thruster_avg_radius = 9;
-            template.hull_art_resource = "F2";
-            template.heat_art_resource = "F2 heat";
-            template.paint_art_resource = "F2 paint";
+            template.hull_art_resource = "Ship/F2/Hull";
+            template.heat_art_resource = "Ship/F2/Heat";
+            template.paint_art_resource = "Ship/F2/Paint";
+
             template.component_thruster_size = 1.0f;
+            template.component_thruster_pos = new Vector2(-10, 0);
+
 
             template.shield_radius = 30f;
             template.component_shield_size = 1.0f;
+            template.component_shield_pos = new Vector2(-2, -4);
 
             template.hitbox = new HitboxPolygon( new Vector2[] {
                 new Vector2(18,-3),
@@ -75,14 +82,14 @@ namespace StarPixel
             template.AddThrusterPort(new Vector2(0, 9), 0.2f,     0.4f, -1, 0, 0);
             template.AddThrusterPort(new Vector2(0, -9), -0.2f,   0.4f, -1, 0, 0);
 
-            template.AddWeaponPort(new Vector2(10, 2), 1.0f, 0.0f, arc_180/4);
-            template.AddWeaponPort(new Vector2(10, -2), 1.0f, 0.0f, arc_180/4);
+            template.AddWeaponPort(new Vector2(10, 3), 1.0f, 0.0f, arc_180/4);
+            template.AddWeaponPort(new Vector2(10, -3), 1.0f, 0.0f, arc_180/4);
 
             ship_templates.Add("F2", template);
 
-            ArtManager.sprites.Add("F2 paint", new ArtSpriteResource("F2 paint", 0.5f));
-            ArtManager.sprites.Add("F2 heat", new ArtSpriteResource("F2 heat", 0.5f));
-            ArtManager.sprites.Add("F2", new ArtSpriteResource("F2", 0.5f));
+            ArtManager.sprites.Add("Ship/F2/Paint", new ArtSpriteResource("Ship/F2/Paint", 0.5f));
+            ArtManager.sprites.Add("Ship/F2/Heat", new ArtSpriteResource("Ship/F2/Heat", 0.5f));
+            ArtManager.sprites.Add("Ship/F2/Hull", new ArtSpriteResource("Ship/F2/Hull", 0.5f));
 
             // -- // F2 END
 
@@ -90,18 +97,21 @@ namespace StarPixel
             // -- // CG1 START
 
             template = new ShipTemplate();
-            template.base_mass = 500;
+            template.base_mass = 300;
             //template.base_intertia = 30000;
             template.mass_avg_radius = 28; // length approx (48+46), so reccommended mass-radius is length/3
             template.thruster_avg_radius = 28;
-            template.hull_art_resource = "CG1";
-            //template.heat_art_resource = "CG1 heat";
-            template.paint_art_resource = "CG1 paint";
+            template.hull_art_resource = "Ship/CG1/Hull";
+            //template.heat_art_resource = "Ship/CG1/Heat";
+            template.paint_art_resource = "Ship/CG1/Paint";
+
             template.component_thruster_size = GameConst.C(3);
+            template.component_thruster_pos = new Vector2(-20, 0);
 
             template.shield_radius = 60f;
             template.component_shield_size = GameConst.C(3);
-
+            template.component_shield_pos = new Vector2(4, 0);
+            
             template.component_armor_size = GameConst.C(3);
             template.armor_segment_count = 5;
 
@@ -138,11 +148,19 @@ namespace StarPixel
             template.AddThrusterPort(new Vector2(-26, -24), left,    0.7f, 0, 1, -1);
             template.AddThrusterPort(new Vector2(-12, 24), forward,     0.7f, -1, 0, 0);
             template.AddThrusterPort(new Vector2(-12, -24), forward,   0.7f, -1, 0, 0);
-            
+
+            template.AddWeaponPort(new Vector2(42, 12), 1.0f, 0.0f , arc_90);
+            template.AddWeaponPort(new Vector2(42, -12), 1.0f, 0.0f, arc_90);
+            template.AddWeaponPort(new Vector2(32, 18), 1.0f, arc_60, arc_90);
+            template.AddWeaponPort(new Vector2(32, -18), 1.0f, -arc_60, arc_90);
+            template.AddWeaponPort(new Vector2(-20, 20), 1.0f, arc_90 + arc_30, arc_90);
+            template.AddWeaponPort(new Vector2(-20, -20), 1.0f, -arc_90 - arc_30, arc_90);
+
+
             ship_templates["CG1"] = template;
 
-            ArtManager.sprites.Add("CG1 paint", new ArtSpriteResource("CG1 paint", 0.5f));
-            ArtManager.sprites.Add("CG1", new ArtSpriteResource("CG1", 0.5f));
+            ArtManager.sprites.Add("Ship/CG1/Paint", new ArtSpriteResource("Ship/CG1/Paint", 0.5f));
+            ArtManager.sprites.Add("Ship/CG1/Hull", new ArtSpriteResource("Ship/CG1/Hull", 0.5f));
 
             // -- // CG1 END
         }

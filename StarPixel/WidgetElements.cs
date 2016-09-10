@@ -12,15 +12,45 @@ namespace StarPixel
 {
     public class WidgetElement
     {
-
-        Vector2 pos;
-        Vector2 size;
+        public Vector2 pos { get; protected set; }
+        public Vector2 size { get; protected set; }
 
         public WidgetElement()
         {
-
         }
 
+        public virtual void Draw(Camera camera)
+        {
+
+        }
+    }
+
+    public class WidgetElementBar : WidgetElement
+    {
+        public Color full_color;
+        public Color empty_color;
+
+        public float fill = 0.5f;
+        public float angle;
+
+        public WidgetElementBar(Vector2 arg_pos, Vector2 arg_size, float arg_angle = 0.0f)
+        {
+            angle = arg_angle;
+            pos = arg_pos;
+            size = arg_size;
+        }
+
+        public override void Draw(Camera camera)
+        {
+            fill = Utility.Clamp(fill, 0.0f, 1.0f);
+            Vector2 length = Utility.CosSin(angle) * size.X;
+            Vector2 posm = camera.Map(pos);
+            Vector2 mid = camera.Map(pos + length * fill);
+            Vector2 end = camera.Map(pos + length);
+
+            ArtPrimitive.DrawLine(posm, mid, full_color, size.Y);
+            ArtPrimitive.DrawLine(mid, end, empty_color, size.Y);
+        }
     }
 
     
@@ -29,8 +59,7 @@ namespace StarPixel
         public List<Vector2>[] nodes;
 
         public Armor armor;
-
-
+        
         public HitboxArmorMarker(HitboxPolygon hitbox, Armor arg_armor, float displacement, float segment_separation)
         {
             // we need to construct the lines to represent our armor segments.

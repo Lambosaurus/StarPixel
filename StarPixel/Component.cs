@@ -54,25 +54,27 @@ namespace StarPixel
         // do i have component parent classes?
         // I dunno. It gets messy, but i feel like i need them to abstract out component generation
         public float max_health { get; private set; }
-        public float health { get; private set; }
-        public float mass { get; private set; }
+        public float health { get; protected set; }
+        public float mass { get; protected set; }
 
-        public float max_power { get; private set; }
-        public float min_power { get; private set; }
+        public float max_power { get; protected set; }
+        public float min_power { get; protected set; }
     
 
         public float size { get; private set; }
-        public bool destroyed { get; private set; }
+        public bool destroyed { get; protected set; }
 
-        public Vector2 pos { get; private set; }
+        public Vector2 pos { get; protected set; }
 
         public Ship ship { get; private set; }
 
         public ComponentTemplate base_template { get; private set; }
 
-        public Component( Ship arg_ship, float arg_size, ComponentTemplate arg_base_template)
+        public Component( Ship arg_ship, Vector2 arg_pos, float arg_size, ComponentTemplate arg_base_template)
         {
             ship = arg_ship;
+
+            pos = arg_pos;
 
             base_template = arg_base_template;
             size = arg_size;
@@ -92,8 +94,8 @@ namespace StarPixel
 
             if (health < dmg_dealt)
             {
-                this.Destroy();
                 Damage remaining = base_template.resistance.RemainingDamage(health, dmg);
+                this.Destroy();
                 return remaining;
             }
             else

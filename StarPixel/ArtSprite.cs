@@ -112,7 +112,7 @@ namespace StarPixel
 
         public bool InView(Camera camera)
         {
-            return camera.ContainsCircle(pos, resource.radius);
+            return (camera.scale * scale.Y * resource.radius > GameConst.minimum_draw_radius) && camera.ContainsCircle(pos, resource.radius);
         }
 
         public void Draw(Camera camera)

@@ -153,6 +153,8 @@ namespace StarPixel
 
         public override bool InView(Camera camera)
         {
+            if (camera.scale * particle_Radius < GameConst.minimum_draw_radius) { return false; }
+            
             // if index_start == index_end we have no particles left!
             if (index_start != index_end)
             {
