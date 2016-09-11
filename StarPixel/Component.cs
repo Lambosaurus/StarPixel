@@ -9,6 +9,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
+using System.Xml.Serialization;
+
 namespace StarPixel
 {
     // This is the object that is exposed to the AI
@@ -25,7 +27,7 @@ namespace StarPixel
 
         // writable variables, which the AI can mess with
         public float allocated_power = 0.0f;
-
+        
 
         // we have a private ptr to the component, which should be safe
         private Component component;
@@ -45,7 +47,9 @@ namespace StarPixel
 
         public float min_power = 0.0f;
         public float max_power = 0.0f;
-        
+
+        public Symbols.Component symbol { get; protected set; } = Symbols.Component.Weapon;
+
         public Resistance resistance = Resistance.Zero;
     }
 
@@ -70,6 +74,7 @@ namespace StarPixel
 
         public ComponentTemplate base_template { get; private set; }
 
+        
         public Component( Ship arg_ship, Vector2 arg_pos, float arg_size, ComponentTemplate arg_base_template)
         {
             ship = arg_ship;

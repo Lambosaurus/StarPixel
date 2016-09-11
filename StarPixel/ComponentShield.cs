@@ -20,6 +20,11 @@ namespace StarPixel
         public float integrity = 120.0f;
         public float reform_integrity = 0.5f; // this is a percentage of maximum
         public float regen = 3f;
+        
+        public ShieldTemplate()
+        {
+            symbol = Symbols.Component.Shield;
+        }
 
         public ComponentShield New( Ship ship )
         {

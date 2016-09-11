@@ -225,7 +225,7 @@ namespace StarPixel
 
         float armor_width = 8f;
         Vector2 padding = new Vector2(4,4);
-        float component_minimum_radius = 2f;
+        float component_minimum_radius = 3f;
 
         HitboxArmorMarker armor;
         WidgetElementBar shield_bar;
@@ -233,6 +233,7 @@ namespace StarPixel
 
         const int default_width = 160;
         const int default_height = 160;
+        static Color dark_grey = new Color(32, 32, 32);
 
         public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, float arg_uiscale = 1.0f) : base( arg_device, arg_batch, new Vector2(default_width, default_height), arg_uiscale)
         {
@@ -290,12 +291,16 @@ namespace StarPixel
 
                 if (target is Ship)
                 {
+                    SpriteTileSheet sheet = Symbols.component_sheet;
+
                     foreach (Component component in ((Ship)target).ListComponents())
                     {
                         Vector2 center = camera.Map(component.pos);
-                        float scale = (component.size*2f) / camera.pixel_constant + (component_minimum_radius*camera.upsample);
-                        ArtPrimitive.DrawCircle(center, new Color(32, 32, 32), scale + (1f*camera.upsample));
+                        float scale = ((component.size * 2f) / camera.pixel_constant) + (component_minimum_radius);
+                        ArtPrimitive.DrawCircle(center, dark_grey, scale + (2f));
                         ArtPrimitive.DrawCircle(center, ColorManager.HPColor(component.health / component.max_health), scale);
+
+                        sheet.Draw(camera.batch, (int)component.base_template.symbol, center, 2f * scale * camera.upsample / sheet.tile_width, dark_grey, 0.0f);
                     }
                 }
 

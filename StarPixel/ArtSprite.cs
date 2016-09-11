@@ -44,14 +44,14 @@ namespace StarPixel
             if (rows == -1) { rows = (int)(sheet.Height / tile_height); }
         }
 
-        public void Draw( SpriteBatch batch, int item, Vector2 position, float scale, Color color )
+        public void Draw( SpriteBatch batch, int item, Vector2 position, float scale, Color color, float rotation = 0.0f )
         {
             int row = item / cols;
             int col = item - (row * cols);
 
             Rectangle rect = new Rectangle(col * tile_width, row * tile_height, tile_width, tile_height);
 
-            batch.Draw(sheet, position, rect, color, 0.0f, tile_center, scale, SpriteEffects.None, 0);
+            batch.Draw(sheet, position, rect, color, rotation, tile_center, scale, SpriteEffects.None, 0);
         }
     }
 

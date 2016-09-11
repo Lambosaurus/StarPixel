@@ -50,6 +50,7 @@ namespace StarPixel
 
         public ThrusterTemplate()
         {
+            symbol = Symbols.Component.Thruster;
         }
 
         public ComponentThruster New(Ship ship)

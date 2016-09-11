@@ -17,8 +17,11 @@ namespace StarPixel
 
         public enum Number { Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine };
 
+        public enum Component { Weapon, Shield, Thruster, Hold, Reactor, Sensors, Core };
+
         public static SpriteTileSheet greek_sheet { get; private set; }
         public static SpriteTileSheet number_sheet { get; private set; }
+        public static SpriteTileSheet component_sheet { get; private set; }
 
         public static void Load(ContentManager content)
         {
@@ -27,6 +30,9 @@ namespace StarPixel
 
             number_sheet = new SpriteTileSheet("Markers/Number", 38, 52);
             number_sheet.Load(content);
+
+            component_sheet = new SpriteTileSheet("Markers/Component", 38, 38);
+            component_sheet.Load(content);
         }
     }
 
