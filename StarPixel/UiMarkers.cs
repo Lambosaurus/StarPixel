@@ -168,8 +168,7 @@ namespace StarPixel
 
                 if (line_color != Color.Transparent)
                 {
-                    ArtPrimitive.DrawArc(center, 0.0f, MathHelper.TwoPi,
-                        radius_s, line_color, line_thickness, dashing);
+                    ArtPrimitive.DrawCircleLine(center, radius_s, line_color, line_thickness, dashing);
                 }
             }
 

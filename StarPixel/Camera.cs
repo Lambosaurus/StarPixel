@@ -126,7 +126,7 @@ namespace StarPixel
         
         public void Begin()
         {
-            ArtPrimitive.Setup(this);
+            ArtPrimitive.Setup(batch, upsample);
             device.SetRenderTarget(surface);
             device.Clear(background_color);
 

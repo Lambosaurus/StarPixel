@@ -39,7 +39,7 @@ namespace StarPixel
         }
 
         
-        public static void Setup( SpriteBatch arg_batch, float arg_upsample)
+        public static void Setup( SpriteBatch arg_batch, float arg_upsample = 1.0f)
         {
             batch = arg_batch;
             upsample = arg_upsample;
