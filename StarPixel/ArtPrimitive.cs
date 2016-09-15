@@ -27,7 +27,7 @@ namespace StarPixel
 
 
         static SpriteBatch batch;
-        static int upsample = 1;
+        static float upsample = 1.0f;
 
         public static void Load(ContentManager content)
         {
@@ -38,14 +38,8 @@ namespace StarPixel
             circletag = content.Load<Texture2D>("Geo/CircleTag");
         }
 
-
-        public static void Setup( Camera camera )
-        {
-            batch = camera.batch;
-            upsample = camera.upsample;
-        }
-
-        public static void Setup( SpriteBatch arg_batch, int arg_upsample)
+        
+        public static void Setup( SpriteBatch arg_batch, float arg_upsample)
         {
             batch = arg_batch;
             upsample = arg_upsample;
@@ -85,36 +79,32 @@ namespace StarPixel
         const float HALF_ARC_COUNT_RADIUS = 30f;
         const float DOUBLE_ARC_COUNT_RADIUS = 300f;
 
-        public static void DrawArc(Vector2 center, float angle_start, float arc_length, float radius, Color color, float width, CircleDashing dashing = CircleDashing.None)
+        public static void DrawCircleLine(Vector2 center, float radius, Color color, float width, CircleDashing dashing = CircleDashing.None)
         {
             int dash_spacing = (int)dashing;
-            
+
             // calculate the number of segments we would use on a full circle
-            int arc_count = STD_ARC_COUNT;
+            int segments = STD_ARC_COUNT;
             if (radius > DOUBLE_ARC_COUNT_RADIUS)
             {
                 // if the circle is large, double it
-                arc_count *= 2;
+                segments *= 2;
                 dash_spacing *= 2; // Keeps the dashing consistant
             }
             else if (dash_spacing != 1 && radius < HALF_ARC_COUNT_RADIUS) // we cant half dash_spacing 1, so we cannot change the radius in this case.
             {
                 // if small, half it
-                arc_count /= 2;
+                segments /= 2;
                 dash_spacing /= 2;
             }
 
             radius *= upsample;
 
-
-            angle_start = Utility.WrapAngle(angle_start);
-
-            // Calculate the number of segments to construct the arc.
-            int segments = (int)(arc_count * arc_length / MathHelper.TwoPi);
-            float da = arc_length / segments; // angle traveled per slice
-
             
-            float a = angle_start;
+            // Calculate the number of segments to construct the arc.
+            float da = MathHelper.TwoPi / segments; // angle traveled per slice
+            
+            float a = 0.0f;
             Vector2 p1 = Utility.CosSin(a, radius) + center;
             for (int i = 0; i < segments; i++)
             {
@@ -128,6 +118,42 @@ namespace StarPixel
                     DrawLine(p1, p2, color, width);
                 }
 
+                p1 = p2;
+            }
+        }
+
+        public static void DrawArc(Vector2 center, float angle_start, float arc_length, float radius, Color color, float width, int segments_per_2pi = STD_ARC_COUNT)
+        {
+            if (radius > DOUBLE_ARC_COUNT_RADIUS)
+            {
+                // if the circle is large, double it
+                segments_per_2pi *= 2;
+            }
+            else if (radius < HALF_ARC_COUNT_RADIUS) // we cant half dash_spacing 1, so we cannot change the radius in this case.
+            {
+                // if small, half it
+                segments_per_2pi /= 2;
+            }
+
+            radius *= upsample;
+            
+            angle_start = Utility.WrapAngle(angle_start);
+
+            // Calculate the number of segments to construct the arc.
+            int segments = (int)(segments_per_2pi * Utility.Abs(arc_length) / MathHelper.TwoPi) + 1; // +1 so an arc length of 0 is never rolled.
+            float da = arc_length / segments; // angle traveled per slice
+
+            
+            float a = angle_start;
+            Vector2 p1 = Utility.CosSin(a, radius) + center;
+            for (int i = 0; i < segments; i++)
+            {
+                // go through the circle segments
+                a += da;
+                Vector2 p2 = Utility.CosSin(a, radius) + center;
+                
+                DrawLine(p1, p2, color, width);
+            
                 p1 = p2;
 
             }

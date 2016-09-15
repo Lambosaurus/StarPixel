@@ -118,7 +118,6 @@ namespace StarPixel
         public void Draw(Camera camera)
         {
             if (!InView(camera)) { return; }
-
             camera.batch.Draw(resource.sprite, camera.Map(pos), null, color, angle, resource.center, camera.scale*scale, SpriteEffects.None, 0);
         }
 

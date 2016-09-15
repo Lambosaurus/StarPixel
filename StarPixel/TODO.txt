@@ -22,47 +22,19 @@
 	LineArt.DrawArcU draws an ard by drawing multiple line segments
 	Aliasing causes some pixels to get left out.
 	Overdrawing the lines a little should fix the problem.
-	> Is LineArt.DrawArcUF ready to be removed?
-
 
 
 > Thrusters need sparkle ports.
+> Particle system overhaul needed
+	- fewer but more detailed particles
+	- dump thruster particles completely
+	- explosion particle methods
+	- examine the particle inheritance model
 
 
+> Standardise how component templates are created, inherited and passed around
 
-> The below would be best solved by nuking whats there and just writing a GUI class. Yeh.
-	> Tidy up the way that ship stats drawing is managed.
-		Currently the stat drawing is a huge mess.
-		Its unclear whether stuff is drawn wrt to global coords or onscreen coords
-		The code is split between StatusCamera and Camera
-		> There is (was?) a kind of logic behind it:
-			The Camera can draw status bars anywhere, but the StatusCamera will have the code
-			for a full readout
-
-
-> The creation of all Components through ComponentTemplate models:
-	In most places, Components have public properties, and the ComponentTemplate spawns them
-	through ComponentTemplate.New()
-
-	Instead, the template should just be passed into the component, and the component
-	does the initilisation.
-	Then as many properties as we can become private var
-	Or at least public var {get; private set;} if then need to be publically read
-	
-	The following have this problem and need to be signed off:
-		- Components
-			- ComponentArmor
-			- ComponentShield
-			- ComponentThrusters
-			- ComponentWeapon
-		- Art
-			- ArtExplosion
-			- ArtThruster
-			- ArtSprite
-			- ArtShield
-			- ArtVent
-		- And Ships
-
+> Break down object update process
 
 
 

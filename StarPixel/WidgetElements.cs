@@ -29,9 +29,9 @@ namespace StarPixel
     {
         public Color full_color;
         public Color empty_color;
-
         public float fill = 0.5f;
-        public float angle;
+
+        public float angle { get; protected set; }
 
         public WidgetElementBar(Vector2 arg_pos, Vector2 arg_size, float arg_angle = 0.0f)
         {
@@ -53,7 +53,56 @@ namespace StarPixel
         }
     }
 
-    
+    public class WidgetElementArcBar : WidgetElementBar
+    {
+        public float radius;
+        const float maximum_radius = 2e3f;
+
+        Vector2 origin;
+        float start_angle;
+        float end_angle;
+        float delta_angle;
+
+        public WidgetElementArcBar(Vector2 arg_pos, Vector2 arg_size, float arg_angle, float arg_radius)
+            : base( arg_pos, arg_size, arg_angle )
+        {
+            radius = arg_radius;
+            Calc();
+        }
+
+        public void Calc()
+        {
+            float mid_length = size.X / 2.0f;
+
+            bool left = false;
+            if (radius < 0)
+            {
+                // the below sqrt calc fails for negative numbers
+                radius = -radius;
+                left = true;
+            }
+
+            radius = Utility.Clamp(radius, mid_length, maximum_radius); // problem is unsolvable if this is the case
+            float offset_length = Utility.Sqrt((radius * radius) - (mid_length * mid_length));
+            if (left) { offset_length = -offset_length; }
+
+            Vector2 origin_offset = Utility.Rotate(new Vector2(mid_length, offset_length), angle);
+
+            start_angle = Utility.WrapAngle( Utility.Angle(new Vector2(-mid_length, -offset_length)) + angle);
+            end_angle = Utility.WrapAngle( Utility.Angle(new Vector2(mid_length, -offset_length)) + angle);
+            origin = pos + Utility.Rotate(origin_offset, angle);
+            delta_angle = end_angle - start_angle;
+        }
+
+        public override void Draw(Camera camera)
+        {
+            Vector2 center = camera.Map(origin);
+            ArtPrimitive.DrawArc(center, start_angle, delta_angle * fill, radius, full_color, size.Y, segments_per_2pi:64);
+            ArtPrimitive.DrawArc(center, end_angle, delta_angle * (fill - 1), radius, empty_color, size.Y, segments_per_2pi:64);
+        }
+    }
+
+
     public class HitboxArmorMarker
     {
         public List<Vector2>[] nodes;

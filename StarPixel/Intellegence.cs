@@ -129,11 +129,16 @@ namespace StarPixel
                     WeaponFacade weapon = link.Weapon(i);
                     if (weapon.weapon_present)
                     {
+                        Vector2 weapon_pos = link.pos + Utility.Rotate(weapon.hardpoint_position, link.angle);
 
-                        float time_estimate = (target.pos - link.pos).Length() / weapon.projectile_velocity;
+                        float time_estimate = (target.pos - weapon_pos).Length() / weapon.projectile_velocity;
                         Vector2 intercept = target.pos + ((target.velocity - link.velocity) * time_estimate) + (0.5f * target_accell * time_estimate*time_estimate);
-                        desired_angle = Utility.Angle(intercept - link.pos);
+                        //desired_angle = Utility.Angle(intercept - weapon_pos);
 
+                        time_estimate = (intercept - weapon_pos).Length() / weapon.projectile_velocity;
+                        intercept = target.pos + ((target.velocity - link.velocity) * time_estimate) + (0.5f * target_accell * time_estimate * time_estimate);
+                        desired_angle = Utility.Angle(intercept - weapon_pos);
+                         
 
                         float range = (intercept - link.pos).Length();
 
