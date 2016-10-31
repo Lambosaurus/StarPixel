@@ -246,7 +246,7 @@ namespace StarPixel
             }
 
 
-
+            // physial to physical collision detection.
             for (int i = 0; i < physical_leftmost.Count; i++)
             {
                 Physical phys_a = physical_leftmost[i];
