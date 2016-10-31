@@ -65,5 +65,6 @@
 	- Display graphs for components of selected ships. Some kind of toggle for whether power/heat/health/em is displayed
 
 
-
-
+> Rebalance the thruster mass balance.
+	- Larger ships should not be orders of magnitude slower than smaller ships
+	- Its just bad for balance. Small ships only need a moderate accelleration advantage to get a lot of leverage.
