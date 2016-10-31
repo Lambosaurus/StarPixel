@@ -1,5 +1,5 @@
 ﻿
-> Excend thermo range into the blue
+> Excend thermo range further into the blue
 
 
 > Standardise up how things are handed to the universe... maybe... eh.
@@ -10,7 +10,10 @@
 	On a similar note: weapon = AssetWeaponTemplates.weapon_templates[template_name].New();
 	is a bit nasty. AssetWeaponTemplates.Get(template_name).New(); is a bit nicer.
 
+	I am unsure how I feel about a lot of this atm. It really needs looking at with fresh eyes.
 
+> Special collision detection cases for objects with a high relative speed.
+	- Possibly only nessicary for projectile to physical hitchecks.
 
 > Damage handling
 	Not implemented:
@@ -18,23 +21,48 @@
 		- Radius affecting multiple armor segments
 
 
-> Line arc art is a bit speckly. Explore the extention of line segments to combat this
+> Line arc art is a bit speckly. Explore the extention of individual arc line segments to combat this
 	LineArt.DrawArcU draws an ard by drawing multiple line segments
 	Aliasing causes some pixels to get left out.
 	Overdrawing the lines a little should fix the problem.
 
 
 > Thrusters need sparkle ports.
+> Dont handle thrusters as particles at all, except for sparkles
 > Particle system overhaul needed
 	- fewer but more detailed particles
 	- dump thruster particles completely
 	- explosion particle methods
 	- examine the particle inheritance model
 
+> Shockwave particle
+> Brilliance particle
 
 > Standardise how component templates are created, inherited and passed around
+	- These will need to be saved
 
 > Break down object update process
+	- Needed for potential multithreading
+	- ALL AI updates need to be done before or after ALL physical model updates
+	- The above may not be important if the facades are filled out separately and the sensor model processed
+
+> Implement sensor component and sensor model.
+	- Sensability affected by heat, size, distance, possibly shield output
+	- Small ships should be able to "go dark"
+
+> Implement component power and reactor
+
+> Implement component heat model
+	- Will also lead to implementing thermal damage model
+
+// #1 PRIORITY
+> Come up with a camera model solution
+	- Possibly eliminate 2xMSAA hack while im at it.
+
+// #2 PRIORITY
+> Build up the UI system, and start implementing some useful windows
+	- Button widget elements
+	- Display graphs for components of selected ships. Some kind of toggle for whether power/heat/health/em is displayed
 
 
 
