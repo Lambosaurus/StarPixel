@@ -134,9 +134,10 @@ namespace StarPixel
             broship.Paint(Color.Red);
             broship.MountShield("default");
             broship.MountArmor("default");
+            broship.pos = new Vector2(500, 500);
 
-            broship.MountWeapon("shooter", 0);
-            broship.MountWeapon("shooter", 1);
+            broship.MountWeapon("boomer", 0);
+            broship.MountWeapon("boomer", 1);
             broship.MountWeapon("shooter", 2);
             broship.MountWeapon("shooter", 3);
             broship.MountWeapon("shooter", 4);
@@ -162,9 +163,12 @@ namespace StarPixel
                 ship2.MountArmor("default");
                 ship2.pos = Utility.CosSin(Utility.RandAngle(), Utility.Rand(500, 2000));
 
-                ship2.MountWeapon("shooter", 0);
-                if (Utility.RandBool()) { ship2.MountWeapon("shooter", 1); }
+                string weapon = Utility.RandBool() ? "shooter": "boomer";
                 
+                ship2.MountWeapon(weapon, 0);
+                if (Utility.RandBool()) { ship2.MountWeapon(weapon, 1); }
+                
+
                 ship2.Paint(new Color(Utility.Rand(0.0f), Utility.Rand(1.0f), Utility.Rand(1.0f)));
             }
             

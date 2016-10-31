@@ -53,6 +53,7 @@ namespace StarPixel
             */
 
 
+            // SHOOTER - END //
             ArtExplosionResource exp_art = new ArtExplosionResource("particle");
             
             exp_art.particle_count = 6;
@@ -82,7 +83,7 @@ namespace StarPixel
             template.projectile_sprite_resource = "bullet";
             template.projectile_explosion_resource = "boom";
             template.projectile_scale = new Vector2(0.66f, 0.2f);
-            template.fire_rate = 10;
+            template.fire_rate = 8;
             template.projectile_velocity = 6f;
             template.projectile_scatter = 0.5f;
             template.explosion = exp;
@@ -90,8 +91,47 @@ namespace StarPixel
             weapon_templates.Add("shooter", template);
 
             ArtManager.sprites.Add("bullet", new ArtSpriteResource("bullet"));
+            // SHOOTER - START //
 
 
+            // BOOMER - START //
+            exp_art = new ArtExplosionResource("particle");
+
+            exp_art.particle_count = 20;
+            exp_art.size_start = new Vector2(6.0f, 1f);
+            exp_art.size_end = new Vector2(1f, 1f);
+            exp_art.velocity_bounce = 2f;
+            exp_art.velocity_scatter = 1.5f;
+            exp_art.particle_size_scatter = 1.7f;
+            exp_art.particle_life = 1.2f;
+            exp_art.coloring_method = ParticleColoring.Temp;
+            //exp_art.particle_color_start = Color.White;
+            //exp_art.particle_color_end = Color.LimeGreen;
+            exp_art.temperature = 5000;
+            exp_art.temperature_scatter = 2000;
+            exp_art.temp_halflife = 0.2f;
+
+
+            ArtManager.explosions.Add("boom2", exp_art);
+
+            exp = new Explosion(new Damage(20), exp_art);
+
+
+            template = new WeaponTemplate();
+
+            template.projectile_color = new Color(1f, 0.4f, 0.2f);
+            template.projectile_sprite_resource = "bullet";
+            template.projectile_explosion_resource = "boom2";
+            template.projectile_scale = new Vector2(2.5f, 0.5f);
+            template.fire_rate = 0.9f;
+            template.projectile_velocity = 7f;
+            template.projectile_scatter = 0.1f;
+            template.explosion = exp;
+
+            weapon_templates.Add("boomer", template);
+
+            //ArtManager.sprites.Add("bullet", new ArtSpriteResource("bullet"));
+            // BOOMER - END //
         }
     }
 }
