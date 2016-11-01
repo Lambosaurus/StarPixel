@@ -44,7 +44,6 @@
 > Break down object update process
 	- Needed for potential multithreading
 	- AI updates cannot be done at the same time as physical updates
-	- The above may not be important if the facades are filled out separately and the sensor model processed
 
 > Implement sensor component and sensor model.
 	- Sensability affected by heat, size, distance, possibly shield output

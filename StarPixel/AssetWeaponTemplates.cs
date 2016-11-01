@@ -84,7 +84,7 @@ namespace StarPixel
             template.projectile_explosion_resource = "boom";
             template.projectile_scale = new Vector2(0.66f, 0.2f);
             template.fire_rate = 8;
-            template.projectile_velocity = 6f;
+            template.projectile_velocity = 6.5f;
             template.projectile_scatter = 0.5f;
             template.explosion = exp;
 
@@ -124,7 +124,7 @@ namespace StarPixel
             template.projectile_explosion_resource = "boom2";
             template.projectile_scale = new Vector2(2.5f, 0.5f);
             template.fire_rate = 0.9f;
-            template.projectile_velocity = 7f;
+            template.projectile_velocity = 7.5f;
             template.projectile_scatter = 0.1f;
             template.explosion = exp;
 
