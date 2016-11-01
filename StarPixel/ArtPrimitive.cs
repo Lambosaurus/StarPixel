@@ -22,12 +22,16 @@ namespace StarPixel
         static Texture2D circle;
         static Texture2D triangle;
         static Texture2D pentagon;
+        static Texture2D line;
 
         static Texture2D circletag;
 
 
         static SpriteBatch batch;
         static float upsample = 1.0f;
+
+        const float LINE_TEXTURE_WIDTH = 8;
+        const float LINE_TEXTURE_CENTER = 5;
 
         public static void Load(ContentManager content)
         {
@@ -36,6 +40,7 @@ namespace StarPixel
             triangle = content.Load<Texture2D>("Geo/Triangle");
             pentagon = content.Load<Texture2D>("Geo/Pentagon");
             circletag = content.Load<Texture2D>("Geo/CircleTag");
+            line = content.Load<Texture2D>("Geo/Line");
         }
 
         
@@ -51,6 +56,14 @@ namespace StarPixel
             Vector2 stretch = new Vector2(Vector2.Distance(p1, p2), width * upsample);
             float angle2 = Utility.Angle(p1 - p2);
             batch.Draw(pixel, center, null, color, angle2, new Vector2(0.5f, 0.5f), stretch, SpriteEffects.None, 0);
+        }
+
+        public static void DrawLineAA(Vector2 p1, Vector2 p2, Color color, float width)
+        {
+            Vector2 center = (p1 + p2) / 2;
+            Vector2 stretch = new Vector2(Vector2.Distance(p1, p2), width * upsample / LINE_TEXTURE_WIDTH);
+            float angle2 = Utility.Angle(p1 - p2);
+            batch.Draw(line, center, null, color, angle2, new Vector2(0.5f, LINE_TEXTURE_CENTER), stretch, SpriteEffects.None, 0);
         }
 
         public static void DrawLineDashed(Vector2 p1, Vector2 p2, Color color, float width, int dashes)

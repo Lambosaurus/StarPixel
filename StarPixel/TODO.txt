@@ -19,7 +19,7 @@
 	Not implemented:
 		- Armor passing through em damage
 		- Radius affecting multiple armor segments
-
+	- Add in explosion knockback
 
 > Line arc art is a bit speckly. Explore the extention of individual arc line segments to combat this
 	LineArt.DrawArcU draws an ard by drawing multiple line segments
@@ -43,7 +43,7 @@
 
 > Break down object update process
 	- Needed for potential multithreading
-	- ALL AI updates need to be done before or after ALL physical model updates
+	- AI updates cannot be done at the same time as physical updates
 	- The above may not be important if the facades are filled out separately and the sensor model processed
 
 > Implement sensor component and sensor model.

@@ -87,7 +87,7 @@ namespace StarPixel
                    onscreen.X < res.X &&
                    onscreen.Y < res.Y;
     
-    }
+        }
 
         public bool ContainsCircle(Vector2 arg_center, float arg_radius)
         {
@@ -131,6 +131,7 @@ namespace StarPixel
             device.Clear(background_color);
 
             batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            //batch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.AnisotropicClamp, DepthStencilState.Default, RasterizerState.CullCounterClockwise);
         }
 
         public void End()
