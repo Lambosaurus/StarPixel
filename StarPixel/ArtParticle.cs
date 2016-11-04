@@ -51,7 +51,24 @@ namespace StarPixel
             Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
             sprite_center = size / 2;
 
-            max_particle_radius = (sprite_center * (size_start + size_end / 2f)).Length() /1.41f;
+            float rad_start = size_start.Length();
+            float rad_end = size_end.Length();
+            
+            float visual_particle_size;
+
+            // if we say the particles visual impact is its size multiplied by its transparency,
+            // then we can solve for the maximum visual impact.
+            if (rad_start > rad_end) { visual_particle_size = rad_start; }
+            else
+            {
+                float rsr = rad_start / rad_end;
+                float maxima_alpha = (rsr - 0.5f) / (rsr - 1);
+                visual_particle_size = (rad_start*(1-maxima_alpha) + (rad_end * maxima_alpha)) * (1-maxima_alpha);
+            }
+
+            // we div the below by 2, because the sprite_center.Length() and the particle size .Lenght()'s are both
+            // larger than the actual radiuses they represent by root(2)
+            max_particle_radius = (sprite_center.Length() * visual_particle_size / 2);
         }
     }
 

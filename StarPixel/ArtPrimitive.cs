@@ -46,6 +46,7 @@ namespace StarPixel
             line = content.Load<Texture2D>("Geo/Line");
         }
         
+        
         public static void DrawLine(Vector2 p1, Vector2 p2, Color color, float width)
         {
             Vector2 center = (p1 + p2) / 2;
@@ -53,6 +54,7 @@ namespace StarPixel
             float angle2 = Utility.Angle(p1 - p2);
             batch.Draw(pixel, center, null, color, angle2, new Vector2(0.5f, 0.5f), stretch, SpriteEffects.None, 0);
         }
+        
 
         public static void DrawLineAA(Vector2 p1, Vector2 p2, Color color, float width)
         {
