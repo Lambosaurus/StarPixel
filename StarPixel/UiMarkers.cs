@@ -112,7 +112,7 @@ namespace StarPixel
 
         public override bool InView(Camera camera)
         {
-            return camera.ContainsCircle(pos, radius * camera.pixel_constant);
+            return camera.ContainsCircle(pos, radius * camera.ui_feature_scale);
         }
 
         public override float LineRadius(float scale, float angle)
@@ -126,7 +126,7 @@ namespace StarPixel
 
             if (icon == null)
             {
-                ArtPrimitive.DrawCircle(camera.Map(pos), line_color, radius);
+                ArtPrimitive.DrawCircle(camera.Map(pos), line_color, radius * camera.ui_feature_scale);
             }
             else
             {
@@ -156,19 +156,18 @@ namespace StarPixel
             if (!InView(camera)) { return; }
 
             Vector2 center = camera.Map(pos);
-            float radius_s = radius / camera.pixel_constant;
-
-            if (radius_s / camera.pixel_constant < minimum_radius)
+            
+            if (radius < minimum_radius * camera.ui_feature_scale)
             {
-                ArtPrimitive.DrawCircle(center, line_color, minimum_radius);
+                ArtPrimitive.DrawCircle(center, line_color, minimum_radius * camera.ui_feature_scale);
             }
             else
             {
-                ArtPrimitive.DrawCircle(center, fill_color, radius_s);
+                ArtPrimitive.DrawCircle(center, fill_color, radius * camera.scale);
 
                 if (line_color != Color.Transparent)
                 {
-                    ArtPrimitive.DrawCircleLine(center, radius_s, line_color, line_thickness, dashing);
+                    ArtPrimitive.DrawCircleLine(center, radius * camera.scale, line_color, line_thickness * camera.ui_feature_scale, dashing);
                 }
             }
 
@@ -208,19 +207,19 @@ namespace StarPixel
             return inner_radius / Utility.Cos(equiv_angle);
         }
 
-        public void DrawCenter(Camera camera, Vector2 center, Color color, float in_rad)
+        public void DrawCenter(Camera camera, Vector2 center, Color color, float internal_radius)
         {
             if (n == 3)
             {
-                ArtPrimitive.DrawTriangle(center, new Vector2(in_rad, in_rad), color, angle);
+                ArtPrimitive.DrawTriangle(center, new Vector2(internal_radius, internal_radius), color, angle);
             }
             else if (n == 4)
             {
-                ArtPrimitive.DrawSquare(center, new Vector2(in_rad, in_rad), color, angle + MathHelper.PiOver4);
+                ArtPrimitive.DrawSquare(center, new Vector2(internal_radius, internal_radius), color, angle + MathHelper.PiOver4);
             }
             else if (n == 5)
             {
-                ArtPrimitive.DrawPentagon(center, new Vector2(in_rad, in_rad), color, angle + MathHelper.TwoPi/5.0f);
+                ArtPrimitive.DrawPentagon(center, new Vector2(internal_radius, internal_radius), color, angle + MathHelper.TwoPi/5.0f);
             }
         }
 
@@ -229,17 +228,15 @@ namespace StarPixel
             if (!InView(camera)) { return; }
 
             Vector2 center = camera.Map(pos);
-            float radius_s = inner_radius / camera.pixel_constant;
-
-            if (radius_s / camera.pixel_constant < minimum_radius)
+            
+            if (radius < minimum_radius * camera.ui_feature_scale)
             {
-                float mrs = minimum_radius;
-                DrawCenter(camera, center, line_color, mrs);
+                DrawCenter(camera, center, line_color, minimum_radius * camera.ui_feature_scale);
             }
             else
             {
-                DrawCenter(camera, center, fill_color, radius_s);
-                ArtPrimitive.DrawPolyLine(center, radius_s, n, line_color, line_thickness, angle, dashing);
+                DrawCenter(camera, center, fill_color, radius * camera.scale);
+                ArtPrimitive.DrawPolyLine(center, radius * camera.scale, n, line_color, line_thickness * camera.ui_feature_scale, angle, dashing);
             }
 
             DrawIcons(camera);
@@ -300,7 +297,7 @@ namespace StarPixel
             if (InView(camera))
             {
                 Vector2 line_vector = (endpoint.pos - startpoint.pos);
-
+                
                 if (line_vector != Vector2.Zero) // if the startpoint and endpoint are set to the same, then line_vector.normalize fails
                 {
 
@@ -312,7 +309,7 @@ namespace StarPixel
 
                     if (Utility.Dot(en - st, line_vector) > 0.0f)
                     {
-                        float line_width = line_thickness *2.0f / (line_count + 1.0f);
+                        float line_width = camera.ui_feature_scale * line_thickness *2.0f / (line_count + 1.0f);
 
                         if (line_count < 1) { line_count = 1; }
                         else if (line_count > 3) { line_count = 3; } // make sure its in range
@@ -378,7 +375,7 @@ namespace StarPixel
         public void Draw(Camera camera, Vector2 position)
         {
             // scale divided by 2, because there was a bug, and now im used to that size
-            tile_sheet.Draw(camera.batch, symbol_no, position, scale / 2.0f, color);
+            tile_sheet.Draw(camera.batch, symbol_no, position, camera.ui_feature_scale * scale / 2.0f, color);
         }
     }
 
@@ -405,13 +402,15 @@ namespace StarPixel
         public override void Draw(Camera camera)
         {
             pos = camera.Map(phys.pos);
-            
-            float angle = phys.angle;
-            float a_radius = radius / camera.pixel_constant;
-            float s_radius = a_radius + (line_width* 2);
 
-            float m_radius = MINIMUM_RADIUS;
-            bool compact_view = s_radius < m_radius;
+            float scaled_line_width = line_width * camera.ui_feature_scale;
+
+            float angle = phys.angle;
+            float armor_bar_radius = radius * camera.scale;
+            float shield_bar_radius = armor_bar_radius + (scaled_line_width * 2);
+            
+            float m_radius = MINIMUM_RADIUS * camera.ui_feature_scale;
+            bool compact_view = shield_bar_radius < m_radius;
             
             
             if (phys.shield != null)
@@ -429,7 +428,7 @@ namespace StarPixel
                 else
                 {
                     Color shcolor = (phys.shield.active) ? ColorManager.shield_color : ColorManager.dead_shield_color;
-                    ArtPrimitive.DrawArc(pos, -MathHelper.PiOver2, MathHelper.TwoPi * s_integrity, s_radius, shcolor, line_width);
+                    ArtPrimitive.DrawArc(pos, -MathHelper.PiOver2, MathHelper.TwoPi * s_integrity, shield_bar_radius, shcolor, scaled_line_width);
                 }
             }
 
@@ -459,7 +458,7 @@ namespace StarPixel
                         float k = phys.armor.integrity[i] / phys.armor.max_integrity;
                         
                         ArtPrimitive.DrawArc(pos, a1 + armor_bar_sep, phys.armor.per_segment_angle - (2 * armor_bar_sep),
-                                a_radius, ColorManager.HPColor(k), line_width);
+                                armor_bar_radius, ColorManager.HPColor(k), scaled_line_width);
                         
 
                         a1 = a2;

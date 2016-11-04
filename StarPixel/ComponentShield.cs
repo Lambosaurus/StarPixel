@@ -78,7 +78,7 @@ namespace StarPixel
             integrity -= total_dmg;
 
 
-            art.Ping(arg_pos, total_dmg);
+            art.Ping(arg_pos, total_dmg );
 
             if (integrity < 0)
             {

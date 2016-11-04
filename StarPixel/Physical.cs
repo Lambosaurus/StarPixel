@@ -144,21 +144,26 @@ namespace StarPixel
             this.pos += bounce * 1.5f * phys_mass_ratio;
             phys.pos -= bounce * 1.5f * this_mass_ratio;
         
+            /* Replaced by the below
             // calculate the generated foce between each ship required to produce the bounce velocity
-            //Vector2 force = ((bounce) / ((1 / mass) + (1 / phys.mass)));
+            ector2 force = ((bounce) / ((1 / mass) + (1 / phys.mass)));
             
-            // Vector2 velocity_this = (force / mass) + Utility.RotatePos(eccentricity_this * Utility.Cross(eccentricity_this, force) / intertia);
-            // Vector2 velocity_phys = (force / phys.mass) + Utility.RotatePos(eccentricity_phys * Utility.Cross(eccentricity_phys, force) / phys.intertia)
+            Vector2 velocity_this = (force / mass) + Utility.RotatePos(eccentricity_this * Utility.Cross(eccentricity_this, force) / intertia);
+            Vector2 velocity_phys = (force / phys.mass) + Utility.RotatePos(eccentricity_phys * Utility.Cross(eccentricity_phys, force) / phys.intertia)
+            */
 
+            // Calculate some constants.
             float A1 = (1.0f / this.mass) + (1.0f / phys.mass) + (this_ecc.Y * this_ecc.Y / this.inertia) + (phys_ecc.Y * phys_ecc.Y / phys.inertia);
             float B1 = (this_ecc.Y * this_ecc.X / this.inertia) + (phys_ecc.Y * phys_ecc.X / phys.inertia);
             float A2 = (1.0f / this.mass) + (1.0f / phys.mass) + (this_ecc.X * this_ecc.X / this.inertia) + (phys_ecc.X * phys_ecc.X / phys.inertia);
             float B2 = (this_ecc.X * this_ecc.Y / this.inertia) + (phys_ecc.X * phys_ecc.Y / phys.inertia);
 
+            // Solve for the force in the X and Y directions.
             float Fx = ((B1 * bounce.Y / (A1 * A2)) + (bounce.X / A1)) / (1.0f - (B1 * B2 / (A1 * A2)));
             float Fy = ((B2 * Fx) + bounce.Y) / A2;
-            
+
             Vector2 force = new Vector2(Fx, Fy);
+
 
             // apply the forces.
             this.Push(force, this_ecc);

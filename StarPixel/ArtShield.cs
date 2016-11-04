@@ -169,9 +169,11 @@ namespace StarPixel
 
             Vector2 rel = arg_pos - pos;
 
+            float dmg_const = dmg * 2;
+
             for (int i = 0; i < count; i++)
             {
-                float dst = dmg / ( size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
+                float dst = dmg_const / ( size[i] * ((Utility.CosSin(angle[i], depth[i]) - rel).LengthSquared()));
                 alpha[i] += dst;
                 alpha[i] = Utility.Clamp(alpha[i], 0, 1);
             }

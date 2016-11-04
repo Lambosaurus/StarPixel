@@ -254,11 +254,11 @@ namespace StarPixel
                 for (int k = 0; k < segment_count; k++)
                 {
                     Vector2 en = camera.Map(segments[k + 1]);
-                    ArtPrimitive.DrawLine(st, en, color, line_width);
+                    ArtPrimitive.DrawLine(st, en, color, line_width * camera.ui_feature_scale);
 
                     if (k < segment_count - 1)
                     {
-                        ArtPrimitive.DrawCircle(en, color, line_width / 2.0f);
+                        ArtPrimitive.DrawCircle(en, color, line_width * camera.ui_feature_scale / 2.0f);
                         st = en;
                     }
                 }

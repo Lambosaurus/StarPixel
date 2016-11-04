@@ -18,17 +18,17 @@ namespace StarPixel
         public Vector2 pos;
         public Vector2 size { get; protected set; }
 
-        public Camera camera { get; protected set; }
+        public RenderCamera camera { get; protected set; }
         public float uiscale { get; protected set; }
 
         public static Color default_background_color = new Color(32, 32, 32, 128);
 
-        public Widget(Camera arg_camera, float arg_uiscale)
+        public Widget(RenderCamera arg_camera, float arg_uiscale)
         {
             camera = arg_camera;
 
             uiscale = arg_uiscale;
-            size = camera.res / camera.upsample;
+            size = camera.output_res;
         }
 
         public Widget(GraphicsDevice device, SpriteBatch batch, Vector2 default_size, float arg_uiscale, int upscale = GameConst.upsample)
@@ -39,8 +39,8 @@ namespace StarPixel
             uiscale = arg_uiscale;
             size = new Vector2(width, height);
 
-            camera = new Camera(device, batch, width, height, upscale);
-            camera.Traditional(uiscale);
+            camera = new RenderCamera(device, batch, width, height, upscale);
+            //camera.Traditional(uiscale);
             
         }
 
@@ -114,7 +114,7 @@ namespace StarPixel
         public bool following = false;
 
         
-        public WidgetCamera( UI arg_ui, Camera arg_camera) : base(arg_camera, 1.0f)
+        public WidgetCamera( UI arg_ui, RenderCamera arg_camera) : base(arg_camera, 1.0f)
         {
             ui = arg_ui;
         }
@@ -126,7 +126,7 @@ namespace StarPixel
             
             if (focus_entity != null)
             {
-                camera.MoveTo(focus_entity.pos);
+                camera.SetPos(focus_entity.pos);
             }
         }
 
@@ -187,7 +187,19 @@ namespace StarPixel
 
         public override void Render(  )
         {
-            camera.Draw(universe, markers);
+            //camera.Draw(universe, markers);
+            camera.Begin();
+
+            universe.Draw(camera);
+
+            if (markers != null)
+            {
+                foreach (UIMarker marker in markers)
+                {
+                    marker.Draw(camera);
+                }
+            }
+            camera.End();
         }
         
         public override void Draw(SpriteBatch arg_batch)
@@ -196,7 +208,6 @@ namespace StarPixel
 
             if (drag_selection)
             {
-                ArtPrimitive.Setup(arg_batch, 1);
                 ArtPrimitive.DrawBoxOutline(drag_origin, drag_last, ui.cursor_color, 1.0f);
                 ArtPrimitive.DrawBoxFilled(drag_origin, drag_last, ui.cursor_color * 0.2f);
             }
@@ -249,14 +260,14 @@ namespace StarPixel
         public void Focus(Physical new_target)
         {
             target = new_target;
-            Vector2 scale = (camera.res - (padding*2)) / (target.sprite.resource.size * target.sprite.resource.scale);
+            Vector2 scale = (camera.internal_res - (padding*2* camera.ui_feature_scale)) / (target.sprite.resource.size * target.sprite.resource.scale);
             target_scale = Utility.Min(scale.X, scale.Y);
             camera.SetScale(target_scale);
             
             if (target.armor != null)
             {
                 armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor,
-                    camera.pixel_constant * armor_width / 2.0f, camera.pixel_constant * armor_width);
+                   armor_width / 2.0f, armor_width);
             }
             else
             {
@@ -270,7 +281,7 @@ namespace StarPixel
 
             if (target != null)
             {
-                camera.MoveTo(Vector2.Zero);
+                camera.SetPos(Vector2.Zero);
                 camera.SetScale(target_scale);
 
                 target.sprite.Draw(camera, Vector2.Zero, 0.0f);
@@ -296,11 +307,11 @@ namespace StarPixel
                     foreach (Component component in ((Ship)target).ListComponents())
                     {
                         Vector2 center = camera.Map(component.pos);
-                        float scale = ((component.size * 2f) / camera.pixel_constant) + (component_minimum_radius);
+                        float scale = ((component.size * 2f) / camera.ui_feature_scale) + (component_minimum_radius);
                         ArtPrimitive.DrawCircle(center, dark_grey, scale + (2f));
                         ArtPrimitive.DrawCircle(center, ColorManager.HPColor(component.health / component.max_health), scale);
 
-                        sheet.Draw(camera.batch, (int)component.base_template.symbol, center, 2f * scale * camera.upsample / sheet.tile_width, dark_grey, 0.0f);
+                        sheet.Draw(camera.batch, (int)component.base_template.symbol, center, 2f * scale / (camera.ui_feature_scale * sheet.tile_width), dark_grey, 0.0f);
                     }
                 }
 
@@ -312,7 +323,7 @@ namespace StarPixel
                 
             }
 
-            camera.Traditional(uiscale);
+            //camera.Traditional(uiscale);
 
             if (target != null)
             { 
