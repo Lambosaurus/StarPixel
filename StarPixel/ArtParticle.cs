@@ -21,7 +21,7 @@ namespace StarPixel
         public ParticleColoring coloring_method = ParticleColoring.Blend;
         public Color particle_color_start;
         public Color particle_color_end;
-
+        
         // if use particle_color = false, then you need to set these
         public float temp_halflife = 0.2f;
         public float temperature = 2000f;
