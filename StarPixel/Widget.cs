@@ -41,7 +41,6 @@ namespace StarPixel
 
             camera = new RenderCamera(device, batch, width, height, upscale);
             //camera.Traditional(uiscale);
-            
         }
 
 

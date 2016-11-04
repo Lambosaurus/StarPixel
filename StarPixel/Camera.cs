@@ -12,7 +12,7 @@ using Microsoft.Xna.Framework.Media;
 namespace StarPixel
 {
     // The information that art needs to draw themselves.
-    public abstract class Camera
+    public class Camera
     {
         public Vector2 pos { get; protected set; }
         public float scale { get; protected set; } = 1.0f;
@@ -67,7 +67,10 @@ namespace StarPixel
                    onscreen.Y - onscreen_rad < internal_res.Y;
         }
 
-        protected abstract void BuildMap();
+        protected virtual void BuildMap()
+        {
+            mapping_center = pos; // this has the position as the top left corner
+        }
 
         // maps a on camera point into the global coordinate frame
         // This is not the functions you would expect from InverseMap, this is calculated post blit... i think. i cant remember.

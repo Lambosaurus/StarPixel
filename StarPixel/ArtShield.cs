@@ -243,8 +243,7 @@ namespace StarPixel
 
         Vector2 cloud_velocity;
 
-
-
+        
         public ArtShieldPop(ArtShieldResource arg_resource, float arg_size, float shield_radius, int arg_count, Vector2 arg_center, Vector2 arg_velocity) : base(arg_resource, 1.0f, arg_count, arg_center)
         {
             alpha_decay /= arg_size;

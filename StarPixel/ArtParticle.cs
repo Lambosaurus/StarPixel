@@ -51,7 +51,7 @@ namespace StarPixel
             Vector2 size = new Vector2(sprite.Bounds.Width, sprite.Bounds.Height);
             sprite_center = size / 2;
 
-            max_particle_radius = sprite_center.Length() * Utility.Max(size_start.Length(), size_end.Length());
+            max_particle_radius = (sprite_center * (size_start + size_end / 2f)).Length() /1.41f;
         }
     }
 
@@ -100,7 +100,7 @@ namespace StarPixel
             particle_size_0 = resource.size_end * size;
             particle_size_1 = (resource.size_start - resource.size_end) * size;
 
-            particle_Radius = Utility.Sqrt(Utility.Max((resource.size_end * size).LengthSquared(), (resource.size_start * size).LengthSquared()));
+            particle_Radius = size * resource.max_particle_radius;
 
 
             velocity = new Vector2[count];

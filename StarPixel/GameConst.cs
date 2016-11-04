@@ -24,7 +24,6 @@ namespace StarPixel
         public const float scroll_zoom = 1.14f;
 
         public const float minimum_draw_radius = 1.5f;
-        
 
         public static float C(int c)
         {
