@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace ConfigLoader
 {
@@ -184,14 +185,49 @@ namespace ConfigLoader
         public static string loadField(string dir, ConfigModule confMod, FieldInfo field)
         {
             //TODO: The actual loading part
+            if (!field.FieldType.IsSubclassOf(typeof(ConfigGroup)))
+            {
+                throw new Exception("Why aren't you using 'ConfigurationGroup' to store your settings?");
+            }
+            string subdirectory = dir + FixFieldTypeString(confMod.GetType());
+            string fullDir = subdirectory + FixFieldTypeString(field.GetType());
+
+            if (File.Exists(fullDir))
+            {
+                JsonToConfGroup(fullDir, confMod, field);
+                ConfigGroup c = (ConfigGroup)field.GetValue(confMod);
+                c.ConfigChanged();
+            }
+            else
+            {
+                //This is where you'd generate a default file if it was missing. As it is, throw some nasty jazz
+                throw new Exception("Where's yo conf file at?" + fullDir);
+            }
+
             return "";
         }
 
-        private static void JsonToConfGroup(string dir, ConfigModule m, FieldInfo field)
+        private static void JsonToConfGroup(string fullDir, ConfigModule m, FieldInfo field)
         {
-
+            FieldInfo localField = m.GetType().GetField(field.Name);
+            try
+            {
+                string JsonString = File.ReadAllText(fullDir);
+                var loadedObject = JsonConvert.DeserializeObject(JsonString);
+                localField.SetValue(m, loadedObject);
+            }
+            catch
+            {
+                throw new Exception("Couldn't load the conf file soz" + localField.ToString());
+            }
         }
 
         //TODO: Determine if we want to do the other way and save to a new file as well
+
+        //Replace the + from internal classes with .
+        private static string FixFieldTypeString(Type t)
+        {
+            return t.ToString().Replace("+", ".");
+        }
     }
 }
