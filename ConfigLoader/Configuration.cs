@@ -20,10 +20,10 @@ namespace ConfigLoader
 
         private static string configDirectory = @"..\StarPixelContent";
 
-        //Purely cos he's the only figure that sounds like a watchman
-        private static configWatcher batMan = new configWatcher(configDirectory);
+        public static StarPixelDirectories Directories = new StarPixelDirectories();
 
-        public static StarPixelDirectories Directories = new StarPixelDirectories(); 
+        //Purely cos he's the only figure that sounds like a watchman
+        private static configWatcher batMan = new configWatcher(Directories.config + configDirectory);
 
         private static object modLock = new object();
         public ConfigModule()
@@ -131,7 +131,7 @@ namespace ConfigLoader
 
         public class StarPixelDirectories : ConfigGroup
         {
-            public string config = Environment.CurrentDirectory;
+            public string config = Environment.CurrentDirectory + @"\..\..\..\";
 
             protected override void SetDefaults()
             {
@@ -184,10 +184,9 @@ namespace ConfigLoader
         //Hold onto your hats.
         public static string loadField(string dir, ConfigModule confMod, FieldInfo field)
         {
-            //TODO: The actual loading part
             if (!field.FieldType.IsSubclassOf(typeof(ConfigGroup)))
             {
-                throw new Exception("Why aren't you using 'ConfigurationGroup' to store your settings?");
+                throw new Exception("Why you no use 'ConfigGroup' to store stuff?");
             }
             string subdirectory = dir + FixFieldTypeString(confMod.GetType());
             string fullDir = subdirectory + FixFieldTypeString(field.GetType());
@@ -200,8 +199,9 @@ namespace ConfigLoader
             }
             else
             {
+                GenDefaultConfig(fullDir, confMod, field);
                 //This is where you'd generate a default file if it was missing. As it is, throw some nasty jazz
-                throw new Exception("Where's yo conf file at?" + fullDir);
+                //throw new Exception("Where's yo conf file at?" + fullDir);
             }
 
             return "";
@@ -224,6 +224,20 @@ namespace ConfigLoader
 
         //TODO: Determine if we want to do the other way and save to a new file as well
 
+        private static void GenDefaultConfig(string fullDir, ConfigModule m, FieldInfo field)
+        {
+            var fieldVal = field.GetValue(m);
+            ((ConfigGroup)fieldVal).SetToDefault();
+            ((ConfigGroup)fieldVal).ConfigChanged();
+            confGrouptoJSON(fullDir, m, field);
+        }
+
+        private static void confGrouptoJSON(string fullDir, ConfigModule m, FieldInfo field)
+        {
+            string JsonString = JsonConvert.SerializeObject(field.GetValue(m));
+            File.WriteAllText(fullDir, JsonString);
+        }
+        
         //Replace the + from internal classes with .
         private static string FixFieldTypeString(Type t)
         {
