@@ -108,15 +108,18 @@ namespace StarPixel
         public List<Vector2>[] nodes;
 
         public Armor armor;
+
+        float line_width;
         
-        public HitboxArmorMarker(HitboxPolygon hitbox, Armor arg_armor, float displacement, float segment_separation)
+        public HitboxArmorMarker(HitboxPolygon hitbox, Armor arg_armor, float displacement, float segment_separation, float arg_line_width)
         {
             // we need to construct the lines to represent our armor segments.
             // We have to project the armors angular system onto the hitbox.
 
             armor = arg_armor;
             nodes = new List<Vector2>[armor.segment_count];
-
+            
+            line_width = arg_line_width;
 
             int count = hitbox.count;
             Vector2[] corners = new Vector2[count];
@@ -213,12 +216,13 @@ namespace StarPixel
 
             foreach (List<Vector2> node in nodes)
             {
-                trim(node, 1, sep);
-                trim(node, -1, sep);
-            }            
+                Trim(node, 1, sep);
+                Trim(node, -1, sep);
+            }
+            
         }
 
-        void trim(List<Vector2> points, int direction, float reminaing)
+        void Trim(List<Vector2> points, int direction, float reminaing)
         {
             int k = (direction == 1) ? 0 : points.Count - 1;
 
@@ -235,13 +239,13 @@ namespace StarPixel
                 points.RemoveAt(k);
                 if (points.Count > 2)
                 {
-                    trim(points, direction, reminaing);
+                    Trim(points, direction, reminaing);
                 }
             }
         }
 
         
-        public void Draw(Camera camera, float line_width)
+        public void Draw(Camera camera)
         {
             for (int i = 0; i < armor.segment_count; i++)
             {
@@ -254,7 +258,7 @@ namespace StarPixel
                 for (int k = 0; k < segment_count; k++)
                 {
                     Vector2 en = camera.Map(segments[k + 1]);
-                    ArtPrimitive.DrawLine(st, en, color, line_width * camera.ui_feature_scale);
+                    ArtPrimitive.DrawLineAA(st, en, color, line_width * camera.ui_feature_scale);
 
                     if (k < segment_count - 1)
                     {

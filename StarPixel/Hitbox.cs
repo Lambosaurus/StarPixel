@@ -410,7 +410,6 @@ namespace StarPixel
 
                 p1 = p2;
             }
-            
         }
     }
 }

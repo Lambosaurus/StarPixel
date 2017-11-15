@@ -74,13 +74,13 @@ namespace StarPixel
                 new Vector2(18, 3),
             } );
 
-            template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.8f , 1, 0, 0);
-            template.AddThrusterPort(new Vector2(12, 4), right ,     0.4f, 0, -1, -1);
-            template.AddThrusterPort(new Vector2(-8, 11), right,     0.4f, 0, -1, 1);
-            template.AddThrusterPort(new Vector2(12, -4), left,      0.4f, 0, 1, 1);
-            template.AddThrusterPort(new Vector2(-8, -11), left,     0.4f, 0, 1, -1);
-            template.AddThrusterPort(new Vector2(0, 9), 0.2f,     0.4f, -1, 0, 0);
-            template.AddThrusterPort(new Vector2(0, -9), -0.2f,   0.4f, -1, 0, 0);
+            template.AddThrusterPort(new Vector2(-15, 0), reverse,  0.8f,  1,  0,  0);
+            template.AddThrusterPort(new Vector2(12, 4), right ,    0.4f,  0, -1, -1);
+            template.AddThrusterPort(new Vector2(-8, 11), right,    0.4f,  0, -1,  1);
+            template.AddThrusterPort(new Vector2(12, -4), left,     0.4f,  0,  1,  1);
+            template.AddThrusterPort(new Vector2(-8, -11), left,    0.4f,  0,  1, -1);
+            template.AddThrusterPort(new Vector2(0, 9), 0.2f,       0.4f, -1,  0,  0);
+            template.AddThrusterPort(new Vector2(0, -9), -0.2f,     0.4f, -1,  0,  0);
 
             template.AddWeaponPort(new Vector2(10, 3), 1.0f, 0.0f, arc_180/4);
             template.AddWeaponPort(new Vector2(10, -3), 1.0f, 0.0f, arc_180/4);
@@ -97,9 +97,9 @@ namespace StarPixel
             // -- // CG1 START
 
             template = new ShipTemplate();
-            template.base_mass = 300;
+            template.base_mass = 200;
             //template.base_intertia = 30000;
-            template.mass_avg_radius = 28; // length approx (48+46), so reccommended mass-radius is length/3
+            template.mass_avg_radius = 40; // length approx (48+46), so reccommended mass-radius is length/3
             template.thruster_avg_radius = 28;
             template.hull_art_resource = "Ship/CG1/Hull";
             //template.heat_art_resource = "Ship/CG1/Heat";

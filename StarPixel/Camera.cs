@@ -92,15 +92,29 @@ namespace StarPixel
             BuildMap();
         }
 
+        public virtual void DrawBackground()
+        {
+            ArtPrimitive.DrawBoxFilled( pos , pos + internal_res, background_color);
+        }
     }
 
+    public class CenteredCamera : Camera
+    {
+        public CenteredCamera(Vector2 arg_res, SpriteBatch arg_batch) : base(arg_res, arg_batch)
+        {
+        }
+
+        protected override void BuildMap()
+        {
+            mapping_center = (pos + internal_midpoint)/scale;
+        }
+    }
 
     public class RenderCamera : Camera
     {
         public RenderTarget2D surface { get; private set; }
         public GraphicsDevice device { get; private set; }
         
-            
         public RenderCamera(GraphicsDevice arg_device, SpriteBatch arg_batch, int x, int y, int arg_upsample_multiplier = 1) : base(new Vector2(x,y), arg_batch)
         {
             internal_scale = arg_upsample_multiplier;
@@ -149,28 +163,5 @@ namespace StarPixel
                 arg_batch.Draw(surface, arg_pos, Color.White);
             }
         }
-
-        /*
-        public void Draw(Universe universe, List<UIMarker> markers = null )
-        {
-            Begin();
-
-            if (universe != null)
-            {
-                universe.Draw(this);
-                
-
-                if (markers != null)
-                {
-                    foreach (UIMarker mark in markers)
-                    {
-                        mark.Draw(this);
-                    }
-                }
-            }
-
-            End();
-        }
-        */
     }
 }

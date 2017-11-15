@@ -222,6 +222,8 @@ namespace StarPixel
             return (a < b) ? a : b;
         }
 
+
+        // sweet fuck, these window function variations need to be renamed
         public static bool PointInWindow( Vector2 point, Vector2 limits)
         {
             return point.X >= 0 &&

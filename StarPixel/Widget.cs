@@ -14,35 +14,52 @@ namespace StarPixel
     public class Widget
     {
         public bool windowed = false;
-
-        public Vector2 pos;
+        
+        public Vector2 pos { get; protected set; }
         public Vector2 size { get; protected set; }
 
-        public RenderCamera camera { get; protected set; }
-        public float uiscale { get; protected set; }
+        public Camera camera { get; protected set; }
 
-        public static Color default_background_color = new Color(32, 32, 32, 128);
+        protected static Color default_background_color = new Color(32, 32, 32, 128);
 
-        public Widget(RenderCamera arg_camera, float arg_uiscale)
+
+        protected const int padding = 10;
+        protected const int window_bar_height = 30;
+        protected static Color default_window_bar_color = new Color(64, 64, 64, 128);
+
+
+        Vector2 bar_drag_anchor;
+        bool bar_dragging = false;
+
+        public Widget(Vector2 arg_size, Vector2 arg_pos, SpriteBatch arg_batch) : this(new Camera(arg_size, arg_batch), arg_pos )
+        {
+            camera.background_color = new Color(32, 32, 32, 128);
+        }
+
+        public Widget(Camera arg_camera, Vector2 arg_pos)
         {
             camera = arg_camera;
-
-            uiscale = arg_uiscale;
+            SetPos(arg_pos);
             size = camera.output_res;
         }
 
+        /*
         public Widget(GraphicsDevice device, SpriteBatch batch, Vector2 default_size, float arg_uiscale, int upscale = GameConst.upsample)
         {
             int width = (int)Math.Ceiling(default_size.X * arg_uiscale);
             int height = (int)Math.Ceiling(default_size.Y * arg_uiscale);
-
-            uiscale = arg_uiscale;
+            
             size = new Vector2(width, height);
 
             camera = new RenderCamera(device, batch, width, height, upscale);
-            //camera.Traditional(uiscale);
         }
+        */
 
+        public virtual void SetPos(Vector2 arg_pos)
+        {
+            pos = arg_pos;
+            camera.SetPos(pos);
+        }
 
         public virtual void Update(InputState inputs)
         {
@@ -57,31 +74,50 @@ namespace StarPixel
         // draw content onto the screen through the given sprite batch
         public virtual void Draw(SpriteBatch arg_batch)
         {
+            DrawWindow();
+        }
+
+        protected void DrawWindow()
+        {
+            camera.DrawBackground();
+
+            if (windowed)
+            {
+                ArtPrimitive.DrawBoxFilled(camera.pos, new Vector2(size.X, -window_bar_height) + camera.pos, default_window_bar_color);
+            }
         }
 
 
         public bool InWindow(Vector2 point)
         {
+            // if we are windowed, we include the window_bar_height in our hit scan.
+            if (windowed) { return Utility.PointInWindow(point - pos + new Vector2(0, window_bar_height), size + new Vector2(0, window_bar_height)); }
             return Utility.PointInWindow(point - pos, size);
         }
-
-
+        
         public virtual void ClickCallback(Vector2 point, InputState.MouseButton button)
         {
         }
 
         public virtual void DragStartCallback(Vector2 point, InputState.MouseButton button)
         {
+            if (windowed && point.Y < pos.Y)
+            {
+                bar_dragging = true;
+                bar_drag_anchor = pos - point;
+            }
         }
 
         // this is distinct from the HoverCallback, because as long as the drag is held, it will
         // persist on the widget, even if the cursor leaves the widget boundary
         public virtual void DragCallback(Vector2 point)
         {
+            if (bar_dragging) { SetPos( point + bar_drag_anchor); }
         }
 
         public virtual void DragReleaseCallback(Vector2 point)
         {
+            bar_dragging = false;
         }
 
         // returns the cursor sprite
@@ -113,7 +149,7 @@ namespace StarPixel
         public bool following = false;
 
         
-        public WidgetCamera( UI arg_ui, RenderCamera arg_camera) : base(arg_camera, 1.0f)
+        public WidgetCamera( UI arg_ui, RenderCamera arg_camera) : base(arg_camera, new Vector2(0,0))
         {
             ui = arg_ui;
         }
@@ -187,7 +223,7 @@ namespace StarPixel
         public override void Render(  )
         {
             //camera.Draw(universe, markers);
-            camera.Begin();
+            ((RenderCamera)camera).Begin();
 
             universe.Draw(camera);
 
@@ -198,12 +234,12 @@ namespace StarPixel
                     marker.Draw(camera);
                 }
             }
-            camera.End();
+            ((RenderCamera)camera).End();
         }
         
         public override void Draw(SpriteBatch arg_batch)
         {
-            camera.Blit(arg_batch, pos);
+            ((RenderCamera)camera).Blit(arg_batch, pos);
 
             if (drag_selection)
             {
@@ -227,6 +263,47 @@ namespace StarPixel
     }
 
 
+    public class WidgetSubCamera : Widget
+    {
+        public Universe target_universe;
+        public Physical target;
+
+        RenderCamera subcamera;
+        
+        public WidgetSubCamera(Vector2 arg_size, Vector2 arg_pos, SpriteBatch arg_batch, GraphicsDevice arg_device) : base( arg_size, arg_pos, arg_batch )
+        {
+            windowed = true;
+
+            int sub_x = (int)size.X - padding * 2;
+            int sub_y = (int)size.Y - padding * 2;
+            subcamera = new RenderCamera(arg_device, arg_batch, sub_x, sub_y, GameConst.upsample);
+            subcamera.SetScale(3);
+        }
+        
+        public override void Render()
+        {
+            subcamera.Begin();
+
+            if (target != null)
+            {
+                subcamera.SetPos(target.pos);
+            }
+            if (target_universe != null)
+            {
+                target_universe.Draw(subcamera);
+            }
+
+            subcamera.End();
+        }
+
+        public override void Draw(SpriteBatch arg_batch)
+        {
+            base.Draw(arg_batch);
+
+            subcamera.Blit(camera.batch, camera.Map( new Vector2(padding, padding) ) );
+        }
+    }
+
     public class WidgetShipStatus : Widget
     {
         Physical target;
@@ -234,24 +311,24 @@ namespace StarPixel
         float target_scale;
 
         float armor_width = 8f;
-        Vector2 padding = new Vector2(4,4);
         float component_minimum_radius = 3f;
 
         HitboxArmorMarker armor;
         WidgetElementBar shield_bar;
-
-
-        const int default_width = 160;
-        const int default_height = 160;
+        
         static Color dark_grey = new Color(32, 32, 32);
 
-        public WidgetShipStatus(GraphicsDevice arg_device, SpriteBatch arg_batch, float arg_uiscale = 1.0f) : base( arg_device, arg_batch, new Vector2(default_width, default_height), arg_uiscale)
+        CenteredCamera ship_camera;
+
+        public WidgetShipStatus(Vector2 arg_size, Vector2 arg_pos, SpriteBatch arg_batch) : base( arg_size, arg_pos, arg_batch )
         {
-            padding += new Vector2(armor_width, armor_width);
+            windowed = true;
 
-            camera.background_color = new Color(32, 32, 32, 128);
-
-            shield_bar = new WidgetElementBar( new Vector2(10, 150), new Vector2(140, armor_width));
+            Vector2 pad_vec = new Vector2(padding, padding);
+            ship_camera = new CenteredCamera(camera.internal_res - 2 * pad_vec, camera.batch);
+            ship_camera.SetPos(pad_vec + camera.pos);
+            
+            shield_bar = new WidgetElementBar( new Vector2(padding, size.Y - (padding + armor_width)), new Vector2(size.X - (2*padding), armor_width));
             shield_bar.full_color = ColorManager.shield_color;
             shield_bar.empty_color = ColorManager.HP_DEAD;
         }
@@ -259,31 +336,34 @@ namespace StarPixel
         public void Focus(Physical new_target)
         {
             target = new_target;
-            Vector2 scale = (camera.internal_res - (padding*2* camera.ui_feature_scale)) / (target.sprite.resource.size * target.sprite.resource.scale);
+            Vector2 scale = (ship_camera.output_res) / (target.sprite.resource.size * target.sprite.resource.scale);
             target_scale = Utility.Min(scale.X, scale.Y);
-            camera.SetScale(target_scale);
+            ship_camera.SetScale(target_scale);
             
+                        
             if (target.armor != null)
             {
                 armor = new HitboxArmorMarker( (HitboxPolygon)target.hitbox, target.armor,
-                   armor_width / 2.0f, armor_width);
+                   armor_width / (target_scale * 2.0f), armor_width / target_scale, armor_width);
             }
             else
             {
                 armor = null;
             }
         }
+        
 
-        public override void Render()
+        public override void Draw(SpriteBatch batch)
         {
-            camera.Begin();
+            base.Draw(batch);
 
+            // we set this each frame, because we cant be bothered watching drag events
+            ship_camera.SetPos( camera.pos + new Vector2(padding, padding) );
+            
             if (target != null)
             {
-                camera.SetPos(Vector2.Zero);
-                camera.SetScale(target_scale);
-
-                target.sprite.Draw(camera, Vector2.Zero, 0.0f);
+                
+                target.sprite.Draw(ship_camera, Vector2.Zero, 0.0f);
                 //if (target is Ship)
                 //{
                 //    ((Ship)target).paint_sprite.Draw(camera, Vector2.Zero, 0.0f);
@@ -291,26 +371,22 @@ namespace StarPixel
 
                 if (armor != null)
                 {
-                    armor.Draw(camera, armor_width);
+                    armor.Draw(ship_camera);
                 }
                 
-                if (target.armor != null)
-                {
-                    //target.hitbox.Draw(camera, target.armor, 8.0f, Vector2.Zero, 0.0f);
-                }
-
                 if (target is Ship)
                 {
                     SpriteTileSheet sheet = Symbols.component_sheet;
 
                     foreach (Component component in ((Ship)target).ListComponents())
                     {
-                        Vector2 center = camera.Map(component.pos);
-                        float scale = ((component.size * 2f) / camera.ui_feature_scale) + (component_minimum_radius);
-                        ArtPrimitive.DrawCircle(center, dark_grey, scale + (2f));
+                        Vector2 center = ship_camera.Map(component.pos);
+                        float scale = ((component.size * 3) * camera.scale);
+                        //float scale = ((component.size * 2f) + component_minimum_radius);
+                        ArtPrimitive.DrawCircle(center, dark_grey, (scale + 2f));
                         ArtPrimitive.DrawCircle(center, ColorManager.HPColor(component.health / component.max_health), scale);
 
-                        sheet.Draw(camera.batch, (int)component.base_template.symbol, center, 2f * scale / (camera.ui_feature_scale * sheet.tile_width), dark_grey, 0.0f);
+                        sheet.Draw(camera.batch, (int)component.base_template.symbol, center, 2f * scale / sheet.tile_width, dark_grey, 0.0f);
                     }
                 }
 
@@ -319,22 +395,21 @@ namespace StarPixel
                     shield_bar.full_color = (target.shield.active) ? ColorManager.shield_color : ColorManager.dead_shield_color;
                     shield_bar.fill = target.shield.integrity / target.shield.max_integrity;
                 }
-                
+
             }
 
-            //camera.Traditional(uiscale);
 
             if (target != null)
-            { 
+            {
                 shield_bar.Draw(camera);
             }
 
-            camera.End();
-        }
-
-        public override void Draw(SpriteBatch batch)
-        {
-            camera.Blit(batch, pos);
+            //camera.Blit(batch, pos);
         }
     }
 }
+
+
+
+
+

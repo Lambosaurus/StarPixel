@@ -87,6 +87,7 @@ namespace StarPixel
         
         WidgetCamera camera_widget;
         WidgetShipStatus status_widget;
+        WidgetSubCamera subcam_widget;
         
         Universe focus_universe;
         Physical focus_phys;
@@ -111,11 +112,12 @@ namespace StarPixel
             device = arg_device;
 
             camera_widget = new WidgetCamera( this, new RenderCamera(arg_device, arg_batch, width, height, GameConst.upsample) ); // UPSAMPLE_MULTILIER
-            status_widget = new WidgetShipStatus(arg_device, arg_batch);
-            status_widget.pos.Y = height - status_widget.size.Y;
-            
+            status_widget = new WidgetShipStatus( new Vector2( 200,200 ), new Vector2(0,height - 200), batch );
+            subcam_widget = new WidgetSubCamera(new Vector2(300, 300), new Vector2(300, 300), batch, device);
+
             widgets.Add(camera_widget);
             widgets.Add(status_widget);
+            widgets.Add(subcam_widget);
             
             inputs = new InputState();
         }
@@ -129,6 +131,8 @@ namespace StarPixel
         {
             focus_universe = arg_universe;
             camera_widget.universe = arg_universe;
+
+            subcam_widget.target_universe = arg_universe;
         }
 
         public void FocusPhys(Physical phys)
